@@ -4,6 +4,12 @@
 
 ![](./images/main--en.png)
 
+At work, I get a lot of notifications from GitHub, Redmine, Backlog, and so on.
+
+If you keep opening them in a new tab to read them later, you will have too many tabs in no time.
+
+This Extension allows you to organize them in an instant and reload the remaining tabs to make them up-to-date!
+
 ## How to use
 
 1. Click the Chrome Extension icon
