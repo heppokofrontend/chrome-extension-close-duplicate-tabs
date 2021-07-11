@@ -1,0 +1,47 @@
+{
+  "name": "my-webpack-project",
+  "description": "My webpack project",
+  "version": "1.0.0",
+  "dependencies": {
+    "@types/chrome": "^0.0.146",
+    "cpx": "^1.5.0",
+    "css-loader": "^5.2.6",
+    "fs-extra": "^10.0.0",
+    "gh-pages": "^3.2.3",
+    "html-minifier": "^4.0.0",
+    "sass": "^1.35.2",
+    "sass-loader": "^12.1.0",
+    "style-loader": "^3.0.0",
+    "stylelint": "^13.13.1",
+    "stylelint-config-recess-order": "^2.4.0",
+    "stylelint-config-standard": "^22.0.0",
+    "terser": "^5.7.1",
+    "typescript": "^4.3.5",
+    "webpack-cli": "^4.7.2",
+    "webpack-dev-server": "^3.11.2"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^4.28.2",
+    "@typescript-eslint/parser": "^4.28.2",
+    "@webpack-cli/generators": "^2.2.0",
+    "eslint": "^7.30.0",
+    "eslint-config-google": "^0.14.0",
+    "ts-loader": "^9.2.3",
+    "webpack": "^5.44.0"
+  },
+  "license": "MIT",
+  "main": "index.js",
+  "scripts": {
+    "build": "yarn build:prod",
+    "build:dev": "webpack --mode=development",
+    "build:prod": "webpack --mode=production --node-env=production",
+    "deploy": "gh-pages -d package -b package",
+    "eslint": "eslint . --ext .js,.ts --fix",
+    "postbuild": "node minify",
+    "prebuild": "cpx 'static/**' package -C",
+    "predeploy": "yarn build",
+    "prestart": "yarn build",
+    "start": "webpack serve --open --liveReload",
+    "stylelint": "stylelint 'src/**/*scss' --fix"
+  }
+}

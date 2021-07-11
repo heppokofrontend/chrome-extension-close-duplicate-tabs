@@ -1,0 +1,20 @@
+{
+  "extName": {
+    "message": "Close duplicate tab"
+  },
+  "extDesc": {
+    "message": "Close duplicate tab on current window."
+  },
+  "checkbox_query": {
+    "message": "Ignore the query"
+  },
+  "checkbox_hash": {
+    "message": "Ignore the hash"
+  },
+  "btn_remove": {
+    "message": "Close duplicate tab"
+  },
+  "btn_reload": {
+    "message": "Reload all tabs"
+  }
+}
