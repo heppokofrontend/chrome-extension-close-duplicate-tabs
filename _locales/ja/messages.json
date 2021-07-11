@@ -1,1 +1,1 @@
-{"extName":{"message":"重複したタブを閉じる"},"extDesc":{"message":"現在のウィンドウでURLが重複しているタブを閉じます。"},"checkbox_query":{"message":"クエリを無視する"},"checkbox_hash":{"message":"ハッシュを無視する"},"btn_remove":{"message":"重複したタブを閉じる"},"btn_reload":{"message":"すべてのタブをリロードする"}}
+{"extName":{"message":"重複したタブを閉じるやつ"},"extDesc":{"message":"現在のウィンドウでURLが重複しているタブを閉じます。"},"checkbox_query":{"message":"クエリを無視する"},"checkbox_hash":{"message":"ハッシュを無視する"},"btn_remove":{"message":"重複したタブを閉じる"},"btn_reload":{"message":"すべてのタブをリロードする"}}
