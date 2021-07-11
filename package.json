@@ -1,6 +1,6 @@
 {
-  "name": "my-webpack-project",
-  "description": "My webpack project",
+  "name": "chrome-extension-close-duplicate-tabs",
+  "description": "This is a Google Chrome extension that closes duplicate tabs in the current window.",
   "version": "1.0.0",
   "dependencies": {
     "@types/chrome": "^0.0.146",
@@ -31,6 +31,7 @@
   },
   "license": "MIT",
   "main": "index.js",
+  "private": true,
   "scripts": {
     "build": "yarn build:prod",
     "build:dev": "webpack --mode=development",
