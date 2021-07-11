@@ -1,8 +1,8 @@
-[日本語はこちら](./README--ja.md)
-
 # Close duplicate tabs
 
 ![](./images/main--en.png)
+
+[日本語はこちら](./README--ja.md)
 
 At work, I get a lot of notifications from GitHub, Redmine, Backlog, and so on.
 

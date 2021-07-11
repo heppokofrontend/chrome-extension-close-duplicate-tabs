@@ -1,8 +1,8 @@
-[English version is here.](./README--ja.md)
-
 # 重複したタブを閉じるやつ
 
 ![](./images/main--ja.png)
+
+[English version is here.](./README--ja.md)
 
 仕事中はGitHubやRedmine、Backlogなどからたくさんの通知が来ます。
 
