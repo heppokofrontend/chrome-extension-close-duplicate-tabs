@@ -1,6 +1,6 @@
 [English version is here.](./README--ja.md)
 
-# 重複したタブを閉じる
+# 重複したタブを閉じるやつ
 
 ![](./images/main--ja.png)
 

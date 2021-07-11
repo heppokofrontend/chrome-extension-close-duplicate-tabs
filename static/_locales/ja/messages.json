@@ -1,6 +1,6 @@
 {
   "extName": {
-    "message": "重複したタブを閉じる"
+    "message": "重複したタブを閉じるやつ"
   },
   "extDesc": {
     "message": "現在のウィンドウでURLが重複しているタブを閉じます。"
