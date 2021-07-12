@@ -7,31 +7,28 @@ const tasks = {
    * @param ignore - URL Queryとhashを無視する
    */
   remove(tabs: chrome.tabs.Tab[], ignore: Message.ignore) {
-    const duplicated = tabs.filter((item, idx, self) => {
-      /**
-       * array.findIndexのcallback関数
-       * @param tab - アクティブウィンドウのタブオブジェクト
-       * @returns - array.filterから渡されたタブオブジェクトとfindIndex中のカレントタブが同じURLかどうか
-       */
-      const findIndex = ({url}: chrome.tabs.Tab) => (
-        url &&
-        item.url &&
-        parse(url, ignore) === parse(item.url, ignore)
-      );
-      const firstIdx = self.findIndex(findIndex);
-      const reversed = [...self].reverse();
-      const lastIdx = self.length - reversed.findIndex(findIndex) - 1;
+    const checkedUrl = new Set<string>();
+    const duplicated: number[] = [];
 
-      return (
-        firstIdx === idx &&
-        lastIdx !== idx
-      );
-    });
-
-    for (const {id} of duplicated) {
-      if (id) {
-        chrome.tabs.remove(id);
+    for (const tab of tabs) {
+      if (
+        !tab.url ||
+        typeof tab.id !== 'number'
+      ) {
+        continue;
       }
+
+      const url = parse(tab.url, ignore);
+
+      if (checkedUrl.has(url)) {
+        duplicated.push(tab.id);
+      }
+
+      checkedUrl.add(url);
+    }
+
+    for (const id of duplicated) {
+      chrome.tabs.remove(id);
     }
   },
   /**
@@ -55,8 +52,6 @@ const closeTab = ({task, ignore}: Message.data) => {
   chrome.tabs.query({
     currentWindow: true,
   }, (tabs) => {
-    console.log(ignore);
-
     tasks[task]?.(tabs, ignore);
   });
 };

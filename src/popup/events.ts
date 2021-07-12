@@ -30,8 +30,6 @@ const handler = {
       STATE[this.dataset.name] = this.checked;
       data[this.dataset.name] = this.checked;
 
-      console.log(STATE);
-
       chrome.storage.local.set(data);
     }
   },
