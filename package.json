@@ -1,7 +1,7 @@
 {
   "name": "chrome-extension-close-duplicate-tabs",
   "description": "This is a Google Chrome extension that closes duplicate tabs in the current window.",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "dependencies": {
     "@types/chrome": "^0.0.146",
     "cpx": "^1.5.0",
