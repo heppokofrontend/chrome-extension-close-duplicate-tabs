@@ -30,5 +30,7 @@ chrome.storage.local.get(['noQuery', 'noHash'], (values: Message.ignore) => {
   }
 
   // CSS Transitionの有効化
-  document.body.dataset.state = 'loaded';
+  setTimeout(() => {
+    document.body.dataset.state = 'loaded';
+  }, 300);
 });
