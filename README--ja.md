@@ -12,6 +12,12 @@
 
 このエクステンションはそんな状態で重複しているタブをすべて閉じ、残ったタブもまとめてリロードして最新状態をすぐに確認できます。
 
+## Download
+
+Google Chromeにインストールしてください。
+
+<https://chrome.google.com/webstore/detail/close-duplicate-tab/ollnnjepahcgphpjjhcfohpelmpldghj>
+
 ## 使い方
 
 1. このブラウザ拡張のアイコンをクリックします

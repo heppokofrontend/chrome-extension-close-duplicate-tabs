@@ -12,6 +12,12 @@ If you keep opening them in a new tab to read them later, you will have too many
 
 This Extension allows you to organize them in an instant and reload the remaining tabs to make them up-to-date!
 
+## Download
+
+Install it on your Google Chrome from here.
+
+<https://chrome.google.com/webstore/detail/close-duplicate-tab/ollnnjepahcgphpjjhcfohpelmpldghj>
+
 ## How to use
 
 1. Click the Chrome Extension icon
