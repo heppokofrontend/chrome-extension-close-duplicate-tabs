@@ -1,5 +1,7 @@
 # 重複したタブを閉じるやつ
 
+[![MIT License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](LICENSE) [![Maintainability](https://api.codeclimate.com/v1/badges/6a4a32f68f2776d2710c/maintainability)](https://codeclimate.com/github/heppokofrontend/chrome-extension-close-duplicate-tabs/maintainability)
+
 ![](./images/main--ja.png)
 
 [English version is here.](./README--ja.md)
