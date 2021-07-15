@@ -16,7 +16,7 @@ This Extension allows you to organize them in an instant and reload the remainin
 
 Install it on your Google Chrome from here.
 
-<https://chrome.google.com/webstore/detail/close-duplicate-tab/ollnnjepahcgphpjjhcfohpelmpldghj>
+[![Available in the Chrome Web Store](./images/iNEddTyWiMfLSwFD6qGq.png)](https://chrome.google.com/webstore/detail/close-duplicate-tab/ollnnjepahcgphpjjhcfohpelmpldghj)
 
 ## How to use
 
