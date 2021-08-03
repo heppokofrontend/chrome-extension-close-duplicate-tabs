@@ -5,7 +5,7 @@
   "dependencies": {
     "@types/chrome": "^0.0.146",
     "cpx": "^1.5.0",
-    "css-loader": "^5.2.6",
+    "css-loader": "^5.2.7",
     "fs-extra": "^10.0.0",
     "gh-pages": "^3.2.3",
     "html-minifier": "^4.0.0",
