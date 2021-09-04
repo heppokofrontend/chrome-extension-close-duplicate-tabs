@@ -45,15 +45,15 @@ const tasks = {
 };
 
 /**
- * タブを閉じる
+ * タスクの実行
  * @param message - postMessageでpopup.tsからに渡されるメッセージ
  */
-const closeTab = ({task, ignore}: Message.data) => {
-  chrome.tabs.query({
+const closeTab = async ({task, ignore}: Message.data) => {
+  const tabs = await chrome.tabs.query({
     currentWindow: true,
-  }, (tabs) => {
-    tasks[task]?.(tabs, ignore);
   });
+
+  tasks[task]?.(tabs, ignore);
 };
 
 chrome.runtime.onConnect.addListener((port) => {
