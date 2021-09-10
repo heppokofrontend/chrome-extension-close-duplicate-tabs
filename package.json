@@ -39,10 +39,10 @@
     "deploy": "gh-pages -d package -b package",
     "eslint": "eslint . --ext .js,.ts --fix",
     "postbuild": "node minify",
-    "prebuild": "cpx 'static/**' package -C",
+    "prebuild": "cpx \"./static/**\" package -C",
     "predeploy": "yarn build",
     "prestart": "yarn build",
     "start": "webpack serve --open --liveReload",
-    "stylelint": "stylelint 'src/**/*scss' --fix"
+    "stylelint": "stylelint \"src/**/*scss\" --fix"
   }
 }
