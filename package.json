@@ -3,7 +3,7 @@
   "description": "This is a Google Chrome extension that closes duplicate tabs in the current window.",
   "version": "0.1.1",
   "dependencies": {
-    "@types/chrome": "^0.0.147",
+    "@types/chrome": "^0.0.148",
     "cpx": "^1.5.0",
     "css-loader": "^5.2.7",
     "fs-extra": "^10.0.0",
