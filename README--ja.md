@@ -4,7 +4,7 @@
 
 ![](./images/main--ja.png)
 
-[English version is here.](./README--ja.md)
+[English version is here.](./README.md)
 
 仕事中はGitHubやRedmine、Backlogなどからたくさんの通知が来ます。
 
