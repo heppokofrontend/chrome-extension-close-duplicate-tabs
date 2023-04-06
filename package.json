@@ -1,48 +1,45 @@
 {
   "name": "chrome-extension-close-duplicate-tabs",
   "description": "This is a Google Chrome extension that closes duplicate tabs in the current window.",
-  "version": "0.1.1",
-  "dependencies": {
-    "@types/chrome": "^0.0.147",
-    "cpx": "^1.5.0",
-    "css-loader": "^5.2.7",
-    "fs-extra": "^10.0.0",
-    "gh-pages": "^3.2.3",
-    "html-minifier": "^4.0.0",
-    "sass": "^1.35.2",
-    "sass-loader": "^12.1.0",
-    "style-loader": "^3.1.0",
-    "stylelint": "^13.13.1",
-    "stylelint-config-recess-order": "^2.4.0",
-    "stylelint-config-standard": "^22.0.0",
-    "terser": "^5.7.1",
-    "typescript": "^4.3.5",
-    "webpack-cli": "^4.7.2",
-    "webpack-dev-server": "^3.11.2"
+  "version": "1.0.0",
+  "author": "heppokofrontend",
+  "bugs": {
+    "url": "https://github.com/heppokofrontend/chrome-extension-hand-tool/issues"
   },
   "devDependencies": {
+    "@types/chrome": "^0.0.220",
     "@typescript-eslint/eslint-plugin": "^4.28.2",
     "@typescript-eslint/parser": "^4.28.2",
-    "@webpack-cli/generators": "^2.2.0",
     "eslint": "^7.30.0",
     "eslint-config-google": "^0.14.0",
+    "gh-pages": "^3.2.3",
+    "http-server": "^14.1.1",
+    "stylelint": "^15.3.0",
+    "stylelint-config-recess-order": "^4.0.0",
+    "stylelint-config-standard": "^31.0.0",
+    "terser": "^5.7.1",
     "ts-loader": "^9.2.3",
-    "webpack": "^5.44.0"
+    "typescript": "^4.3.5",
+    "uglify-js": "^3.17.4"
   },
+  "homepage": "https://github.com/heppokofrontend/chrome-extension-hand-tool#readme",
+  "keywords": [],
   "license": "MIT",
   "main": "index.js",
-  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/heppokofrontend/chrome-extension-hand-tool.git"
+  },
   "scripts": {
-    "build": "yarn build:prod",
-    "build:dev": "webpack --mode=development",
-    "build:prod": "webpack --mode=production --node-env=production",
+    "build": "tsc --build",
     "deploy": "gh-pages -d package -b package",
+    "dev": "tsc --watch",
     "eslint": "eslint . --ext .js,.ts --fix",
-    "postbuild": "node minify",
-    "prebuild": "cpx \"./static/**\" package -C",
+    "minify:content": "uglifyjs ./package/popup.js -o ./package/popup.js",
+    "minify:worker": "uglifyjs ./package/worker.js -o ./package/worker.js",
+    "postbuild": "yarn minify:content && yarn minify:worker",
     "predeploy": "yarn build",
-    "prestart": "yarn build",
-    "start": "webpack serve --open --liveReload",
-    "stylelint": "stylelint \"src/**/*scss\" --fix"
+    "serve": "http-server ./ -o index.html",
+    "start": "yarn dev"
   }
 }

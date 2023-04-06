@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title data-i18n="extName"></title>
+    <link rel="stylesheet" href="./popup.css" />
+    <script src="popup.js" defer></script>
+  </head>
+  <body>
+    <main>
+      <h1 data-i18n="extName"></h1>
+
+      <div class="main">
+        <div class="safety">
+          <div class="buttons">
+            <p>
+              <button type="button" data-task-name="remove">
+                <span class="inner">
+                  <span class="img">
+                    <img src="./images/remove.svg" width="64" height="64" alt="" />
+                  </span>
+                  <span data-i18n="btn_remove">loading...</span>
+                </span>
+              </button>
+            </p>
+
+            <p>
+              <button type="button" data-task-name="reload">
+                <span class="inner">
+                  <span class="img">
+                    <img src="./images/reload.svg" width="64" height="64" alt="" />
+                  </span>
+                  <span data-i18n="btn_reload">loading...</span>
+                </span>
+              </button>
+            </p>
+          </div>
+
+          <div class="options">
+            <p>
+              <label>
+                <span class="img">
+                  <img src="./images/hash.svg" width="16" height="16" alt="" />
+                </span>
+                <input
+                  type="checkbox"
+                  data-option-type="ignoreHash"
+                  aria-describedby="desc-ignoreHash"
+                />
+                <span class="label" data-i18n="checkbox_hash">loading...</span>
+              </label>
+            </p>
+
+            <p class="hint" id="desc-ignoreHash">
+              <span aria-label="hint">💡</span>
+              https://example.com/abc/def?query=hoge&query2=piyo<em>#hash</em>
+            </p>
+
+            <p>
+              <label>
+                <span class="img">
+                  <img src="./images/query.svg" width="16" height="16" alt="" />
+                </span>
+                <input
+                  type="checkbox"
+                  data-option-type="ignoreQuery"
+                  aria-describedby="desc-ignoreQuery"
+                />
+                <span class="label" data-i18n="checkbox_query">loading...</span>
+              </label>
+            </p>
+
+            <p class="hint" id="desc-ignoreQuery">
+              <span aria-label="hint">💡</span>
+              https://example.com/abc/def<em>?query=hoge&query2=piyo</em>#hash
+            </p>
+          </div>
+        </div>
+
+        <details id="dangerDetails">
+          <summary><span>Danger Zone</span></summary>
+
+          <div class="content danger">
+            <div class="buttons">
+              <p>
+                <button type="button" data-task-name="categorize">
+                  <span class="inner">
+                    <span class="img">
+                      <img src="./images/categorize.svg" width="28" height="28" alt="" />
+                    </span>
+                    <span data-i18n="btn_categorize">loading...</span>
+                  </span>
+                </button>
+              </p>
+
+              <p>
+                <button type="button" data-task-name="divide">
+                  <span class="inner">
+                    <span class="img">
+                      <img src="./images/divide.svg" width="32" height="32" alt="" />
+                    </span>
+                    <span data-i18n="btn_divide">loading...</span>
+                  </span>
+                </button>
+              </p>
+
+              <p>
+                <button type="button" data-task-name="sort">
+                  <span class="inner">
+                    <span class="img">
+                      <img src="./images/sort.svg" width="32" height="24" alt="" />
+                    </span>
+                    <span data-i18n="btn_sort">loading...</span>
+                  </span>
+                </button>
+              </p>
+
+              <p>
+                <button type="button" data-task-name="combine">
+                  <span class="inner">
+                    <span class="img">
+                      <img src="./images/combine.svg" width="32" height="32" alt="" />
+                    </span>
+                    <span data-i18n="btn_combine">loading...</span>
+                  </span>
+                </button>
+              </p>
+            </div>
+
+            <div class="options">
+              <p>
+                <label>
+                  <span class="img">
+                    <img src="./images/allwindow.svg" width="16" height="16" alt="" />
+                  </span>
+                  <input type="checkbox" data-option-type="includeAllWindow" />
+                  <span class="label" data-i18n="checkbox_window">loading...</span>
+                </label>
+              </p>
+
+              <p>
+                <label>
+                  <span class="img">
+                    <img src="./images/pinned.svg" width="16" height="16" alt="" />
+                  </span>
+                  <input type="checkbox" data-option-type="includePinnedTabs" />
+                  <span class="label" data-i18n="checkbox_pinned">loading...</span>
+                </label>
+              </p>
+
+              <p>
+                <label>
+                  <span class="img" aria-hidden="true"> / </span>
+                  <input
+                    type="checkbox"
+                    data-option-type="ignorePathname"
+                    aria-describedby="desc-ignorePathname desc-ignorePathname2"
+                  />
+                  <span class="label" data-i18n="checkbox_pathname">loading...</span>
+                </label>
+              </p>
+
+              <p class="hint" id="desc-ignorePathname">
+                <span aria-label="hint">💡</span>
+                https://example.com<em>/abc/def</em>?query=hoge&query2=piyo#hash
+              </p>
+              <p class="hint" id="desc-ignorePathname2">
+                <span aria-label="hint">💡</span> <span data-i18n="hint_pathname"></span>
+              </p>
+
+              <p>
+                <label>
+                  <span class="img">
+                    <img src="./images/silent.svg" width="14" height="16" alt="" />
+                  </span>
+                  <input type="checkbox" data-option-type="noConfirm" />
+                  <span class="label" data-i18n="checkbox_silent">loading...</span>
+                </label>
+              </p>
+            </div>
+          </div>
+        </details>
+      </div>
+    </main>
+
+    <dialog id="notice" role="dialog" aria-modal="true" tabindex="-1">
+      <p id="notice-text"></p>
+      <p>
+        <button type="button" id="notice-close">OK</button>
+      </p>
+    </dialog>
+
+    <dialog id="confirm" role="alertdialog" tabindex="-1">
+      <p id="confirm-text"></p>
+      <p id="dialog-buttons"></p>
+    </dialog>
+  </body>
+</html>

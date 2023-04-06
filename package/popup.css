@@ -1,0 +1,379 @@
+:root {
+  --color-outline: #000;
+  --color-h1-text: #333;
+  --color-h1-bg: #ddd;
+  --color-background: #f1f1f1;
+  --color-background-secondary: #fff;
+  --color-label-text: #000;
+  --color-label-bg: #dfdfdf;
+  --color-checkbox-border: #e1e1e1;
+  --color-danger-title-text: inherit;
+  --color-danger-title-font-weight: normal;
+  --color-danger-title-bg: #ff7c7c;
+  --color-danger-label-bg: #f1f1f1;
+  --color-hint: #446ca9;
+  --color-dialog-text: #333;
+  --color-dialog-background: #fff;
+  --border-details: 1px solid #ff7c7c;
+  --border-top-details-content: 0;
+  --border-bottom-h1: 0;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-outline: #fff;
+    --color-h1-text: #898989;
+    --color-h1-bg: #202124;
+    --color-background: #292a2d;
+    --color-background-secondary: #202124;
+    --color-checkbox-border: #39393b;
+    --color-label-text: #ddd;
+    --color-label-bg: #515254;
+    --color-danger-title-text: #ff7c7c;
+    --color-danger-title-font-weight: bold;
+    --color-danger-title-bg: #202124;
+    --color-danger-label-bg: #414245;
+    --color-hint: #8ab4f8;
+    --color-dialog-text: #fff;
+    --color-dialog-background: #292a2d;
+    --border-details: 1px solid #703031;
+    --border-top-details-content: 2px solid #292a2d;
+    --border-bottom-h1: 1px solid #111;
+  }
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--color-outline);
+}
+
+body {
+  width: 380px;
+  background: var(--color-background);
+}
+
+h1 {
+  padding: 10px 16px;
+  font-family: monospace;
+  font-size: 12px;
+  font-weight: normal;
+  color: var(--color-h1-text);
+  text-align: center;
+  letter-spacing: 2px;
+  background: var(--color-h1-bg);
+  border-bottom: var(--border-bottom-h1);
+}
+
+button {
+  font-size: 11px;
+  background: #42ccc0;
+  border: 0;
+  border-radius: 6px;
+}
+
+button:hover,
+button:focus {
+  opacity: 0.8;
+}
+
+.main {
+  padding: 14px 14px 20px;
+}
+
+/* -----------------------------------------------------------------------------
+ * Buttons
+ * -------------------------------------------------------------------------- */
+
+.buttons {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.buttons button {
+  width: 100%;
+}
+
+.buttons button [data-i18n] {
+  white-space: pre-wrap;
+}
+
+/* -----------------------------------------------------------------------------
+ * Options
+ * -------------------------------------------------------------------------- */
+
+label {
+  position: relative;
+  z-index: 0;
+  display: flex;
+  align-items: center;
+  padding: 12px 10px;
+  color: var(--color-label-text);
+  background-color: var(--color-label-bg);
+  border-radius: 4px;
+}
+
+label .img {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  font-weight: bold;
+  color: #fff;
+  background: #008080;
+  border-radius: 4px;
+}
+
+.options {
+  margin: 20px 0;
+}
+
+.options p:not(:first-child) {
+  margin-top: 4px;
+}
+
+.label {
+  display: block;
+  padding: 0 80px 0 6px;
+}
+
+.label::before,
+.label::after {
+  position: absolute;
+  top: 0;
+  right: 10px;
+  bottom: 0;
+  display: block;
+  margin: auto 0;
+  content: '';
+}
+
+.label::before {
+  z-index: 1;
+  width: 32px;
+  height: 32px;
+  background: #f0f3f4;
+  border-radius: 50%;
+  box-shadow: 0 0 3px rgb(0 0 0 / 60%);
+}
+
+[data-state='loaded'] .label::before {
+  transition: 0.2s right ease-out;
+}
+
+.label::after {
+  width: 72px;
+  height: 32px;
+  background: #42ccc0;
+  border-radius: 20px;
+  box-shadow: 0 0 3px rgb(0 0 0 / 60%) inset, 0 0 0 4px var(--color-checkbox-border);
+}
+
+[data-state='loaded'] .label::after {
+  transition: 0.2s background-color ease-out;
+}
+
+label input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+}
+
+label input:not(:checked) + span::before {
+  right: 49px;
+}
+
+label input:not(:checked) + span::after {
+  background-color: #cbd7db;
+}
+
+label input:focus-visible + span::after {
+  box-shadow: 0 0 3px rgb(0 0 0 / 60%) inset, 0 0 0 4px #e1e1e1, 0 0 0 6px var(--color-outline);
+}
+
+.hint {
+  padding-left: 4px;
+  font-size: 10px;
+  color: var(--color-hint);
+}
+
+.hint + .hint {
+  margin-top: 0;
+}
+
+.hint + p:not(.hint) {
+  margin-top: 12px;
+}
+
+.hint em {
+  font-style: normal;
+  font-weight: bold;
+  text-decoration: underline;
+}
+
+/* -----------------------------------------------------------------------------
+ * Safety Zone
+ * -------------------------------------------------------------------------- */
+.safety .buttons {
+  gap: 20px;
+}
+
+.safety .buttons p {
+  display: grid;
+}
+
+.safety .buttons button {
+  aspect-ratio: 1 / 1;
+}
+
+.safety .buttons button .img {
+  display: block;
+  margin-bottom: 14px;
+}
+
+.safety .buttons button .inner {
+  display: block;
+  padding: 10px 3px;
+}
+
+/* -----------------------------------------------------------------------------
+ * Danger Zone
+ * -------------------------------------------------------------------------- */
+
+details {
+  margin-top: 30px;
+  overflow: hidden;
+  border: var(--border-details);
+  border-radius: 4px;
+}
+
+details summary {
+  padding: 15px 10px;
+  font-weight: var(--color-danger-title-font-weight);
+  color: var(--color-danger-title-text);
+  cursor: default;
+  background-color: var(--color-danger-title-bg);
+}
+
+details summary:focus-visible {
+  box-shadow: none;
+}
+
+details summary:focus-visible span {
+  border-radius: 4px;
+  box-shadow: 0 0 0 3px var(--color-outline);
+}
+
+details .content {
+  padding: 10px 14px 24px;
+  background-color: var(--color-background-secondary);
+  border-top: var(--border-top-details-content);
+  border-radius: 0 0 4px 4px;
+}
+
+details .content label {
+  background-color: var(--color-danger-label-bg);
+}
+
+.danger .buttons {
+  gap: 8px;
+  margin: 10px 0 0;
+}
+
+.danger .buttons p {
+  display: flex;
+}
+
+.danger .buttons button {
+  padding: 10px 16px 10px 8px;
+  color: #111;
+  background-color: #ff7c7c;
+}
+
+.danger .buttons button .img {
+  padding-top: 2px;
+  margin-right: 10px;
+}
+
+.danger .buttons button [data-i18n] {
+  flex-grow: 1;
+}
+
+.danger .buttons button[data-task-name='categorize'] .img {
+  padding-top: 4px;
+  margin-right: 12px;
+  margin-left: 2px;
+}
+
+.danger .buttons .inner {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.danger .options .img {
+  background-color: #900;
+}
+
+.danger .options label input:checked + .label::after {
+  background-color: #ff7c7c;
+}
+
+.danger .options:last-child {
+  padding-bottom: 0;
+  margin-bottom: 0;
+  border-bottom: 0;
+}
+
+/* -----------------------------------------------------------------------------
+ * Dialog
+ * -------------------------------------------------------------------------- */
+
+dialog {
+  inset: 0 0 30px;
+  max-width: 324px;
+  padding: 32px 28px 28px;
+  margin: auto;
+  overflow: hidden;
+  color: var(--color-dialog-text);
+  text-align: center;
+  background: var(--color-dialog-background);
+  border: 0;
+  border-radius: 4px;
+  box-shadow: 0 0 10px 0 rgb(0 0 0 / 80%);
+}
+
+dialog::backdrop {
+  background: rgb(0 0 0 / 40%);
+}
+
+dialog #confirm-text,
+dialog #notice-text {
+  margin-bottom: 30px;
+}
+
+dialog button {
+  min-width: 80px;
+  padding: 10px;
+}
+
+#dialog-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+}
+
+#dialog-buttons button {
+  flex-basis: calc(50% - 5px);
+  white-space: pre-wrap;
+}
+
+#dialog-buttons button:not(:first-child):last-child {
+  background: #b3ccca;
+}
