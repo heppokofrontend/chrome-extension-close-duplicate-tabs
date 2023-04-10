@@ -1,0 +1,92 @@
+{
+  "extName": {
+    "message": "重複したタブを閉じるやつ"
+  },
+  "extDesc": {
+    "message": "現在のウィンドウでURLが重複しているタブを閉じます。"
+  },
+  "checkbox_hash": {
+    "message": "ハッシュを無視する"
+  },
+  "checkbox_query": {
+    "message": "クエリを無視する"
+  },
+  "checkbox_window": {
+    "message": "すべてのウィンドウを対象にする"
+  },
+  "checkbox_pinned": {
+    "message": "固定されたタブを対象にする"
+  },
+  "checkbox_pathname": {
+    "message": "パス名を無視する"
+  },
+  "checkbox_silent": {
+    "message": "確認ダイアログを表示しない"
+  },
+  "btn_remove": {
+    "message": "重複したタブを閉じる"
+  },
+  "btn_reload": {
+    "message": "タブをすべてリロードする"
+  },
+  "btn_categorize": {
+    "message": "ホスト名ごとに\n別窓にする"
+  },
+  "btn_divide": {
+    "message": "すべてのタブを\n別窓にする"
+  },
+  "btn_sort": {
+    "message": "タブを並び変える"
+  },
+  "btn_combine": {
+    "message": "全ウィンドウを\n１つにまとめる"
+  },
+  "hint_pathname": {
+    "message": "推奨：ハッシュとクエリの無視の有効化"
+  },
+  "dialog_comfirm": {
+    "message": "確認"
+  },
+  "dialog_notice": {
+    "message": "お知らせ"
+  },
+  "dialog_command_true": {
+    "message": "はい"
+  },
+  "dialog_command_false": {
+    "message": "キャンセル"
+  },
+  "dialog_command_sortByUrl": {
+    "message": "URL優先"
+  },
+  "dialog_command_sortByTitle": {
+    "message": "ページ名優先"
+  },
+  "dialog_command_sortByHostAndTitle": {
+    "message": "ホスト名＋ページ名"
+  },
+  "dialog_remove": {
+    "message": "重複したタブを閉じます。\nよろしいですか？"
+  },
+  "dialog_remove_allwin": {
+    "message": "すべてのウィンドウの重複したタブを閉じます。\nよろしいですか？"
+  },
+  "dialog_reload": {
+    "message": "すべてのタブをリロードします。\nよろしいですか？"
+  },
+  "dialog_reload_allwin": {
+    "message": "すべてのウィンドウの\nすべてのタブをリロードします。\nよろしいですか？"
+  },
+  "dialog_combine": {
+    "message": "「すべてのウィンドウを対象にする」が\n無効化されています。\n本当に実行しますか？"
+  },
+  "dialog_ignorePathname": {
+    "message": "このオプションだけでは\n「ハッシュ」と「クエリ」は無視されないことにご注意ください。"
+  },
+  "dialog_noConfirm": {
+    "message": "今後、確認ダイアログを表示せずに\nタスクを実行します。"
+  },
+  "dialog_sort": {
+    "message": "どのルールでタブを並び替えますか？"
+  }
+}

@@ -1,4 +1,3 @@
 node_modules
-/package
-/.private
-*.log
+package/**/*.js
+*.zip

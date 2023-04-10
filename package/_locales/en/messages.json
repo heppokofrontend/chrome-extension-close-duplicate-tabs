@@ -1,0 +1,92 @@
+{
+  "extName": {
+    "message": "Close duplicate tab"
+  },
+  "extDesc": {
+    "message": "Close duplicate tab on current window."
+  },
+  "checkbox_hash": {
+    "message": "Ignore hash"
+  },
+  "checkbox_query": {
+    "message": "Ignore query"
+  },
+  "checkbox_window": {
+    "message": "Include all windows"
+  },
+  "checkbox_pinned": {
+    "message": "Include pinned tabs"
+  },
+  "checkbox_pathname": {
+    "message": "Ignore pathname"
+  },
+  "checkbox_silent": {
+    "message": "Do not show confirmation dialog"
+  },
+  "btn_remove": {
+    "message": "Close duplicate tabs"
+  },
+  "btn_reload": {
+    "message": "Reload all tabs"
+  },
+  "btn_categorize": {
+    "message": "Divide all tabs for each hostname"
+  },
+  "btn_divide": {
+    "message": "Divide all tabs"
+  },
+  "btn_sort": {
+    "message": "Sort the tabs"
+  },
+  "btn_combine": {
+    "message": "Combine all windows \ninto one window"
+  },
+  "hint_pathname": {
+    "message": "Recommended: enable [ Ignore hash ] and [ Ignore query ]."
+  },
+  "dialog_comfirm": {
+    "message": "Alert"
+  },
+  "dialog_notice": {
+    "message": "Notice"
+  },
+  "dialog_command_true": {
+    "message": "YES"
+  },
+  "dialog_command_false": {
+    "message": "Cancel"
+  },
+  "dialog_command_sortByUrl": {
+    "message": "By URL"
+  },
+  "dialog_command_sortByTitle": {
+    "message": "By page title"
+  },
+  "dialog_command_sortByHostAndTitle": {
+    "message": "By hostname + \npage title"
+  },
+  "dialog_remove": {
+    "message": "Close duplicate tabs. \nAre you sure?"
+  },
+  "dialog_remove_allwin": {
+    "message": "Close duplicate tabs in all windows. \nAre you sure?"
+  },
+  "dialog_reload": {
+    "message": "Reload all tabs. \nAre you sure?"
+  },
+  "dialog_reload_allwin": {
+    "message": "Reload all tabs in all windows. \nAre you sure?"
+  },
+  "dialog_combine": {
+    "message": "\"Include all windows\" is disabled.\nAre you sure you want to run it?"
+  },
+  "dialog_ignorePathname": {
+    "message": "Note that \"hash\" and \"query\" are not ignored by simply enabling this option."
+  },
+  "dialog_noConfirm": {
+    "message": "From now on, the task will be executed without displaying a confirmation dialog."
+  },
+  "dialog_sort": {
+    "message": "Which rules would you like to \nsort your tabs?"
+  }
+}

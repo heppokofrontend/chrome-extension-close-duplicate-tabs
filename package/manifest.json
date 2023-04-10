@@ -1,21 +1,18 @@
 {
   "manifest_version": 3,
   "name": "__MSG_extName__",
-  "version": "0.1.1",
+  "version": "1.0.0",
   "description": "__MSG_extDesc__",
   "action": {
-    "default_icon": "icon.png",
-    "default_popup": "index.html"
+    "default_icon": "images/icon.png",
+    "default_popup": "popup.html"
   },
   "background": {
     "service_worker": "worker.js"
   },
-  "permissions": [
-    "tabs",
-    "storage"
-  ],
+  "permissions": ["tabs", "storage"],
   "icons": {
-    "128": "icon.png"
+    "128": "images/icon.png"
   },
   "default_locale": "en"
 }
