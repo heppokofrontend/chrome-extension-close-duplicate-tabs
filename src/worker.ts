@@ -74,8 +74,8 @@ const categorizeTabs = async (tabs: chrome.tabs.Tab[]) => {
   };
 
   const currentTab = await getCurrentTab();
-  const hosts: Record<string, { id: number; pinned: boolean }[]> = {};
-  const promises: Promise<chrome.windows.Window | void>[] = [];
+  const hosts: Record<string, { id: number; pinned: boolean }[] | undefined> = {};
+  const promises: (Promise<chrome.windows.Window> | Promise<void>)[] = [];
   const currentTabIsPinned = currentTab.pinned;
   const checkCurrentTabIsPinnedAndItDoesNotIncludesPinned = (
     tab: chrome.tabs.Tab,
@@ -102,18 +102,23 @@ const categorizeTabs = async (tabs: chrome.tabs.Tab[]) => {
         hosts[hostname] = [];
       }
 
-      hosts[hostname].push({ id, pinned });
+      hosts[hostname]?.push({ id, pinned });
     });
 
   if (ifCurrentTabIsPinnedAndItDoesNotIncludesPinned) {
     const { hostname } = new URL(currentTab.url);
 
     hosts[hostname] ??= [];
-    hosts[hostname].unshift({ id: currentTab.id, pinned: currentTab.pinned });
+    hosts[hostname]?.unshift({ id: currentTab.id, pinned: currentTab.pinned });
   }
 
   for (const values of Object.values(hosts)) {
-    const firstTab = values[0];
+    const firstTab = values?.[0];
+
+    if (!firstTab) {
+      continue;
+    }
+
     const windowPromise = chrome.windows
       .create({ tabId: firstTab.id })
       .then(async ({ id: windowId }) => {
@@ -191,7 +196,7 @@ const combineTabs = async (tabs: chrome.tabs.Tab[]) => {
   const targetTabIdList = tabs.filter((tab): tab is ValidTab => typeof tab.id === 'number');
   const promises: Promise<chrome.tabs.Tab>[] = [];
 
-  for (const { id, pinned } of targetTabIdList) {
+  for (const { id } of targetTabIdList) {
     promises.push(
       chrome.tabs.move(id, {
         windowId,
@@ -212,14 +217,14 @@ const combineTabs = async (tabs: chrome.tabs.Tab[]) => {
 };
 
 const sortTabs = async (tabs: chrome.tabs.Tab[], sort: SortType | undefined) => {
-  type TabData = {
+  interface TabData {
     id: number;
     hostname: string;
     url: string;
     title: string;
     pinned: boolean;
     windowId: number;
-  };
+  }
 
   const compareByUrl = (a: TabData, b: TabData) => {
     if (a.url < b.url) {
@@ -262,7 +267,7 @@ const sortTabs = async (tabs: chrome.tabs.Tab[], sort: SortType | undefined) => 
 
     return 0;
   };
-  const tabSet: Record<number, TabData[]> = {};
+  const tabSet: Record<number, TabData[] | undefined> = {};
   const sorter =
     sort === 'sortByUrl'
       ? compareByUrl
@@ -290,11 +295,11 @@ const sortTabs = async (tabs: chrome.tabs.Tab[], sort: SortType | undefined) => 
     .forEach((tabData) => {
       const { windowId } = tabData;
       tabSet[windowId] ??= [];
-      tabSet[windowId].push(tabData);
+      tabSet[windowId]?.push(tabData);
     });
 
   for (const tabList of Object.values(tabSet)) {
-    tabList.sort(sorter);
+    tabList?.sort(sorter);
   }
 
   const tabList = Object.values(tabSet).flat();
@@ -302,7 +307,13 @@ const sortTabs = async (tabs: chrome.tabs.Tab[], sort: SortType | undefined) => 
   const limit = tabList.length;
 
   for (i; i < limit; i++) {
-    const { id, title, pinned, windowId } = tabList[i];
+    const item = tabList[i];
+
+    if (typeof item === 'undefined') {
+      continue;
+    }
+
+    const { id, pinned, windowId } = item;
 
     await chrome.tabs.move(id, {
       windowId,
@@ -312,13 +323,16 @@ const sortTabs = async (tabs: chrome.tabs.Tab[], sort: SortType | undefined) => 
 };
 
 chrome.runtime.onConnect.addListener((port) => {
-  type Request = { taskName?: string; options?: SaveDataType & { sort: SortType } };
+  interface Request {
+    taskName?: string;
+    options?: SaveDataType & { sort: SortType };
+  }
 
   const onmessageListener = (request: Request) => {
     const callTaskFunctions = async ({ taskName, options }: Request) => {
       const currentWindow =
-        taskName !== 'combine' && Boolean(options?.includeAllWindow) === false ? true : undefined;
-      const pinned = Boolean(options?.includePinnedTabs) === true ? undefined : false;
+        taskName !== 'combine' && !Boolean(options?.includeAllWindow) ? true : undefined;
+      const pinned = Boolean(options?.includePinnedTabs) ? undefined : false;
       const tabs = await chrome.tabs.query({
         windowType: 'normal',
         currentWindow,

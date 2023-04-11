@@ -1,8 +1,18 @@
 {
-  "extends": ["prettier", "google"],
+  "root": true,
+  "extends": [
+    "plugin:@typescript-eslint/recommended",
+    "plugin:@typescript-eslint/recommended-requiring-type-checking",
+    "plugin:@typescript-eslint/strict",
+    "prettier"
+  ],
+  "plugins": ["@typescript-eslint"],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
-    "ecmaVersion": "latest"
+    "ecmaVersion": "latest",
+    "project": "./tsconfig.json"
   },
-  "plugins": ["@typescript-eslint"]
+  "rules": {
+    "@typescript-eslint/no-floating-promises": "off"
+  }
 }
