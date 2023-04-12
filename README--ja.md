@@ -6,7 +6,7 @@
 
 [English version is here.](./README.md)
 
-仕事中はGitHubやRedmine、Backlogなどからたくさんの通知が来ます。
+仕事中は GitHub や Redmine、Backlog などからたくさんの通知が来ます。
 
 そういう時、あとで読もうと思って別タブで開いておくのを何度か繰り返していると、気がついた時にはあなたのブラウザはタブだらけ…。
 
@@ -14,7 +14,7 @@
 
 ## Download
 
-Google Chromeにインストールしてください。
+Google Chrome にインストールしてください。
 
 [![Available in the Chrome Web Store](./images/iNEddTyWiMfLSwFD6qGq.png)](https://chrome.google.com/webstore/detail/close-duplicate-tab/ollnnjepahcgphpjjhcfohpelmpldghj)
 
@@ -24,9 +24,9 @@ Google Chromeにインストールしてください。
 2. 必要に応じて設定を変更します（チェックボックス）
 3. 使いたい機能ごとにボタンをクリックします
 
-### URLの比較
+### URL の比較
 
-初期値では、URLの比較にOrigin (Scheme + FQDN + Port)からクエリまでを利用します。
+初期値では、URL の比較に Origin (Scheme + FQDN + Port)からクエリまでを利用します。
 
 なお、比較時に次のようなデフォルトドキュメントは常に省略されます。
 
@@ -37,31 +37,29 @@ Google Chromeにインストールしてください。
 > /index.cgi  
 > /index.aspx
 
-たとえば、次のようなURLはすべて同じものとして扱われます。
+たとえば、次のような URL はすべて同じものとして扱われます。
 
 ```
+https://www.example.com/index.html
 https://www.example.com/
-https://www.example.com/#baz
-https://www.example.com/#bar
-https://www.example.com/index.html#bar
 
 →　https://www.example.com/
 ```
 
 ```
-https://www.example.com/?a=100&b=200
-https://www.example.com/?a=100&b=200#baz
-https://www.example.com/?a=100&b=200#bar
-https://www.example.com/index.html?a=100&b=200#bar
+https://www.example.com/index.php#bar
+https://www.example.com/index.htm#bar
+https://www.example.com/index.cgi#bar
+https://www.example.com/#bar
 
-→　https://www.example.com/?a=100&b=200
+→　https://www.example.com/#bar
 ```
 
 ### クエリを無視する
 
-タブごとのURLの比較をするときに、URLクエリを無視するかどうかを切り替えるものです。
+タブごとの URL の比較をするときに、URL クエリを無視するかどうかを切り替えるものです。
 
-URLクエリとは、URLのうち次の範囲を指します。
+URL クエリとは、URL のうち次の範囲を指します。
 
 ```
 https://www.example.com/?a=10&b=20#foo
@@ -69,7 +67,7 @@ https://www.example.com/?a=10&b=20#foo
 -> ?a=10&b=20
 ```
 
-クエリが無視されている場合、次のようなURLはすべて同じものとして扱われます。
+クエリが無視されている場合、次のような URL はすべて同じものとして扱われます。
 
 ```
 https://www.example.com/
@@ -82,9 +80,9 @@ https://www.example.com/index.html?a=10&b=20
 
 ### ハッシュを無視する
 
-タブごとのURLの比較をするときに、URLハッシュを無視するかどうかを切り替えるものです。
+タブごとの URL の比較をするときに、URL ハッシュを無視するかどうかを切り替えるものです。
 
-URLハッシュとは、URLのうち次の範囲を指します。
+URL ハッシュとは、URL のうち次の範囲を指します。
 
 ```
 https://www.example.com/?a=10&b=20#foo
@@ -92,7 +90,7 @@ https://www.example.com/?a=10&b=20#foo
 -> #foo
 ```
 
-ハッシュが無視されている場合、次のようなURLはすべて同じものとして扱われます。
+ハッシュが無視されている場合、次のような URL はすべて同じものとして扱われます。
 
 ```
 https://www.example.com/
@@ -105,7 +103,7 @@ https://www.example.com/index.html#baz
 
 ### 両方とも無視する
 
-クエリとハッシュが無視されている場合、次のようなURLはすべて同じものとして扱われます。
+クエリとハッシュが無視されている場合、次のような URL はすべて同じものとして扱われます。
 
 ```
 https://www.example.com/

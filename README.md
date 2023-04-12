@@ -40,21 +40,19 @@ And the default document will then be ignored.
 In other words, all these URLs will be treated as identical.
 
 ```
+https://www.example.com/index.html
 https://www.example.com/
-https://www.example.com/#baz
-https://www.example.com/#bar
-https://www.example.com/index.html#bar
 
 →　https://www.example.com/
 ```
 
 ```
-https://www.example.com/?a=100&b=200
-https://www.example.com/?a=100&b=200#baz
-https://www.example.com/?a=100&b=200#bar
-https://www.example.com/index.html?a=100&b=200#bar
+https://www.example.com/index.php#bar
+https://www.example.com/index.htm#bar
+https://www.example.com/index.cgi#bar
+https://www.example.com/#bar
 
-→　https://www.example.com/?a=100&b=200
+→　https://www.example.com/#bar
 ```
 
 ### Ignore the query
