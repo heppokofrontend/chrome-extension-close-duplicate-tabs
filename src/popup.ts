@@ -64,7 +64,7 @@ const showConfirmModal = (() => {
       (comannds ?? (defaultComannds as Commands<T>)).forEach((command) => {
         const button = templateButton.cloneNode();
 
-        button.textContent = getMessage(`dialog_command_${command}`);
+        button.textContent = getMessage(`dialog_command_${String(command)}`);
         button.addEventListener('click', () => resolve(command));
 
         buttonContainer.appendChild(button);
@@ -106,7 +106,7 @@ const setLanguage = () => {
 };
 
 const loadSaveData = async () => {
-  const getValue = (key: string, callback: (items: { [key: string]: any }) => void) =>
+  const getValue = <T>(key: string, callback: (items: Record<string, T | undefined>) => void) =>
     new Promise<void>((resolve) => {
       chrome.storage.local.get(key, (items) => {
         callback(items);
@@ -115,11 +115,11 @@ const loadSaveData = async () => {
     });
 
   return Promise.all([
-    getValue('dangerZoneIsOpen', ({ dangerZoneIsOpen }) => {
+    getValue<boolean>('dangerZoneIsOpen', ({ dangerZoneIsOpen }) => {
       STATE.dangerZoneIsOpen = dangerZoneIsOpen ?? false;
     }),
-    getValue('saveData', ({ saveData }) => {
-      for (const [key, value] of Object.entries<boolean>(saveData)) {
+    getValue<typeof defaultSaveData>('saveData', ({ saveData }) => {
+      for (const [key, value] of Object.entries<boolean>(saveData ?? defaultSaveData)) {
         const checkbox = document.querySelector<HTMLInputElement>(`[data-option-type=${key}]`);
 
         if (checkbox) {
@@ -127,7 +127,7 @@ const loadSaveData = async () => {
         }
       }
 
-      STATE.saveData = saveData;
+      STATE.saveData = saveData ?? defaultSaveData;
     }),
   ]);
 };
@@ -201,6 +201,7 @@ const addEvent = () => {
   };
 
   for (const button of buttons) {
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
     button.addEventListener('click', onclickListener);
   }
 
@@ -220,7 +221,7 @@ const addEvent = () => {
     const { optionType } = e.target.dataset;
 
     if (isValidOptionType(optionType)) {
-      if (e.target.checked && STATE.saveData.noConfirm === false) {
+      if (e.target.checked && !STATE.saveData.noConfirm) {
         switch (optionType) {
           case 'ignorePathname':
           case 'noConfirm':
