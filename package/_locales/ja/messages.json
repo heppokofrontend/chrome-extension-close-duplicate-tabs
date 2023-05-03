@@ -50,11 +50,23 @@
   "dialog_notice": {
     "message": "お知らせ"
   },
+  "dialog_categorize": {
+    "message": "ホスト名ごとに別窓にする"
+  },
+  "dialog_command_apply": {
+    "message": "実行"
+  },
   "dialog_command_true": {
     "message": "はい"
   },
   "dialog_command_false": {
     "message": "キャンセル"
+  },
+  "dialog_command_categorize_range1": {
+    "message": ""
+  },
+  "dialog_command_categorize_range2": {
+    "message": " 枚以下のタブは1つにまとめる"
   },
   "dialog_command_sortByUrl": {
     "message": "URL優先"

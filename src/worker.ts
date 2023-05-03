@@ -62,7 +62,10 @@ const removeDuplicatedTabs = async (tabs: chrome.tabs.Tab[], options: SaveDataTy
   }
 };
 
-const categorizeTabs = async (tabs: chrome.tabs.Tab[]) => {
+const categorizeTabs = async (
+  tabs: chrome.tabs.Tab[],
+  minCategorizeNumber: SaveDataType['minCategorizeNumber'],
+) => {
   type ValidTab = chrome.tabs.Tab & {
     id: number;
     url: string;
@@ -74,7 +77,7 @@ const categorizeTabs = async (tabs: chrome.tabs.Tab[]) => {
   };
 
   const currentTab = await getCurrentTab();
-  const hosts: Record<string, { id: number; pinned: boolean }[] | undefined> = {};
+  const hosts: Record<string, { tabId: number; pinned: boolean }[] | undefined> = {};
   const promises: (Promise<chrome.windows.Window> | Promise<void>)[] = [];
   const currentTabIsPinned = currentTab.pinned;
   const checkCurrentTabIsPinnedAndItDoesNotIncludesPinned = (
@@ -102,14 +105,38 @@ const categorizeTabs = async (tabs: chrome.tabs.Tab[]) => {
         hosts[hostname] = [];
       }
 
-      hosts[hostname]?.push({ id, pinned });
+      hosts[hostname]?.push({ tabId: id, pinned });
     });
 
   if (ifCurrentTabIsPinnedAndItDoesNotIncludesPinned) {
     const { hostname } = new URL(currentTab.url);
 
     hosts[hostname] ??= [];
-    hosts[hostname]?.unshift({ id: currentTab.id, pinned: currentTab.pinned });
+    hosts[hostname]?.unshift({ tabId: currentTab.id, pinned: currentTab.pinned });
+  }
+
+  if (typeof minCategorizeNumber === 'number' && minCategorizeNumber !== 0) {
+    const OTHERS_HOST_NAME = '___OTHRERS___';
+
+    for (const [hostname, tabDataList] of Object.entries(hosts)) {
+      if (!tabDataList?.length) {
+        continue;
+      }
+
+      if (tabDataList.length <= minCategorizeNumber) {
+        hosts[OTHERS_HOST_NAME] ??= [];
+        hosts[OTHERS_HOST_NAME].unshift(...tabDataList);
+
+        if (hosts[hostname]) {
+          // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+          delete hosts[hostname];
+        }
+      }
+    }
+  }
+
+  if (Object.keys(hosts).length < 2) {
+    return;
   }
 
   for (const values of Object.values(hosts)) {
@@ -120,14 +147,14 @@ const categorizeTabs = async (tabs: chrome.tabs.Tab[]) => {
     }
 
     const windowPromise = chrome.windows
-      .create({ tabId: firstTab.id })
+      .create({ tabId: firstTab.tabId })
       .then(async ({ id: windowId }) => {
         const idList = values.slice(1);
         const promisesForTabMove: Promise<chrome.tabs.Tab>[] = [];
 
-        chrome.tabs.update(firstTab.id, { pinned: firstTab.pinned });
+        chrome.tabs.update(firstTab.tabId, { pinned: firstTab.pinned });
 
-        for (const { id: tabId } of idList) {
+        for (const { tabId } of idList) {
           promisesForTabMove.push(chrome.tabs.move(tabId, { windowId, index: -1 }));
         }
 
@@ -135,8 +162,8 @@ const categorizeTabs = async (tabs: chrome.tabs.Tab[]) => {
 
         const promisesForTabUpdate: Promise<chrome.tabs.Tab>[] = [];
 
-        for (const { id, pinned } of idList) {
-          promisesForTabUpdate.push(chrome.tabs.update(id, { pinned }));
+        for (const { tabId, pinned } of idList) {
+          promisesForTabUpdate.push(chrome.tabs.update(tabId, { pinned }));
         }
 
         await Promise.all(promisesForTabUpdate);
@@ -355,7 +382,7 @@ chrome.runtime.onConnect.addListener((port) => {
           return;
 
         case 'categorize':
-          await categorizeTabs(tabs);
+          await categorizeTabs(tabs, options?.minCategorizeNumber);
           return;
 
         case 'divide':
