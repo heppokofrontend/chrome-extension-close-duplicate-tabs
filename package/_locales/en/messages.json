@@ -78,19 +78,28 @@
     "message": "By hostname + \npage title"
   },
   "dialog_remove": {
-    "message": "Close duplicate tabs. \nAre you sure?"
+    "message": "Will close duplicate tabs. \nAre you sure you want to run this?"
   },
   "dialog_remove_allwin": {
-    "message": "Close duplicate tabs in all windows. \nAre you sure?"
+    "message": "Will close duplicate tabs in all windows. \nAre you sure you want to run this?"
   },
   "dialog_reload": {
-    "message": "Reload all tabs. \nAre you sure?"
+    "message": "Will reload all tabs. \nAre you sure you want to run this?"
   },
   "dialog_reload_allwin": {
-    "message": "Reload all tabs in all windows. \nAre you sure?"
+    "message": "Will reload all tabs in all windows. \nAre you sure you want to run this?"
   },
   "dialog_combine": {
+    "message": "Will combine all windows into one window.\nAre you sure you want to run it?"
+  },
+  "dialog_combine_all": {
     "message": "\"Include all windows\" is disabled.\nAre you sure you want to run it?"
+  },
+  "dialog_divide": {
+    "message": "Will divide all tabs. \nAre you sure you want to run this?"
+  },
+  "dialog_divide_all": {
+    "message": "\"Include all windows\" is enabled.\nProcessing may take longer or crash. \n\nAre you sure you want to run this?"
   },
   "dialog_ignorePathname": {
     "message": "Note that \"hash\" and \"query\" are not ignored by simply enabling this option."
