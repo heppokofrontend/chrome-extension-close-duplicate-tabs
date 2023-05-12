@@ -5,6 +5,7 @@ const defaultSaveData = {
   includeAllWindow: false,
   includePinnedTabs: false,
   noConfirm: false,
+  minCategorizeNumber: 1,
 };
 
 const STATE = {
@@ -12,7 +13,7 @@ const STATE = {
   saveData: defaultSaveData,
 };
 
-const getMessage = (key: string) => chrome.i18n.getMessage(key) || key;
+const getMessage = (key: string) => chrome.i18n.getMessage(key);
 const showNoticeModal = (() => {
   const noticeModal = document.getElementById('notice') as HTMLDialogElement;
   const noticeModalText = document.getElementById('notice-text') as HTMLParagraphElement;
@@ -42,6 +43,15 @@ const showNoticeModal = (() => {
 
 const showConfirmModal = (() => {
   type Commands<T> = T[];
+  type Options<T> =
+    | {
+        type: 'multiple';
+        comannds: Commands<T>;
+      }
+    | {
+        type: 'range';
+        range: number[];
+      };
   const confirmModal = document.getElementById('confirm') as HTMLDialogElement;
   const confirmModalText = document.getElementById('confirm-text') as HTMLParagraphElement;
   const buttonContainer = document.getElementById('dialog-buttons') as HTMLParagraphElement;
@@ -51,7 +61,7 @@ const showConfirmModal = (() => {
   templateButton.type = 'button';
   confirmModal.ariaLabel = getMessage('dialog_comfirm');
 
-  return <T = 'true' | 'false'>(taskName: string, comannds?: Commands<T>) => {
+  return <T = 'true' | 'false'>(taskName: string, options?: Options<T>) => {
     const textContent = getMessage(`dialog_${taskName}`);
 
     confirmModalText.textContent = '';
@@ -60,15 +70,59 @@ const showConfirmModal = (() => {
     confirmModal.showModal();
     confirmModal.focus();
 
-    return new Promise<T>((resolve) => {
-      (comannds ?? (defaultComannds as Commands<T>)).forEach((command) => {
-        const button = templateButton.cloneNode();
+    return new Promise<T | 'false'>((resolve) => {
+      if (options?.type === 'range') {
+        // FIXME: Type assertion
+        const field = document.createElement('label');
+        const min = options.range[0];
+        const max = options.range[options.range.length - 1];
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+        let value = STATE.saveData.minCategorizeNumber ?? min;
 
-        button.textContent = getMessage(`dialog_command_${String(command)}`);
-        button.addEventListener('click', () => resolve(command));
+        field.className = 'textfield-label-in-dialog';
+        field.insertAdjacentHTML(
+          'afterbegin',
+          `
+            ${getMessage(`dialog_command_${taskName}_range1`)}
+            <input type="number" min="${min}" max="${max}" value="${value}" />
+            ${getMessage(`dialog_command_${taskName}_range2`)}
+          `,
+        );
+        field.querySelector('input')?.addEventListener('change', (e) => {
+          if (e.target instanceof HTMLInputElement) {
+            value = e.target.valueAsNumber;
 
-        buttonContainer.appendChild(button);
-      });
+            save({
+              ...STATE.saveData,
+              minCategorizeNumber: value,
+            });
+          }
+        });
+        buttonContainer.appendChild(field);
+
+        const okButton = templateButton.cloneNode();
+
+        okButton.textContent = getMessage(`dialog_command_apply`);
+        okButton.addEventListener('click', () => resolve(value as T));
+
+        buttonContainer.appendChild(okButton);
+
+        const cancelButton = templateButton.cloneNode();
+
+        cancelButton.textContent = getMessage(`dialog_command_false`);
+        cancelButton.addEventListener('click', () => resolve('false'));
+
+        buttonContainer.appendChild(cancelButton);
+      } else {
+        (options?.comannds ?? (defaultComannds as Commands<T>)).forEach((command) => {
+          const button = templateButton.cloneNode();
+
+          button.textContent = getMessage(`dialog_command_${String(command)}`);
+          button.addEventListener('click', () => resolve(command));
+
+          buttonContainer.appendChild(button);
+        });
+      }
     }).finally(() => {
       buttonContainer.textContent = '';
       confirmModal.close();
@@ -119,10 +173,10 @@ const loadSaveData = async () => {
       STATE.dangerZoneIsOpen = dangerZoneIsOpen ?? false;
     }),
     getValue<typeof defaultSaveData>('saveData', ({ saveData }) => {
-      for (const [key, value] of Object.entries<boolean>(saveData ?? defaultSaveData)) {
+      for (const [key, value] of Object.entries<boolean | number>(saveData ?? defaultSaveData)) {
         const checkbox = document.querySelector<HTMLInputElement>(`[data-option-type=${key}]`);
 
-        if (checkbox) {
+        if (checkbox && typeof value === 'boolean') {
           checkbox.checked = value;
         }
       }
@@ -134,6 +188,7 @@ const loadSaveData = async () => {
 
 const addEvent = () => {
   let sortType: SortType = 'false';
+  let minCategorizeNumber: number | 'false' = 1;
   const buttons = document.querySelectorAll<HTMLButtonElement>('.buttons button');
   const onclickListener = async (e: Event) => {
     if (!(e.currentTarget instanceof HTMLButtonElement)) {
@@ -176,14 +231,23 @@ const addEvent = () => {
         break;
 
       case 'sort': {
-        sortType = await showConfirmModal<SortType>(taskName, [
-          'sortByUrl',
-          'sortByTitle',
-          'sortByHostAndTitle',
-          'false',
-        ]);
+        sortType = await showConfirmModal<SortType>(taskName, {
+          type: 'multiple',
+          comannds: ['sortByUrl', 'sortByTitle', 'sortByHostAndTitle', 'false'],
+        });
 
         if (sortType === 'false') {
+          return;
+        }
+      }
+
+      case 'categorize': {
+        minCategorizeNumber = await showConfirmModal<typeof minCategorizeNumber>(taskName, {
+          type: 'range',
+          range: [...(new Array(10) as [])].map((_, index) => index),
+        });
+
+        if (minCategorizeNumber === 'false') {
           return;
         }
       }
@@ -196,6 +260,7 @@ const addEvent = () => {
       options: {
         ...STATE.saveData,
         sort: sortType,
+        minCategorizeNumber,
       },
     });
   };

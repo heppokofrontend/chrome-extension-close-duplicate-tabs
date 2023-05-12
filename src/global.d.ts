@@ -5,5 +5,6 @@ type SaveDataType = {
   includeAllWindow?: boolean;
   includePinnedTabs?: boolean;
   noConfirm?: boolean;
+  minCategorizeNumber?: number;
 };
 type SortType = 'sortByUrl' | 'sortByTitle' | 'sortByHostAndTitle' | 'false';

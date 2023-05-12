@@ -50,11 +50,23 @@
   "dialog_notice": {
     "message": "Notice"
   },
+  "dialog_categorize": {
+    "message": "Divide all tabs for each hostname"
+  },
+  "dialog_command_apply": {
+    "message": "Apply"
+  },
   "dialog_command_true": {
     "message": "YES"
   },
   "dialog_command_false": {
     "message": "Cancel"
+  },
+  "dialog_command_categorize_range1": {
+    "message": "Less than "
+  },
+  "dialog_command_categorize_range2": {
+    "message": " are included in one window."
   },
   "dialog_command_sortByUrl": {
     "message": "By URL"

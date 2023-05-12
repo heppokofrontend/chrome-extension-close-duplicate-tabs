@@ -107,7 +107,7 @@ button:focus {
  * Options
  * -------------------------------------------------------------------------- */
 
-label {
+label:has([type='checkbox']) {
   position: relative;
   z-index: 0;
   display: flex;
@@ -118,7 +118,7 @@ label {
   border-radius: 4px;
 }
 
-label .img {
+label:has([type='checkbox']) .img {
   display: grid;
   place-items: center;
   width: 24px;
@@ -178,21 +178,21 @@ label .img {
   transition: 0.2s background-color ease-out;
 }
 
-label input {
+label input[type='checkbox'] {
   position: absolute;
   inset: 0;
   opacity: 0;
 }
 
-label input:not(:checked) + span::before {
+label input[type='checkbox']:not(:checked) + span::before {
   right: 49px;
 }
 
-label input:not(:checked) + span::after {
+label input[type='checkbox']:not(:checked) + span::after {
   background-color: #cbd7db;
 }
 
-label input:focus-visible + span::after {
+label input[type='checkbox']:focus-visible + span::after {
   box-shadow: 0 0 3px rgb(0 0 0 / 60%) inset, 0 0 0 4px #e1e1e1, 0 0 0 6px var(--color-outline);
 }
 
@@ -376,4 +376,19 @@ dialog button {
 
 #dialog-buttons button:not(:first-child):last-child {
   background: #b3ccca;
+}
+
+.textfield-label-in-dialog {
+  display: block;
+  margin: 0 0 1.5em;
+  text-align: left;
+}
+
+.textfield-label-in-dialog input[type='number'] {
+  width: 3.5em;
+  padding: 4px;
+  font-size: 18px;
+  text-align: right;
+  letter-spacing: 8px;
+  border-radius: 4px;
 }
