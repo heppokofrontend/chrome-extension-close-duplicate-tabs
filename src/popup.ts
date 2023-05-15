@@ -219,13 +219,30 @@ const addEvent = () => {
         break;
       }
 
+      // １つにまとめる
       case 'combine':
-        if (
-          !noConfirm &&
-          !STATE.saveData.includeAllWindow &&
-          (await showConfirmModal(taskName)) === 'false'
-        ) {
-          return;
+        if (!noConfirm) {
+          if (
+            (!STATE.saveData.includeAllWindow &&
+              (await showConfirmModal(`${taskName}_all`)) === 'false') ||
+            (await showConfirmModal(taskName)) === 'false'
+          ) {
+            return;
+          }
+        }
+
+        break;
+
+      // 全部別窓にする
+      case 'divide':
+        if (!noConfirm) {
+          if (
+            (STATE.saveData.includeAllWindow &&
+              (await showConfirmModal(`${taskName}_all`)) === 'false') ||
+            (await showConfirmModal(taskName)) === 'false'
+          ) {
+            return;
+          }
         }
 
         break;
@@ -239,6 +256,8 @@ const addEvent = () => {
         if (sortType === 'false') {
           return;
         }
+
+        break;
       }
 
       case 'categorize': {
@@ -250,6 +269,8 @@ const addEvent = () => {
         if (minCategorizeNumber === 'false') {
           return;
         }
+
+        break;
       }
     }
 
