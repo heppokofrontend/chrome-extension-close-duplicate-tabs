@@ -20,6 +20,9 @@
   "checkbox_pathname": {
     "message": "Ignore pathname"
   },
+  "checkbox_foucedChangeURLWhenClickedAnchorLink": {
+    "message": "Force URL Hash Change"
+  },
   "checkbox_silent": {
     "message": "Do not show confirmation dialog"
   },
@@ -43,6 +46,9 @@
   },
   "hint_pathname": {
     "message": "Recommended: enable [ Ignore hash ] and [ Ignore query ]."
+  },
+  "hint_foucedChangeURLWhenClickedAnchorLink": {
+    "message": "When you click on intra-page links like the table of contents, the URL will be forcibly updated."
   },
   "dialog_comfirm": {
     "message": "Alert"

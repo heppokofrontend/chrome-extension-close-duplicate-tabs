@@ -4,6 +4,7 @@ const defaultSaveData = {
   ignoreHash: true,
   includeAllWindow: false,
   includePinnedTabs: false,
+  foucedChangeURLWhenClickedAnchorLink: false,
   noConfirm: false,
   minCategorizeNumber: 1,
 };
