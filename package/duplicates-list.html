@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title data-i18n="duplicates_title"></title>
+    <link rel="stylesheet" href="./styles/common.css" />
+    <link rel="stylesheet" href="./styles/duplicates-list.css" />
+    <script src="common.js" defer></script>
+    <script src="duplicates-list.js" defer></script>
+  </head>
+  <body>
+    <main data-include-all-window="loading">
+      <h1 data-i18n="duplicates_title"></h1>
+      <p id="return">
+        <button type="button">
+          <span data-i18n="duplicates_return"></span>
+          <img src="./images/open.svg" />
+        </button>
+      </p>
+      <div id="container"></div>
+      <div id="empty-message">
+        <p class="single" data-i18n="duplicates_empty_message"></p>
+        <p class="all" data-i18n="duplicates_empty_message_all"></p>
+      </div>
+    </main>
+  </body>
+</html>
