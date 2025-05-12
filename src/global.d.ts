@@ -4,6 +4,7 @@ type SaveDataType = {
   ignoreHash?: boolean;
   includeAllWindow?: boolean;
   includePinnedTabs?: boolean;
+  foucedChangeURLWhenClickedAnchorLink?: boolean;
   noConfirm?: boolean;
   minCategorizeNumber?: number;
 };

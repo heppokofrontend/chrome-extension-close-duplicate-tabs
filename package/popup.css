@@ -121,8 +121,10 @@ label:has([type='checkbox']) {
 label:has([type='checkbox']) .img {
   display: grid;
   place-items: center;
-  width: 24px;
-  height: 24px;
+  min-width: 24px;
+  max-width: 24px;
+  min-height: 24px;
+  max-height: 24px;
   font-weight: bold;
   color: #fff;
   background: #008080;
@@ -197,6 +199,8 @@ label input[type='checkbox']:focus-visible + span::after {
 }
 
 .hint {
+  display: flex;
+  gap: 0.5em;
   padding-left: 4px;
   font-size: 10px;
   color: var(--color-hint);
