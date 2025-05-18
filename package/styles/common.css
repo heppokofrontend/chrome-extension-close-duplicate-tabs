@@ -1,0 +1,90 @@
+:root {
+  --color-outline: #000;
+  --color-h1-text: #333;
+  --color-h1-bg: #ddd;
+  --color-background: #f1f1f1;
+  --color-background-secondary: #fff;
+  --color-label-text: #000;
+  --color-label-bg: #dfdfdf;
+  --color-checkbox-border: #e1e1e1;
+  --color-danger-title-text: inherit;
+  --color-danger-title-font-weight: normal;
+  --color-danger-title-bg: #ff7c7c;
+  --color-danger-label-bg: #f1f1f1;
+  --color-hint: #446ca9;
+  --color-dialog-text: #333;
+  --color-dialog-background: #fff;
+  --border-details: 1px solid #ff7c7c;
+  --border-top-details-content: 0;
+  --border-bottom-h1: 0;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-outline: #fff;
+    --color-h1-text: #898989;
+    --color-h1-bg: #202124;
+    --color-background: #292a2d;
+    --color-background-secondary: #202124;
+    --color-checkbox-border: #39393b;
+    --color-label-text: #ddd;
+    --color-label-bg: #515254;
+    --color-danger-title-text: #ff7c7c;
+    --color-danger-title-font-weight: bold;
+    --color-danger-title-bg: #202124;
+    --color-danger-label-bg: #414245;
+    --color-hint: #8ab4f8;
+    --color-dialog-text: #fff;
+    --color-dialog-background: #292a2d;
+    --border-details: 1px solid #703031;
+    --border-top-details-content: 2px solid #292a2d;
+    --border-bottom-h1: 1px solid #111;
+  }
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--color-outline);
+}
+
+body {
+  font-size: 75%;
+  line-height: 1.6;
+  background: var(--color-background);
+}
+
+h1 {
+  padding: 10px 16px;
+  font-family: monospace;
+  font-size: 12px;
+  font-weight: normal;
+  line-height: 1.2;
+  color: var(--color-h1-text);
+  text-align: center;
+  letter-spacing: 2px;
+  background: var(--color-h1-bg);
+  border-bottom: var(--border-bottom-h1);
+}
+
+button {
+  font-size: 11px;
+  color: #000;
+  background: #42ccc0;
+  border: 0;
+  border-radius: 6px;
+}
+
+button:hover,
+button:focus {
+  opacity: 0.8;
+}
+
+.main {
+  padding: 14px 14px 20px;
+}
