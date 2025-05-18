@@ -24,100 +24,35 @@ const getCurrentTab = async () =>
   (await chrome.tabs.query({ active: true, currentWindow: true }))[0];
 
 // Tasks
-let duplicatedListWindow: chrome.windows.Window | null = null;
-const removeDuplicatedTabs = async (
-  tabs: chrome.tabs.Tab[],
-  options: SaveDataType & { shouldShowDuplicatePage?: boolean },
-) => {
+const removeDuplicatedTabs = async (tabs: chrome.tabs.Tab[], options: SaveDataType) => {
   type ValidTab = chrome.tabs.Tab & {
     id: number;
     url: string;
   };
 
-  const urlBaseTabList: Record<string, chrome.tabs.Tab[]> = {};
-
-  for (const tab of tabs) {
-    const { id } = tab;
-    const url = getUrl(tab.url, options);
-
-    if (!url || typeof id !== 'number') {
-      continue;
-    }
-
-    if (url in urlBaseTabList === false) {
-      urlBaseTabList[url] = [];
-    }
-
-    urlBaseTabList[url].push(tab);
-  }
-
   const currentTab = await getCurrentTab();
-  const duplicatedEntries = Object.entries(urlBaseTabList).filter(([_, { length }]) => {
-    return 2 <= length;
-  });
-
-  if (options.shouldShowDuplicatePage === true) {
-    chrome.storage.session.set({ lastWindowId: currentTab.windowId, duplicatedEntries });
-    chrome.windows.get(duplicatedListWindow?.id ?? 0, async () => {
-      if (chrome.runtime.lastError) {
-        duplicatedListWindow = await chrome.windows.create({
-          url: 'duplicates-list.html',
-          type: 'popup',
-          width: 800,
-          height: 800,
-          left: 100,
-          top: 100,
-        });
-
-        return;
-      }
-
-      chrome.windows.update(
-        duplicatedListWindow!.id as number,
-        { focused: true, state: 'normal' },
-        () => {
-          const tab = duplicatedListWindow?.tabs?.[0];
-          if (typeof tab?.id === 'number') {
-            chrome.tabs.reload(tab.id, { bypassCache: false });
-          }
-        },
-      );
-    });
-
-    return;
-  }
-
+  const currentUrl = getUrl(currentTab.url, options);
   const checkedUrl = new Set<string>();
-  const currentWindowId = (await chrome.windows.getCurrent()).id;
-  const tabIdList = duplicatedEntries.flatMap(([_, tabItems]) => tabItems);
 
-  if (currentWindowId && options.includeAllWindow) {
-    tabIdList.sort((a, b) => {
-      if (a.windowId === currentWindowId && b.windowId !== currentWindowId) {
-        return -1;
-      }
-
-      if (a.windowId !== currentWindowId && b.windowId === currentWindowId) {
-        return 1;
-      }
-
-      return 0;
-    });
+  if (currentUrl) {
+    checkedUrl.add(currentUrl);
   }
 
-  const targetTabIdList = tabIdList
+  const targetTabIdList = tabs
     .filter((tab): tab is ValidTab => {
       const { id } = tab;
+      const url = getUrl(tab.url, options);
 
-      if (typeof tab.url === 'undefined' || typeof id === 'undefined' || currentTab.id === id) {
+      if (!url || typeof id !== 'number') {
         return false;
       }
 
-      if (checkedUrl.has(tab.url)) {
+      if (checkedUrl.has(url) && currentTab.id !== id) {
         return true;
       }
 
-      checkedUrl.add(tab.url);
+      checkedUrl.add(url);
+
       return false;
     })
     .map(({ id }) => id);
@@ -215,7 +150,7 @@ const categorizeTabs = async (
       .create({ tabId: firstTab.tabId })
       .then(async ({ id: windowId }) => {
         const idList = values.slice(1);
-        const promisesForTabMove: Promise<chrome.tabs.Tab | undefined>[] = [];
+        const promisesForTabMove: Promise<chrome.tabs.Tab>[] = [];
 
         chrome.tabs.update(firstTab.tabId, { pinned: firstTab.pinned });
 
@@ -225,7 +160,7 @@ const categorizeTabs = async (
 
         await Promise.all(promisesForTabMove);
 
-        const promisesForTabUpdate: Promise<chrome.tabs.Tab | undefined>[] = [];
+        const promisesForTabUpdate: Promise<chrome.tabs.Tab>[] = [];
 
         for (const { tabId, pinned } of idList) {
           promisesForTabUpdate.push(chrome.tabs.update(tabId, { pinned }));
@@ -417,7 +352,7 @@ const sortTabs = async (tabs: chrome.tabs.Tab[], sort: SortType | undefined) => 
 chrome.runtime.onConnect.addListener((port) => {
   interface Request {
     taskName?: string;
-    options?: SaveDataType & { sort: SortType; shouldShowDuplicatePage: boolean };
+    options?: SaveDataType & { sort: SortType };
   }
 
   const onmessageListener = (request: Request) => {
@@ -432,10 +367,6 @@ chrome.runtime.onConnect.addListener((port) => {
       });
 
       switch (taskName) {
-        case 'remove':
-          await removeDuplicatedTabs(tabs, options ?? {});
-          return;
-
         case 'reload':
           for (const { id } of tabs) {
             if (typeof id === 'number') {
@@ -444,6 +375,10 @@ chrome.runtime.onConnect.addListener((port) => {
             }
           }
 
+          return;
+
+        case 'remove':
+          await removeDuplicatedTabs(tabs, options ?? {});
           return;
 
         case 'categorize':

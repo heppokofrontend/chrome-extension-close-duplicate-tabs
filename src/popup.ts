@@ -14,6 +14,7 @@ const STATE = {
   saveData: defaultSaveData,
 };
 
+const getMessage = (key: string) => chrome.i18n.getMessage(key);
 const showNoticeModal = (() => {
   const noticeModal = document.getElementById('notice') as HTMLDialogElement;
   const noticeModalText = document.getElementById('notice-text') as HTMLParagraphElement;
@@ -45,10 +46,6 @@ const showConfirmModal = (() => {
   type Commands<T> = T[];
   type Options<T> =
     | {
-        type: 'remove';
-        comannds: Commands<T>;
-      }
-    | {
         type: 'multiple';
         comannds: Commands<T>;
       }
@@ -75,65 +72,57 @@ const showConfirmModal = (() => {
     confirmModal.focus();
 
     return new Promise<T | 'false'>((resolve) => {
-      switch (options?.type) {
-        case 'range': {
-          // FIXME: Type assertion
-          const field = document.createElement('label');
-          const min = options.range[0];
-          const max = options.range[options.range.length - 1];
-          // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-          let value = STATE.saveData.minCategorizeNumber ?? min;
+      if (options?.type === 'range') {
+        // FIXME: Type assertion
+        const field = document.createElement('label');
+        const min = options.range[0];
+        const max = options.range[options.range.length - 1];
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+        let value = STATE.saveData.minCategorizeNumber ?? min;
 
-          field.className = 'textfield-label-in-dialog';
-          field.insertAdjacentHTML(
-            'afterbegin',
-            `
+        field.className = 'textfield-label-in-dialog';
+        field.insertAdjacentHTML(
+          'afterbegin',
+          `
             ${getMessage(`dialog_command_${taskName}_range1`)}
             <input type="number" min="${min}" max="${max}" value="${value}" />
             ${getMessage(`dialog_command_${taskName}_range2`)}
           `,
-          );
-          field.querySelector('input')?.addEventListener('change', (e) => {
-            if (e.target instanceof HTMLInputElement) {
-              value = e.target.valueAsNumber;
+        );
+        field.querySelector('input')?.addEventListener('change', (e) => {
+          if (e.target instanceof HTMLInputElement) {
+            value = e.target.valueAsNumber;
 
-              save({
-                ...STATE.saveData,
-                minCategorizeNumber: value,
-              });
-            }
-          });
-          buttonContainer.appendChild(field);
+            save({
+              ...STATE.saveData,
+              minCategorizeNumber: value,
+            });
+          }
+        });
+        buttonContainer.appendChild(field);
 
-          const okButton = templateButton.cloneNode();
+        const okButton = templateButton.cloneNode();
 
-          okButton.textContent = getMessage(`dialog_command_apply`);
-          okButton.addEventListener('click', () => resolve(value as T));
+        okButton.textContent = getMessage(`dialog_command_apply`);
+        okButton.addEventListener('click', () => resolve(value as T));
 
-          buttonContainer.appendChild(okButton);
+        buttonContainer.appendChild(okButton);
 
-          const cancelButton = templateButton.cloneNode();
+        const cancelButton = templateButton.cloneNode();
 
-          cancelButton.textContent = getMessage(`dialog_command_false`);
-          cancelButton.addEventListener('click', () => resolve('false'));
+        cancelButton.textContent = getMessage(`dialog_command_false`);
+        cancelButton.addEventListener('click', () => resolve('false'));
 
-          buttonContainer.appendChild(cancelButton);
+        buttonContainer.appendChild(cancelButton);
+      } else {
+        (options?.comannds ?? (defaultComannds as Commands<T>)).forEach((command) => {
+          const button = templateButton.cloneNode();
 
-          break;
-        }
+          button.textContent = getMessage(`dialog_command_${String(command)}`);
+          button.addEventListener('click', () => resolve(command));
 
-        default: {
-          (options?.comannds ?? (defaultComannds as Commands<T>)).forEach((command) => {
-            const button = templateButton.cloneNode();
-
-            button.textContent = getMessage(`dialog_command_${String(command)}`);
-            button.addEventListener('click', () => resolve(command));
-
-            buttonContainer.appendChild(button);
-          });
-
-          break;
-        }
+          buttonContainer.appendChild(button);
+        });
       }
     }).finally(() => {
       buttonContainer.textContent = '';
@@ -153,6 +142,22 @@ const save = (newSaveData: SaveDataType) => {
   chrome.storage.local.set({
     saveData: value,
   });
+};
+
+const setLanguage = () => {
+  const targets = document.querySelectorAll<HTMLElement>('[data-i18n]');
+
+  for (const elm of targets) {
+    const { i18n } = elm.dataset;
+
+    if (!i18n) {
+      continue;
+    }
+
+    const textContent = getMessage(i18n);
+
+    elm.textContent = textContent;
+  }
 };
 
 const loadSaveData = async () => {
@@ -183,30 +188,10 @@ const loadSaveData = async () => {
 };
 
 const addEvent = () => {
+  let sortType: SortType = 'false';
   let minCategorizeNumber: number | 'false' = 1;
   const buttons = document.querySelectorAll<HTMLButtonElement>('.buttons button');
-  const postMessage = ({
-    taskName,
-    shouldShowDuplicatePage = false,
-    sortType = 'false',
-  }: {
-    taskName: string;
-    shouldShowDuplicatePage?: boolean;
-    sortType?: SortType;
-  }) => {
-    const port = chrome.runtime.connect();
-
-    port.postMessage({
-      taskName,
-      options: {
-        ...STATE.saveData,
-        shouldShowDuplicatePage,
-        sort: sortType,
-        minCategorizeNumber,
-      },
-    });
-  };
-  const onClickEventHandler = async (e: Event) => {
+  const onclickListener = async (e: Event) => {
     if (!(e.currentTarget instanceof HTMLButtonElement)) {
       return;
     }
@@ -218,21 +203,10 @@ const addEvent = () => {
       case 'remove': {
         const messageName = STATE.saveData.includeAllWindow ? 'remove_allwin' : taskName;
 
-        if (noConfirm) {
-          postMessage({ taskName });
+        if (!noConfirm && (await showConfirmModal(messageName)) === 'false') {
           return;
         }
 
-        const result = await showConfirmModal<'true' | 'show_duplicate' | 'false'>(messageName, {
-          type: 'remove',
-          comannds: ['true', 'show_duplicate', 'false'],
-        });
-
-        if (result === 'false') {
-          return;
-        }
-
-        postMessage({ taskName, shouldShowDuplicatePage: result === 'show_duplicate' });
         break;
       }
 
@@ -243,7 +217,6 @@ const addEvent = () => {
           return;
         }
 
-        postMessage({ taskName });
         break;
       }
 
@@ -259,7 +232,6 @@ const addEvent = () => {
           }
         }
 
-        postMessage({ taskName });
         break;
 
       // 全部別窓にする
@@ -274,11 +246,10 @@ const addEvent = () => {
           }
         }
 
-        postMessage({ taskName });
         break;
 
       case 'sort': {
-        const sortType = await showConfirmModal<SortType>(taskName, {
+        sortType = await showConfirmModal<SortType>(taskName, {
           type: 'multiple',
           comannds: ['sortByUrl', 'sortByTitle', 'sortByHostAndTitle', 'false'],
         });
@@ -287,7 +258,6 @@ const addEvent = () => {
           return;
         }
 
-        postMessage({ taskName, sortType });
         break;
       }
 
@@ -301,14 +271,25 @@ const addEvent = () => {
           return;
         }
 
-        postMessage({ taskName });
         break;
       }
     }
+
+    const port = chrome.runtime.connect();
+
+    port.postMessage({
+      taskName,
+      options: {
+        ...STATE.saveData,
+        sort: sortType,
+        minCategorizeNumber,
+      },
+    });
   };
 
   for (const button of buttons) {
-    button.addEventListener('click', onClickEventHandler);
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
+    button.addEventListener('click', onclickListener);
   }
 
   const isValidOptionType = (value: unknown): value is keyof SaveDataType => {
@@ -359,6 +340,7 @@ const addEvent = () => {
 };
 
 const init = async () => {
+  setLanguage();
   await loadSaveData();
   addEvent();
 };
