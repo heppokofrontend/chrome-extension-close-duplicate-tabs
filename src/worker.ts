@@ -55,18 +55,6 @@ const removeDuplicatedTabs = async (
   const duplicatedEntries = Object.entries(urlBaseTabList).filter(([_, { length }]) => {
     return 2 <= length;
   });
-  const targetTabIdList = duplicatedEntries
-    .flatMap(([_, tabItems]) => tabItems)
-    .filter((tab): tab is ValidTab => {
-      const { id } = tab;
-
-      if (typeof tab.url === 'undefined' || typeof id === 'undefined' || currentTab.id === id) {
-        return false;
-      }
-
-      return true;
-    })
-    .map(({ id }) => id);
 
   if (options.shouldShowDuplicatePage === true) {
     chrome.storage.session.set({ lastWindowId: currentTab.windowId, duplicatedEntries });
@@ -98,6 +86,41 @@ const removeDuplicatedTabs = async (
 
     return;
   }
+
+  const checkedUrl = new Set<string>();
+  const currentWindowId = (await chrome.windows.getCurrent()).id;
+  const tabIdList = duplicatedEntries.flatMap(([_, tabItems]) => tabItems);
+
+  if (currentWindowId && options.includeAllWindow) {
+    tabIdList.sort((a, b) => {
+      if (a.windowId === currentWindowId && b.windowId !== currentWindowId) {
+        return -1;
+      }
+
+      if (a.windowId !== currentWindowId && b.windowId === currentWindowId) {
+        return 1;
+      }
+
+      return 0;
+    });
+  }
+
+  const targetTabIdList = tabIdList
+    .filter((tab): tab is ValidTab => {
+      const { id } = tab;
+
+      if (typeof tab.url === 'undefined' || typeof id === 'undefined' || currentTab.id === id) {
+        return false;
+      }
+
+      if (checkedUrl.has(tab.url)) {
+        return true;
+      }
+
+      checkedUrl.add(tab.url);
+      return false;
+    })
+    .map(({ id }) => id);
 
   for (const id of targetTabIdList) {
     chrome.tabs.remove(id);
