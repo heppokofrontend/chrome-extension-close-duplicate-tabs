@@ -68,9 +68,6 @@
   "dialog_command_false": {
     "message": "Cancel"
   },
-  "dialog_command_show_duplicate": {
-    "message": "Find Duplicates"
-  },
   "dialog_command_categorize_range1": {
     "message": "Less than "
   },
@@ -118,20 +115,5 @@
   },
   "dialog_sort": {
     "message": "Which rules would you like to \nsort your tabs?"
-  },
-  "duplicates_title": {
-    "message": "Duplicate Tabs List - Close duplicate tab"
-  },
-  "duplicates_return": {
-    "message": "Back to Original Window"
-  },
-  "duplicates_already_closed": {
-    "message": "The window has already been closed."
-  },
-  "duplicates_empty_message": {
-    "message": "There are no duplicate tabs in this window."
-  },
-  "duplicates_empty_message_all": {
-    "message": "There are no duplicate tabs in all windows."
   }
 }

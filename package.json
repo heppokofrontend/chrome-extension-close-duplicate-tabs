@@ -7,7 +7,7 @@
     "url": "https://github.com/heppokofrontend/chrome-extension-hand-tool/issues"
   },
   "devDependencies": {
-    "@types/chrome": "^0.0.321",
+    "@types/chrome": "^0.0.220",
     "@typescript-eslint/eslint-plugin": "^5.58.0",
     "@typescript-eslint/parser": "^5.58.0",
     "eslint": "^8.38.0",
@@ -37,12 +37,9 @@
     "deploy": "gh-pages -d package -b package",
     "dev": "tsc --watch",
     "eslint": "eslint . --ext .js,.ts --fix",
-    "minify:common": "uglifyjs ./package/common.js -o ./package/common.js",
-    "minify:content": "uglifyjs ./package/content-scripts.js -o ./package/content-scripts.js",
-    "minify:popup": "uglifyjs ./package/popup.js -o ./package/popup.js",
-    "minify:list": "uglifyjs ./package/duplicates-list.js -o ./package/duplicates-list.js",
+    "minify:content": "uglifyjs ./package/popup.js -o ./package/popup.js",
     "minify:worker": "uglifyjs ./package/worker.js -o ./package/worker.js",
-    "postbuild": "yarn minify:common && yarn minify:content && yarn minify:popup && yarn minify:list && yarn minify:worker",
+    "postbuild": "yarn minify:content && yarn minify:worker",
     "predeploy": "yarn build",
     "serve": "http-server ./ -o index.html",
     "start": "yarn dev"
