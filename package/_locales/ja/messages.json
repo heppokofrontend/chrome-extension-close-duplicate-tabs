@@ -68,6 +68,9 @@
   "dialog_command_false": {
     "message": "キャンセル"
   },
+  "dialog_command_show_duplicate": {
+    "message": "重複を確認"
+  },
   "dialog_command_categorize_range1": {
     "message": ""
   },
@@ -115,5 +118,20 @@
   },
   "dialog_sort": {
     "message": "どのルールでタブを並び替えますか？"
+  },
+  "duplicates_title": {
+    "message": "重複タブ一覧 - 重複したタブを閉じるやつ"
+  },
+  "duplicates_return": {
+    "message": "元のウィンドウに戻る"
+  },
+  "duplicates_already_closed": {
+    "message": "すでに閉じられています。"
+  },
+  "duplicates_empty_message": {
+    "message": "このウィンドウに重複しているタブはありません。"
+  },
+  "duplicates_empty_message_all": {
+    "message": "すべてのウィンドウで重複しているタブはありません。"
   }
 }
