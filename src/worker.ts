@@ -88,7 +88,7 @@ const removeDuplicatedTabs = async (
   }
 
   const checkedUrl = new Set<string>();
-  const currentWindowId = (await chrome.windows.getCurrent()).id;
+  const currentWindowId = currentTab.windowId;
   const tabIdList = duplicatedEntries.flatMap(([_, tabItems]) => tabItems);
 
   if (currentWindowId && options.includeAllWindow) {
