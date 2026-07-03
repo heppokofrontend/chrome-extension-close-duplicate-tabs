@@ -89,7 +89,9 @@ label:has([type='checkbox']) .img {
   height: 32px;
   background: #42ccc0;
   border-radius: 20px;
-  box-shadow: 0 0 3px rgb(0 0 0 / 60%) inset, 0 0 0 4px var(--color-checkbox-border);
+  box-shadow:
+    0 0 3px rgb(0 0 0 / 60%) inset,
+    0 0 0 4px var(--color-checkbox-border);
 }
 
 [data-state='loaded'] .label::after {
@@ -111,7 +113,10 @@ label input[type='checkbox']:not(:checked) + span::after {
 }
 
 label input[type='checkbox']:focus-visible + span::after {
-  box-shadow: 0 0 3px rgb(0 0 0 / 60%) inset, 0 0 0 4px #e1e1e1, 0 0 0 6px var(--color-outline);
+  box-shadow:
+    0 0 3px rgb(0 0 0 / 60%) inset,
+    0 0 0 4px #e1e1e1,
+    0 0 0 6px var(--color-outline);
 }
 
 .hint {

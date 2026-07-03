@@ -1,8 +1,9 @@
 {
   "manifest_version": 3,
   "name": "__MSG_extName__",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "description": "__MSG_extDesc__",
+  "minimum_chrome_version": "120",
   "action": {
     "default_icon": "images/icon.png",
     "default_popup": "popup.html"

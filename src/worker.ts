@@ -1,27 +1,17 @@
-// Utils
-const parseUrl = (url: URL, options?: SaveDataType) => {
-  const { origin, hash, search } = url;
-  const pathname = url.pathname.replace(/\/index\.(x?html?|php|cgi|aspx)$/, '/');
+import type { SaveDataType, SortType } from './constants';
+import { getUrl } from './utils/url';
+import { pickTabIdsToClose } from './utils/duplicate-tabs';
+import { getSorter, type SortableTab } from './utils/sort';
 
-  return {
-    origin,
-    hash: options?.ignoreHash ? '' : hash,
-    search: options?.ignoreQuery ? '' : search,
-    pathname: options?.ignorePathname ? '' : pathname,
-  };
-};
-const getUrl = (url: string | undefined, options?: SaveDataType) => {
-  if (!url) {
-    return null;
+const getCurrentTab = async () => {
+  const [currentTab] = await chrome.tabs.query({ active: true, currentWindow: true });
+
+  if (!currentTab) {
+    throw new Error('No active tab found in the current window.');
   }
 
-  const { origin, pathname, search, hash } = parseUrl(new URL(url), options);
-
-  return `${origin}${pathname}${search}${hash}`;
+  return currentTab;
 };
-
-const getCurrentTab = async () =>
-  (await chrome.tabs.query({ active: true, currentWindow: true }))[0];
 
 // Tasks
 let duplicatedListWindow: chrome.windows.Window | null = null;
@@ -29,11 +19,6 @@ const removeDuplicatedTabs = async (
   tabs: chrome.tabs.Tab[],
   options: SaveDataType & { shouldShowDuplicatePage?: boolean },
 ) => {
-  type ValidTab = chrome.tabs.Tab & {
-    id: number;
-    url: string;
-  };
-
   const urlBaseTabList: Record<string, chrome.tabs.Tab[]> = {};
 
   for (const tab of tabs) {
@@ -44,91 +29,66 @@ const removeDuplicatedTabs = async (
       continue;
     }
 
-    if (url in urlBaseTabList === false) {
-      urlBaseTabList[url] = [];
-    }
-
+    urlBaseTabList[url] ??= [];
     urlBaseTabList[url].push(tab);
   }
 
   const currentTab = await getCurrentTab();
-  const duplicatedEntries = Object.entries(urlBaseTabList).filter(([_, { length }]) => {
+  const duplicatedEntries = Object.entries(urlBaseTabList).filter(([, { length }]) => {
     return 2 <= length;
   });
 
   if (options.shouldShowDuplicatePage === true) {
-    chrome.storage.session.set({ lastWindowId: currentTab.windowId, duplicatedEntries });
-    chrome.windows.get(duplicatedListWindow?.id ?? 0, async () => {
+    void chrome.storage.session.set({ lastWindowId: currentTab.windowId, duplicatedEntries });
+    chrome.windows.get(duplicatedListWindow?.id ?? 0, () => {
       if (chrome.runtime.lastError) {
-        duplicatedListWindow = await chrome.windows.create({
-          url: 'duplicates-list.html',
-          type: 'popup',
-          width: 800,
-          height: 800,
-          left: 100,
-          top: 100,
-        });
+        void (async () => {
+          duplicatedListWindow =
+            (await chrome.windows.create({
+              url: 'duplicates-list.html',
+              type: 'popup',
+              width: 800,
+              height: 800,
+              left: 100,
+              top: 100,
+            })) ?? null;
+        })();
 
         return;
       }
 
-      chrome.windows.update(
-        duplicatedListWindow!.id as number,
-        { focused: true, state: 'normal' },
-        () => {
-          const tab = duplicatedListWindow?.tabs?.[0];
-          if (typeof tab?.id === 'number') {
-            chrome.tabs.reload(tab.id, { bypassCache: false });
-          }
-        },
-      );
+      const targetWindowId = duplicatedListWindow?.id;
+
+      if (typeof targetWindowId !== 'number') {
+        return;
+      }
+
+      chrome.windows.update(targetWindowId, { focused: true, state: 'normal' }, () => {
+        const tab = duplicatedListWindow?.tabs?.[0];
+        if (typeof tab?.id === 'number') {
+          void chrome.tabs.reload(tab.id, { bypassCache: false });
+        }
+      });
     });
 
     return;
   }
 
-  const checkedUrl = new Set<string>();
   const currentUrl = getUrl(currentTab.url, options);
-  const currentWindowId = currentTab.windowId;
-  const tabIdList = duplicatedEntries.flatMap(([_, tabItems]) => tabItems);
+  const candidateTabs = duplicatedEntries
+    .flatMap(([, tabItems]) => tabItems)
+    .filter((tab): tab is chrome.tabs.Tab & { id: number } => typeof tab.id === 'number');
 
-  if (currentWindowId && options.includeAllWindow) {
-    tabIdList.sort((a, b) => {
-      if (a.windowId === currentWindowId && b.windowId !== currentWindowId) {
-        return -1;
-      }
-
-      if (a.windowId !== currentWindowId && b.windowId === currentWindowId) {
-        return 1;
-      }
-
-      return 0;
-    });
-  }
-
-  if (currentUrl) {
-    checkedUrl.add(currentUrl);
-  }
-
-  const targetTabIdList = tabIdList
-    .filter((tab): tab is ValidTab => {
-      const { id } = tab;
-
-      if (typeof tab.url === 'undefined' || typeof id === 'undefined' || currentTab.id === id) {
-        return false;
-      }
-
-      if (checkedUrl.has(tab.url)) {
-        return true;
-      }
-
-      checkedUrl.add(tab.url);
-      return false;
-    })
-    .map(({ id }) => id);
+  const targetTabIdList = pickTabIdsToClose({
+    candidateTabs,
+    currentTabId: currentTab.id,
+    currentUrl,
+    currentWindowId: currentTab.windowId,
+    includeAllWindow: options.includeAllWindow,
+  });
 
   for (const id of targetTabIdList) {
-    chrome.tabs.remove(id);
+    void chrome.tabs.remove(id);
   }
 };
 
@@ -182,7 +142,7 @@ const categorizeTabs = async (
     const { hostname } = new URL(currentTab.url);
 
     hosts[hostname] ??= [];
-    hosts[hostname]?.unshift({ tabId: currentTab.id, pinned: currentTab.pinned });
+    hosts[hostname].unshift({ tabId: currentTab.id, pinned: currentTab.pinned });
   }
 
   if (typeof minCategorizeNumber === 'number' && minCategorizeNumber !== 0) {
@@ -216,28 +176,32 @@ const categorizeTabs = async (
       continue;
     }
 
-    const windowPromise = chrome.windows
-      .create({ tabId: firstTab.tabId })
-      .then(async ({ id: windowId }) => {
-        const idList = values.slice(1);
-        const promisesForTabMove: Promise<chrome.tabs.Tab | undefined>[] = [];
+    const windowPromise = chrome.windows.create({ tabId: firstTab.tabId }).then(async (created) => {
+      const windowId = created?.id;
 
-        chrome.tabs.update(firstTab.tabId, { pinned: firstTab.pinned });
+      if (typeof windowId !== 'number') {
+        return;
+      }
 
-        for (const { tabId } of idList) {
-          promisesForTabMove.push(chrome.tabs.move(tabId, { windowId, index: -1 }));
-        }
+      const idList = values.slice(1);
+      const promisesForTabMove: Promise<chrome.tabs.Tab | undefined>[] = [];
 
-        await Promise.all(promisesForTabMove);
+      void chrome.tabs.update(firstTab.tabId, { pinned: firstTab.pinned });
 
-        const promisesForTabUpdate: Promise<chrome.tabs.Tab | undefined>[] = [];
+      for (const { tabId } of idList) {
+        promisesForTabMove.push(chrome.tabs.move(tabId, { windowId, index: -1 }));
+      }
 
-        for (const { tabId, pinned } of idList) {
-          promisesForTabUpdate.push(chrome.tabs.update(tabId, { pinned }));
-        }
+      await Promise.all(promisesForTabMove);
 
-        await Promise.all(promisesForTabUpdate);
-      });
+      const promisesForTabUpdate: Promise<chrome.tabs.Tab | undefined>[] = [];
+
+      for (const { tabId, pinned } of idList) {
+        promisesForTabUpdate.push(chrome.tabs.update(tabId, { pinned }));
+      }
+
+      await Promise.all(promisesForTabUpdate);
+    });
 
     promises.push(windowPromise);
   }
@@ -252,7 +216,7 @@ const categorizeTabs = async (
       await chrome.tabs.update(newCurrentTab.id, { active: true });
 
       if (currentTabIsPinned) {
-        chrome.tabs.update(newCurrentTab.id, {
+        void chrome.tabs.update(newCurrentTab.id, {
           pinned: true,
         });
       }
@@ -267,7 +231,7 @@ const divideTabs = async (tabs: chrome.tabs.Tab[]) => {
   const targetTabIdList = tabs
     .filter((tab): tab is ValidTab => typeof tab.id === 'number')
     .filter(({ id }) => id !== currentTab.id);
-  const promises: Promise<chrome.windows.Window | chrome.tabs.Tab>[] = [];
+  const promises: Promise<chrome.windows.Window | chrome.tabs.Tab | undefined>[] = [];
 
   for (const { id: tabId } of targetTabIdList) {
     promises.push(chrome.windows.create({ tabId }));
@@ -276,7 +240,7 @@ const divideTabs = async (tabs: chrome.tabs.Tab[]) => {
   await Promise.all(promises);
 
   for (const { id, pinned } of targetTabIdList) {
-    chrome.tabs.update(id, { pinned });
+    void chrome.tabs.update(id, { pinned });
   }
 
   if (currentTab.id) {
@@ -305,7 +269,7 @@ const combineTabs = async (tabs: chrome.tabs.Tab[]) => {
   await Promise.all(promises);
 
   for (const { id, pinned } of targetTabIdList) {
-    chrome.tabs.update(id, { pinned });
+    void chrome.tabs.update(id, { pinned });
   }
 
   if (currentTabId) {
@@ -314,63 +278,8 @@ const combineTabs = async (tabs: chrome.tabs.Tab[]) => {
 };
 
 const sortTabs = async (tabs: chrome.tabs.Tab[], sort: SortType | undefined) => {
-  interface TabData {
-    id: number;
-    hostname: string;
-    url: string;
-    title: string;
-    pinned: boolean;
-    windowId: number;
-  }
-
-  const compareByUrl = (a: TabData, b: TabData) => {
-    if (a.url < b.url) {
-      return -1;
-    }
-
-    if (a.url > b.url) {
-      return 1;
-    }
-
-    return 0;
-  };
-  const compareByTitle = (a: TabData, b: TabData) => {
-    if (a.title < b.title) {
-      return -1;
-    }
-
-    if (a.title > b.title) {
-      return 1;
-    }
-
-    return 0;
-  };
-  const compareByHostAndTitle = (a: TabData, b: TabData) => {
-    if (a.hostname < b.hostname) {
-      return -1;
-    }
-
-    if (a.hostname > b.hostname) {
-      return 1;
-    }
-
-    if (a.title < b.title) {
-      return -1;
-    }
-
-    if (a.title > b.title) {
-      return 1;
-    }
-
-    return 0;
-  };
-  const tabSet: Record<number, TabData[] | undefined> = {};
-  const sorter =
-    sort === 'sortByUrl'
-      ? compareByUrl
-      : sort === 'sortByTitle'
-      ? compareByTitle
-      : compareByHostAndTitle;
+  const tabSet: Record<number, SortableTab[] | undefined> = {};
+  const sorter = getSorter(sort);
 
   tabs
     .map(({ id, pinned, url, title, windowId }) => {
@@ -384,7 +293,7 @@ const sortTabs = async (tabs: chrome.tabs.Tab[], sort: SortType | undefined) => 
         windowId,
       };
     })
-    .filter((tab): tab is TabData => {
+    .filter((tab): tab is SortableTab => {
       return (
         typeof tab.url === 'string' && typeof tab.title === 'string' && typeof tab.id === 'number'
       );
@@ -392,7 +301,7 @@ const sortTabs = async (tabs: chrome.tabs.Tab[], sort: SortType | undefined) => 
     .forEach((tabData) => {
       const { windowId } = tabData;
       tabSet[windowId] ??= [];
-      tabSet[windowId]?.push(tabData);
+      tabSet[windowId].push(tabData);
     });
 
   for (const tabList of Object.values(tabSet)) {
@@ -427,9 +336,8 @@ chrome.runtime.onConnect.addListener((port) => {
 
   const onmessageListener = (request: Request) => {
     const callTaskFunctions = async ({ taskName, options }: Request) => {
-      const currentWindow =
-        taskName !== 'combine' && !Boolean(options?.includeAllWindow) ? true : undefined;
-      const pinned = Boolean(options?.includePinnedTabs) ? undefined : false;
+      const currentWindow = taskName !== 'combine' && !options?.includeAllWindow ? true : undefined;
+      const pinned = options?.includePinnedTabs ? undefined : false;
       const tabs = await chrome.tabs.query({
         windowType: 'normal',
         currentWindow,
@@ -445,7 +353,7 @@ chrome.runtime.onConnect.addListener((port) => {
           for (const { id } of tabs) {
             if (typeof id === 'number') {
               // NOTE: リロード後に音声を停止させる処理を実装したいが、現状 tabs 経由では不可能な模様
-              chrome.tabs.reload(id);
+              void chrome.tabs.reload(id);
             }
           }
 
@@ -469,7 +377,7 @@ chrome.runtime.onConnect.addListener((port) => {
       }
     };
 
-    callTaskFunctions(request);
+    void callTaskFunctions(request);
 
     return true;
   };

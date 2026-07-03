@@ -1,10 +1,12 @@
+import type { SaveDataType } from './constants';
+
 type ValidTab = chrome.tabs.Tab & {
   id: number;
   url: string;
 };
 
 chrome.storage.local.get('saveData', ({ saveData }: { saveData: SaveDataType }) => {
-  document.body.dataset.includeAllWindow = String(saveData.includeAllWindow ?? false);
+  document.body.dataset['includeAllWindow'] = String(saveData.includeAllWindow ?? false);
 });
 
 const render = async () => {
@@ -54,7 +56,7 @@ const render = async () => {
             <img src="./images/open.svg" />
           </button></th>
           <td class="title">
-            <div>${tab.title}</div>
+            <div>${tab.title ?? ''}</div>
             <div role="alert"><span class="status">${closedMessage}</span></div>
           </td>
         </tr>
@@ -68,7 +70,7 @@ const render = async () => {
 
         chrome.tabs.update(tabId, { active: true }, () => {
           if (chrome.runtime.lastError && tr) {
-            tr.dataset.closed = 'true';
+            tr.dataset['closed'] = 'true';
             button.setAttribute('aria-disabled', 'true');
             return;
           }
@@ -93,4 +95,4 @@ const render = async () => {
   container?.appendChild(fragment);
 };
 
-render();
+void render();

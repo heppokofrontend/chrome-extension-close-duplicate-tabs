@@ -1,13 +1,7 @@
-const defaultSaveData = {
-  ignorePathname: false,
-  ignoreQuery: false,
-  ignoreHash: true,
-  includeAllWindow: false,
-  includePinnedTabs: false,
-  foucedChangeURLWhenClickedAnchorLink: false,
-  noConfirm: false,
-  minCategorizeNumber: 1,
-};
+import { type SaveDataType, type SortType, defaultSaveData } from './constants';
+import { mergeSaveData } from './utils/save-data';
+
+const getMessage = (key: string) => chrome.i18n.getMessage(key);
 
 const STATE = {
   dangerZoneIsOpen: false,
@@ -89,7 +83,7 @@ const showConfirmModal = (() => {
             'afterbegin',
             `
             ${getMessage(`dialog_command_${taskName}_range1`)}
-            <input type="number" min="${min}" max="${max}" value="${value}" />
+            <input type="number" min="${String(min)}" max="${String(max)}" value="${String(value)}" />
             ${getMessage(`dialog_command_${taskName}_range2`)}
           `,
           );
@@ -108,14 +102,18 @@ const showConfirmModal = (() => {
           const okButton = templateButton.cloneNode();
 
           okButton.textContent = getMessage(`dialog_command_apply`);
-          okButton.addEventListener('click', () => resolve(value as T));
+          okButton.addEventListener('click', () => {
+            resolve(value as T);
+          });
 
           buttonContainer.appendChild(okButton);
 
           const cancelButton = templateButton.cloneNode();
 
           cancelButton.textContent = getMessage(`dialog_command_false`);
-          cancelButton.addEventListener('click', () => resolve('false'));
+          cancelButton.addEventListener('click', () => {
+            resolve('false');
+          });
 
           buttonContainer.appendChild(cancelButton);
 
@@ -127,7 +125,9 @@ const showConfirmModal = (() => {
             const button = templateButton.cloneNode();
 
             button.textContent = getMessage(`dialog_command_${String(command)}`);
-            button.addEventListener('click', () => resolve(command));
+            button.addEventListener('click', () => {
+              resolve(command);
+            });
 
             buttonContainer.appendChild(button);
           });
@@ -150,7 +150,7 @@ const save = (newSaveData: SaveDataType) => {
 
   STATE.saveData = value;
 
-  chrome.storage.local.set({
+  void chrome.storage.local.set({
     saveData: value,
   });
 };
@@ -159,7 +159,7 @@ const loadSaveData = async () => {
   const getValue = <T>(key: string, callback: (items: Record<string, T | undefined>) => void) =>
     new Promise<void>((resolve) => {
       chrome.storage.local.get(key, (items) => {
-        callback(items);
+        callback(items as Record<string, T | undefined>);
         resolve();
       });
     });
@@ -169,7 +169,9 @@ const loadSaveData = async () => {
       STATE.dangerZoneIsOpen = dangerZoneIsOpen ?? false;
     }),
     getValue<typeof defaultSaveData>('saveData', ({ saveData }) => {
-      for (const [key, value] of Object.entries<boolean | number>(saveData ?? defaultSaveData)) {
+      const mergedSaveData = mergeSaveData(saveData, defaultSaveData);
+
+      for (const [key, value] of Object.entries<boolean | number>(mergedSaveData)) {
         const checkbox = document.querySelector<HTMLInputElement>(`[data-option-type=${key}]`);
 
         if (checkbox && typeof value === 'boolean') {
@@ -177,7 +179,7 @@ const loadSaveData = async () => {
         }
       }
 
-      STATE.saveData = saveData ?? defaultSaveData;
+      STATE.saveData = mergedSaveData;
     }),
   ]);
 };
@@ -211,7 +213,7 @@ const addEvent = () => {
       return;
     }
 
-    const taskName = e.currentTarget.dataset.taskName;
+    const taskName = e.currentTarget.dataset['taskName'];
     const { noConfirm } = STATE.saveData;
 
     switch (taskName) {
@@ -308,7 +310,9 @@ const addEvent = () => {
   };
 
   for (const button of buttons) {
-    button.addEventListener('click', onClickEventHandler);
+    button.addEventListener('click', (e) => {
+      void onClickEventHandler(e);
+    });
   }
 
   const isValidOptionType = (value: unknown): value is keyof SaveDataType => {
@@ -350,7 +354,7 @@ const addEvent = () => {
   const dangerDetailsSummary = dangerDetails?.querySelector('summary');
 
   dangerDetailsSummary?.addEventListener('click', () => {
-    chrome.storage.local.set({ dangerZoneIsOpen: !dangerDetails?.open });
+    void chrome.storage.local.set({ dangerZoneIsOpen: !dangerDetails?.open });
   });
 
   if (dangerDetails) {
@@ -363,9 +367,9 @@ const init = async () => {
   addEvent();
 };
 
-init();
+void init();
 
 // CSS Transitionの有効化
 setTimeout(() => {
-  document.body.dataset.state = 'loaded';
+  document.body.dataset['state'] = 'loaded';
 }, 300);
