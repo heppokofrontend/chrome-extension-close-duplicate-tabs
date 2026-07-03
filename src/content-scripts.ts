@@ -12,7 +12,7 @@ const run = () => {
     anchors.forEach((a) => {
       a.removeEventListener('click', onClick);
 
-      if (saveData?.foucedChangeURLWhenClickedAnchorLink) {
+      if (saveData?.forcedChangeURLWhenClickedAnchorLink) {
         a.addEventListener('click', onClick);
       }
     });

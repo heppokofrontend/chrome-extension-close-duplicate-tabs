@@ -20,7 +20,7 @@
   "checkbox_pathname": {
     "message": "パス名を無視する"
   },
-  "checkbox_foucedChangeURLWhenClickedAnchorLink": {
+  "checkbox_forcedChangeURLWhenClickedAnchorLink": {
     "message": "URLハッシュを強制的に変更する"
   },
   "checkbox_silent": {
@@ -47,7 +47,7 @@
   "hint_pathname": {
     "message": "推奨：ハッシュとクエリの無視の有効化"
   },
-  "hint_foucedChangeURLWhenClickedAnchorLink": {
+  "hint_forcedChangeURLWhenClickedAnchorLink": {
     "message": "目次などのページ内リンクをクリックしたとき、強制的にURLを更新します。"
   },
   "dialog_comfirm": {
