@@ -4,7 +4,7 @@ on:
   push:
     branches: [main]
   pull_request:
-    branches: [main]
+    branches: [main, 'release/**']
 
 permissions:
   contents: read
@@ -50,4 +50,4 @@ jobs:
           test -s package/popup.js
           test -s package/worker.js
           test -s package/duplicates-list.js
-          test -s package/common.js
+          test -s package/i18n.js
