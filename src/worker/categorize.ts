@@ -55,7 +55,7 @@ export const categorizeTabs = async (
   }
 
   if (typeof minCategorizeNumber === 'number' && minCategorizeNumber !== 0) {
-    const OTHERS_HOST_NAME = '___OTHRERS___';
+    const OTHERS_HOST_NAME = '___OTHERS___';
 
     for (const [hostname, tabDataList] of Object.entries(hosts)) {
       if (!tabDataList?.length) {
