@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { pickTabIdsToClose } from './duplicate-tabs';
+import { pickTabIdsToClose } from './remove-duplicates';
 
 describe('pickTabIdsToClose', () => {
   it('never closes the current tab', () => {
