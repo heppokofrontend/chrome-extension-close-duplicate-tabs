@@ -1,50 +1,59 @@
 {
   "name": "chrome-extension-close-duplicate-tabs",
   "description": "This is a Google Chrome extension that closes duplicate tabs in the current window.",
-  "version": "1.0.0",
+  "version": "1.2.4",
   "author": "heppokofrontend",
+  "allowScripts": {
+    "esbuild@0.28.1": true
+  },
   "bugs": {
-    "url": "https://github.com/heppokofrontend/chrome-extension-hand-tool/issues"
+    "url": "https://github.com/heppokofrontend/chrome-extension-close-duplicate-tabs/issues"
   },
   "devDependencies": {
-    "@types/chrome": "^0.0.321",
-    "@typescript-eslint/eslint-plugin": "^5.58.0",
-    "@typescript-eslint/parser": "^5.58.0",
-    "eslint": "^8.38.0",
-    "eslint-config-google": "^0.14.0",
-    "eslint-config-prettier": "^8.8.0",
-    "gh-pages": "^3.2.3",
-    "http-server": "^14.1.1",
-    "prettier": "^2.8.7",
-    "stylelint": "^15.3.0",
-    "stylelint-config-recess-order": "^4.0.0",
-    "stylelint-config-standard": "^31.0.0",
-    "terser": "^5.7.1",
-    "ts-loader": "^9.2.3",
-    "typescript": "^5.0.4",
-    "uglify-js": "^3.17.4"
+    "@eslint/js": "10.0.1",
+    "@types/chrome": "0.2.0",
+    "@vitest/coverage-v8": "4.1.9",
+    "esbuild": "0.28.1",
+    "eslint": "10.6.0",
+    "eslint-config-prettier": "10.1.8",
+    "gh-pages": "6.3.0",
+    "globals": "17.7.0",
+    "http-server": "14.1.1",
+    "jsdom": "29.1.1",
+    "prettier": "3.9.4",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.62.1",
+    "vitest": "4.1.9"
   },
-  "homepage": "https://github.com/heppokofrontend/chrome-extension-hand-tool#readme",
+  "homepage": "https://github.com/heppokofrontend/chrome-extension-close-duplicate-tabs#readme",
   "keywords": [],
   "license": "MIT",
-  "main": "index.js",
+  "packageManager": "npm@11.17.0",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/heppokofrontend/chrome-extension-hand-tool.git"
+    "url": "git+https://github.com/heppokofrontend/chrome-extension-close-duplicate-tabs.git"
   },
   "scripts": {
-    "build": "tsc --build",
+    "build": "npm run typecheck && npm run build:content && npm run build:popup && npm run build:worker && npm run build:duplicates-list && npm run build:common",
+    "build:content": "esbuild src/content-scripts.ts --bundle --minify --format=iife --target=chrome120 --outfile=package/content-scripts.js",
+    "build:popup": "esbuild src/popup.ts --bundle --minify --format=iife --target=chrome120 --outfile=package/popup.js",
+    "build:worker": "esbuild src/worker.ts --bundle --minify --format=iife --target=chrome120 --outfile=package/worker.js",
+    "build:duplicates-list": "esbuild src/duplicates-list.ts --bundle --minify --format=iife --target=chrome120 --outfile=package/duplicates-list.js",
+    "build:common": "esbuild src/common.ts --bundle --minify --format=iife --target=chrome120 --outfile=package/common.js",
     "deploy": "gh-pages -d package -b package",
-    "dev": "tsc --watch",
-    "eslint": "eslint . --ext .js,.ts --fix",
-    "minify:common": "uglifyjs ./package/common.js -o ./package/common.js",
-    "minify:content": "uglifyjs ./package/content-scripts.js -o ./package/content-scripts.js",
-    "minify:popup": "uglifyjs ./package/popup.js -o ./package/popup.js",
-    "minify:list": "uglifyjs ./package/duplicates-list.js -o ./package/duplicates-list.js",
-    "minify:worker": "uglifyjs ./package/worker.js -o ./package/worker.js",
-    "postbuild": "yarn minify:common && yarn minify:content && yarn minify:popup && yarn minify:list && yarn minify:worker",
-    "predeploy": "yarn build",
+    "dev:content": "esbuild src/content-scripts.ts --bundle --format=iife --target=chrome120 --sourcemap=inline --outfile=package/content-scripts.js --watch",
+    "dev:popup": "esbuild src/popup.ts --bundle --format=iife --target=chrome120 --sourcemap=inline --outfile=package/popup.js --watch",
+    "dev:worker": "esbuild src/worker.ts --bundle --format=iife --target=chrome120 --sourcemap=inline --outfile=package/worker.js --watch",
+    "dev:duplicates-list": "esbuild src/duplicates-list.ts --bundle --format=iife --target=chrome120 --sourcemap=inline --outfile=package/duplicates-list.js --watch",
+    "dev:common": "esbuild src/common.ts --bundle --format=iife --target=chrome120 --sourcemap=inline --outfile=package/common.js --watch",
+    "format": "prettier . --write",
+    "format:check": "prettier . --check",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "predeploy": "npm run build",
     "serve": "http-server ./ -o index.html",
-    "start": "yarn dev"
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit"
   }
 }

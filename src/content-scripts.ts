@@ -1,3 +1,5 @@
+import type { SaveDataType } from './constants';
+
 const onClick = (e: MouseEvent) => {
   if (e.currentTarget instanceof HTMLAnchorElement) {
     history.pushState(null, '', e.currentTarget.href);

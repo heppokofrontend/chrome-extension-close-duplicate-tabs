@@ -1,9 +1,29 @@
 {
   "compilerOptions": {
-    "strict": true,
-    "removeComments": true,
     "target": "ESNext",
-    "outDir": "package"
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "moduleDetection": "force",
+    "lib": ["ESNext", "DOM", "DOM.Iterable"],
+    "types": ["chrome"],
+
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "exactOptionalPropertyTypes": true,
+    "allowUnreachableCode": false,
+    "allowUnusedLabels": false,
+    "verbatimModuleSyntax": true,
+    "noUncheckedSideEffectImports": true,
+    "isolatedModules": true,
+
+    "skipLibCheck": true,
+    "noEmit": true
   },
   "include": ["src/**/*"]
 }
