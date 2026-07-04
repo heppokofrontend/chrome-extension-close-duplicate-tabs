@@ -124,9 +124,14 @@ export const removeDuplicatedTabs = async (
   }
 
   const currentUrl = getUrl(currentTab.url, options);
-  const candidateTabs = duplicatedEntries
-    .flatMap(([, tabItems]) => tabItems)
-    .filter((tab): tab is chrome.tabs.Tab & { id: number } => typeof tab.id === 'number');
+  // pickTabIdsToClose は url の同一性で「残す/閉じる」を決めるため、
+  // 正規化前の url を渡すと ignoreHash などが実質無効化される。
+  // ここでグループ化キー（正規化 URL）を各タブの url に流し込んでおく。
+  const candidateTabs = duplicatedEntries.flatMap(([normalizedUrl, tabItems]) =>
+    tabItems
+      .filter((tab): tab is chrome.tabs.Tab & { id: number } => typeof tab.id === 'number')
+      .map(({ id, windowId }) => ({ id, url: normalizedUrl, windowId })),
+  );
 
   const targetTabIdList = pickTabIdsToClose({
     candidateTabs,
