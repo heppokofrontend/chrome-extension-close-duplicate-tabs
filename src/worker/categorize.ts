@@ -1,21 +1,20 @@
+import type { ValidTab as BaseValidTab } from './types';
 import type { SaveDataType } from '../constants';
 import { getCurrentTab } from './utils';
+
+type ValidTab = BaseValidTab & {
+  url: string;
+};
+type CurrentPinnedTab = BaseValidTab & {
+  url: string;
+  pinned: true;
+};
 
 /** ホスト名ごとに別窓にする */
 export const categorizeTabs = async (
   tabs: chrome.tabs.Tab[],
   minCategorizeNumber: SaveDataType['minCategorizeNumber'],
 ) => {
-  type ValidTab = chrome.tabs.Tab & {
-    id: number;
-    url: string;
-  };
-  type CurrentPinnedTab = chrome.tabs.Tab & {
-    id: number;
-    url: string;
-    pinned: true;
-  };
-
   const currentTab = await getCurrentTab();
   const hosts: Record<string, { tabId: number; pinned: boolean }[] | undefined> = {};
   const promises: (Promise<chrome.windows.Window> | Promise<void>)[] = [];

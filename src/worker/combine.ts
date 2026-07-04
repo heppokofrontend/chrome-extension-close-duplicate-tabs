@@ -1,11 +1,8 @@
+import type { ValidTab } from './types';
 import { getCurrentTab } from './utils';
 
 /** 全ウィンドウを１つにまとめる */
 export const combineTabs = async (tabs: chrome.tabs.Tab[]) => {
-  type ValidTab = chrome.tabs.Tab & {
-    id: number;
-  };
-
   const { id: currentTabId, windowId } = await getCurrentTab();
   const targetTabIdList = tabs.filter((tab): tab is ValidTab => typeof tab.id === 'number');
   const promises: Promise<chrome.tabs.Tab>[] = [];

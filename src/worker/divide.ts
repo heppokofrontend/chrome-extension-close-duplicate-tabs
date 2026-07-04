@@ -1,9 +1,8 @@
+import type { ValidTab } from './types';
 import { getCurrentTab } from './utils';
 
 /** すべてのタブを別窓にする */
 export const divideTabs = async (tabs: chrome.tabs.Tab[]) => {
-  type ValidTab = chrome.tabs.Tab & { id: number };
-
   const currentTab = await getCurrentTab();
   const targetTabIdList = tabs
     .filter((tab): tab is ValidTab => typeof tab.id === 'number')
