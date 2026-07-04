@@ -63,6 +63,7 @@ export const pickTabIdsToClose = ({
 
 let duplicatedListWindow: chrome.windows.Window | null = null;
 
+/** 重複したタブを閉じる */
 export const removeDuplicatedTabs = async (
   tabs: chrome.tabs.Tab[],
   options: SaveDataType & { shouldShowDuplicatePage?: boolean },
