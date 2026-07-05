@@ -40,11 +40,11 @@ const showConfirmModal = (() => {
   type Options<T> =
     | {
         type: 'remove';
-        comannds: Commands<T>;
+        commands: Commands<T>;
       }
     | {
         type: 'multiple';
-        comannds: Commands<T>;
+        commands: Commands<T>;
       }
     | {
         type: 'range';
@@ -54,10 +54,10 @@ const showConfirmModal = (() => {
   const confirmModalText = document.getElementById('confirm-text') as HTMLParagraphElement;
   const buttonContainer = document.getElementById('dialog-buttons') as HTMLParagraphElement;
   const templateButton = document.createElement('button');
-  const defaultComannds = ['true', 'false'];
+  const defaultCommands = ['true', 'false'];
 
   templateButton.type = 'button';
-  confirmModal.ariaLabel = getMessage('dialog_comfirm');
+  confirmModal.ariaLabel = getMessage('dialog_confirm');
 
   return <T = 'true' | 'false'>(taskName: string, options?: Options<T>) => {
     const textContent = getMessage(`dialog_${taskName}`);
@@ -127,7 +127,7 @@ const showConfirmModal = (() => {
         }
 
         default: {
-          (options?.comannds ?? (defaultComannds as Commands<T>)).forEach((command) => {
+          (options?.commands ?? (defaultCommands as Commands<T>)).forEach((command) => {
             const button = templateButton.cloneNode();
 
             button.textContent = getMessage(`dialog_command_${String(command)}`);
@@ -226,7 +226,7 @@ const addEvent = () => {
 
         const result = await showConfirmModal<'true' | 'show_duplicate' | 'false'>(messageName, {
           type: 'remove',
-          comannds: ['true', 'show_duplicate', 'false'],
+          commands: ['true', 'show_duplicate', 'false'],
         });
 
         if (result === 'false') {
@@ -281,7 +281,7 @@ const addEvent = () => {
       case 'sort': {
         const sortType = await showConfirmModal<SortType>(taskName, {
           type: 'multiple',
-          comannds: ['sortByUrl', 'sortByTitle', 'sortByHostAndTitle', 'false'],
+          commands: ['sortByUrl', 'sortByTitle', 'sortByHostAndTitle', 'false'],
         });
 
         if (sortType === 'false') {

@@ -56,7 +56,7 @@
   "hint_autoAvoidDuplicate": {
     "message": "新しいタブが開かれた時、すでに開かれているタブがあればそのタブを開きます。新規タブや、一部の特殊なURLは対象外です。"
   },
-  "dialog_comfirm": {
+  "dialog_confirm": {
     "message": "確認"
   },
   "dialog_notice": {

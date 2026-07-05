@@ -56,7 +56,7 @@
   "hint_autoAvoidDuplicate": {
     "message": "When a new tab opens, if an existing tab with the same URL is already open, that existing tab is shown instead. New tab pages and some special URLs are excluded."
   },
-  "dialog_comfirm": {
+  "dialog_confirm": {
     "message": "Alert"
   },
   "dialog_notice": {
