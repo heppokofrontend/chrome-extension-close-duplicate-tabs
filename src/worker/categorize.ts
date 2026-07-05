@@ -1,5 +1,6 @@
+import type { SaveDataType } from '../utils/save-data';
 import type { ValidTab as BaseValidTab } from './types';
-import type { SaveDataType } from '../constants';
+
 import { getCurrentTab } from './utils';
 
 type ValidTab = BaseValidTab & {

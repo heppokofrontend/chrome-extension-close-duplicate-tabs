@@ -1,4 +1,4 @@
-import type { SortType } from '../constants';
+export type SortType = 'sortByUrl' | 'sortByTitle' | 'sortByHostAndTitle' | 'false';
 
 export type SortableTab = {
   id: number;

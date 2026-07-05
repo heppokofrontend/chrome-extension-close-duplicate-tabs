@@ -1,12 +1,15 @@
 import { describe, it, expect } from 'vitest';
+import type { NormalizedUrl } from '../utils/url';
 import { pickTabIdsToClose } from './remove-duplicates';
+
+const normalize = (url: string) => url as NormalizedUrl;
 
 describe('pickTabIdsToClose', () => {
   it('never closes the current tab', () => {
     const result = pickTabIdsToClose({
-      candidateTabs: [{ id: 1, url: 'https://a.com', windowId: 1 }],
+      candidateTabs: [{ id: 1, url: normalize('https://a.com'), windowId: 1 }],
       currentTabId: 1,
-      currentUrl: 'https://a.com',
+      currentUrl: normalize('https://a.com'),
       currentWindowId: 1,
       includeAllWindow: false,
     });
@@ -20,27 +23,27 @@ describe('pickTabIdsToClose', () => {
   it('closes every other tab sharing the current tab url, not just the extras', () => {
     const result = pickTabIdsToClose({
       candidateTabs: [
-        { id: 1, url: 'https://a.com', windowId: 1 }, // current tab
-        { id: 2, url: 'https://a.com', windowId: 1 },
-        { id: 3, url: 'https://a.com', windowId: 1 },
+        { id: 1, url: normalize('https://a.com'), windowId: 1 }, // current tab
+        { id: 2, url: normalize('https://a.com'), windowId: 1 },
+        { id: 3, url: normalize('https://a.com'), windowId: 1 },
       ],
       currentTabId: 1,
-      currentUrl: 'https://a.com',
+      currentUrl: normalize('https://a.com'),
       currentWindowId: 1,
       includeAllWindow: false,
     });
 
-    expect(result.sort()).toStrictEqual([2, 3]);
+    expect(result.toSorted((a, b) => a - b)).toStrictEqual([2, 3]);
   });
 
   it('keeps the first occurrence and closes the rest for urls unrelated to the current tab', () => {
     const result = pickTabIdsToClose({
       candidateTabs: [
-        { id: 2, url: 'https://b.com', windowId: 1 },
-        { id: 3, url: 'https://b.com', windowId: 1 },
+        { id: 2, url: normalize('https://b.com'), windowId: 1 },
+        { id: 3, url: normalize('https://b.com'), windowId: 1 },
       ],
       currentTabId: 1,
-      currentUrl: 'https://a.com',
+      currentUrl: normalize('https://a.com'),
       currentWindowId: 1,
       includeAllWindow: false,
     });
@@ -51,8 +54,8 @@ describe('pickTabIdsToClose', () => {
   it('ignores tabs without a url', () => {
     const result = pickTabIdsToClose({
       candidateTabs: [
-        { id: 2, url: undefined, windowId: 1 },
-        { id: 3, url: 'https://b.com', windowId: 1 },
+        { id: 2, windowId: 1 },
+        { id: 3, url: normalize('https://b.com'), windowId: 1 },
       ],
       currentTabId: 1,
       currentUrl: null,
@@ -69,43 +72,43 @@ describe('pickTabIdsToClose', () => {
   it('closes tabs whose normalized url matches the current tab (hash stripped upstream)', () => {
     const result = pickTabIdsToClose({
       candidateTabs: [
-        { id: 1, url: 'https://a.com/foo', windowId: 1 }, // current tab (normalized)
-        { id: 2, url: 'https://a.com/foo', windowId: 1 },
-        { id: 3, url: 'https://a.com/foo', windowId: 1 },
+        { id: 1, url: normalize('https://a.com/foo'), windowId: 1 }, // current tab (normalized)
+        { id: 2, url: normalize('https://a.com/foo'), windowId: 1 },
+        { id: 3, url: normalize('https://a.com/foo'), windowId: 1 },
       ],
       currentTabId: 1,
-      currentUrl: 'https://a.com/foo',
+      currentUrl: normalize('https://a.com/foo'),
       currentWindowId: 1,
       includeAllWindow: false,
     });
 
-    expect(result.toSorted()).toStrictEqual([2, 3]);
+    expect(result.toSorted((a, b) => a - b)).toStrictEqual([2, 3]);
   });
 
   it('keeps only the first occurrence when a group of normalized urls does not include the current tab', () => {
     const result = pickTabIdsToClose({
       candidateTabs: [
-        { id: 2, url: 'https://a.com/foo', windowId: 1 },
-        { id: 3, url: 'https://a.com/foo', windowId: 1 },
-        { id: 4, url: 'https://a.com/foo', windowId: 1 },
+        { id: 2, url: normalize('https://a.com/foo'), windowId: 1 },
+        { id: 3, url: normalize('https://a.com/foo'), windowId: 1 },
+        { id: 4, url: normalize('https://a.com/foo'), windowId: 1 },
       ],
       currentTabId: 1,
-      currentUrl: 'https://b.com/',
+      currentUrl: normalize('https://b.com/'),
       currentWindowId: 1,
       includeAllWindow: false,
     });
 
-    expect(result.toSorted()).toStrictEqual([3, 4]);
+    expect(result.toSorted((a, b) => a - b)).toStrictEqual([3, 4]);
   });
 
   it('prioritizes the current window so its tab is kept when includeAllWindow is enabled', () => {
     const result = pickTabIdsToClose({
       candidateTabs: [
-        { id: 2, url: 'https://b.com', windowId: 2 },
-        { id: 3, url: 'https://b.com', windowId: 1 },
+        { id: 2, url: normalize('https://b.com'), windowId: 2 },
+        { id: 3, url: normalize('https://b.com'), windowId: 1 },
       ],
       currentTabId: 1,
-      currentUrl: 'https://a.com',
+      currentUrl: normalize('https://a.com'),
       currentWindowId: 1,
       includeAllWindow: true,
     });
