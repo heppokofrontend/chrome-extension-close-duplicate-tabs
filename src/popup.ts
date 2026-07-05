@@ -73,8 +73,8 @@ const showConfirmModal = (() => {
         case 'range': {
           // FIXME: Type assertion
           const field = document.createElement('label');
-          const min = options.range[0];
-          const max = options.range[options.range.length - 1];
+          const min = options.range[0] ?? 0;
+          const max = options.range[options.range.length - 1] ?? min;
           // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
           let value = STATE.saveData.minCategorizeNumber ?? min;
 
@@ -89,7 +89,13 @@ const showConfirmModal = (() => {
           );
           field.querySelector('input')?.addEventListener('change', (e) => {
             if (e.target instanceof HTMLInputElement) {
-              value = e.target.valueAsNumber;
+              const valueAsNumber = e.target.valueAsNumber;
+              const clamped = Number.isNaN(valueAsNumber)
+                ? value
+                : Math.min(max, Math.max(min, valueAsNumber));
+
+              e.target.valueAsNumber = clamped;
+              value = clamped;
 
               save({
                 ...STATE.saveData,
@@ -289,7 +295,7 @@ const addEvent = () => {
       case 'categorize': {
         minCategorizeNumber = await showConfirmModal<typeof minCategorizeNumber>(taskName, {
           type: 'range',
-          range: [...(new Array(10) as [])].map((_, index) => index),
+          range: Array.from({ length: 10 }, (_, index) => index),
         });
 
         if (minCategorizeNumber === 'false') {
