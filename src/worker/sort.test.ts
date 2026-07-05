@@ -35,14 +35,14 @@ describe('getSorter', () => {
       makeTab({ id: 2, url: 'https://a.com/' }),
     ];
 
-    expect(tabs.toSorted(sorter).map((tab) => tab.id)).toEqual([2, 1]);
+    expect(tabs.toSorted(sorter).map((tab) => tab.id)).toStrictEqual([2, 1]);
   });
 
   it('sorts by title when sortType is sortByTitle', () => {
     const sorter = getSorter('sortByTitle');
     const tabs = [makeTab({ id: 1, title: 'Zebra' }), makeTab({ id: 2, title: 'Apple' })];
 
-    expect(tabs.toSorted(sorter).map((tab) => tab.id)).toEqual([2, 1]);
+    expect(tabs.toSorted(sorter).map((tab) => tab.id)).toStrictEqual([2, 1]);
   });
 
   it('sorts by hostname then title when sortType is sortByHostAndTitle', () => {
@@ -53,7 +53,7 @@ describe('getSorter', () => {
       makeTab({ id: 3, hostname: 'a.com', title: 'A' }),
     ];
 
-    expect(tabs.toSorted(sorter).map((tab) => tab.id)).toEqual([3, 2, 1]);
+    expect(tabs.toSorted(sorter).map((tab) => tab.id)).toStrictEqual([3, 2, 1]);
   });
 
   it('falls back to sorting by hostname then title for unknown or falsy sortType', () => {
@@ -62,8 +62,8 @@ describe('getSorter', () => {
       makeTab({ id: 2, hostname: 'a.com', title: 'Z' }),
     ];
 
-    expect(tabs.toSorted(getSorter('false')).map((tab) => tab.id)).toEqual([2, 1]);
-    expect(tabs.toSorted(getSorter(undefined)).map((tab) => tab.id)).toEqual([2, 1]);
+    expect(tabs.toSorted(getSorter('false')).map((tab) => tab.id)).toStrictEqual([2, 1]);
+    expect(tabs.toSorted(getSorter(undefined)).map((tab) => tab.id)).toStrictEqual([2, 1]);
   });
 
   it('treats equal keys as equal, preserving relative order', () => {
@@ -93,7 +93,7 @@ describe('sortTabs', () => {
 
     await sortTabs(tabs, 'sortByUrl');
 
-    expect(move.mock.calls).toEqual([
+    expect(move.mock.calls).toStrictEqual([
       [11, { windowId: 1, index: 0 }],
       [10, { windowId: 1, index: 5 }],
       [21, { windowId: 2, index: 6 }],
