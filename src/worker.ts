@@ -1,9 +1,12 @@
 import type { SaveDataType } from '@/utils';
+import { registerAutoAvoidListeners } from '@/worker/auto-avoid-duplicates';
 import { categorizeTabs } from '@/worker/categorize';
 import { combineTabs } from '@/worker/combine';
 import { divideTabs } from '@/worker/divide';
 import { removeDuplicatedTabs } from '@/worker/remove-duplicates';
 import { sortTabs, type SortType } from '@/worker/sort';
+
+registerAutoAvoidListeners();
 
 chrome.runtime.onConnect.addListener((port) => {
   interface Request {

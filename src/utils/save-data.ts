@@ -7,6 +7,9 @@ export type SaveDataType = {
   forcedChangeURLWhenClickedAnchorLink?: boolean;
   noConfirm?: boolean;
   minCategorizeNumber?: number;
+  autoAvoidDuplicate?: boolean;
+  /** お知らせダイアログの表示済みキーと、表示した日付（yyyy-mm-dd）の記録。 */
+  shown?: Record<string, string>;
 };
 
 export type UrlNormalizeOptions = Pick<
@@ -31,6 +34,8 @@ export const defaultSaveData: Required<SaveDataType> = {
   forcedChangeURLWhenClickedAnchorLink: false,
   noConfirm: false,
   minCategorizeNumber: 1,
+  autoAvoidDuplicate: false,
+  shown: {},
 };
 
 export const getSaveData = async () => {

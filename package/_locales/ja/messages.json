@@ -26,6 +26,9 @@
   "checkbox_silent": {
     "message": "確認ダイアログを表示しない"
   },
+  "checkbox_autoAvoidDuplicate": {
+    "message": "新しい重複タブを抑制する"
+  },
   "btn_remove": {
     "message": "重複したタブを閉じる"
   },
@@ -49,6 +52,9 @@
   },
   "hint_forcedChangeURLWhenClickedAnchorLink": {
     "message": "目次などのページ内リンクをクリックしたとき、強制的にURLを更新します。"
+  },
+  "hint_autoAvoidDuplicate": {
+    "message": "新しいタブが開かれた時、すでに開かれているタブがあればそのタブを開きます。新規タブや、一部の特殊なURLは対象外です。"
   },
   "dialog_comfirm": {
     "message": "確認"
@@ -115,6 +121,9 @@
   },
   "dialog_noConfirm": {
     "message": "今後、確認ダイアログを表示せずに\nタスクを実行します。"
+  },
+  "dialog_autoAvoidDuplicate": {
+    "message": "新規タブが既存タブと重複する場合、\n新規タブを閉じて既存タブへ切り替えます。"
   },
   "dialog_sort": {
     "message": "どのルールでタブを並び替えますか？"
