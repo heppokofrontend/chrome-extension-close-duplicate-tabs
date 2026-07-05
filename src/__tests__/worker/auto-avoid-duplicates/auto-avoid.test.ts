@@ -13,7 +13,11 @@ interface MockTab {
   pinned?: boolean;
 }
 
-const createChromeMock = (saveData: Partial<SaveDataType>, existingTabs: MockTab[]) => {
+const createChromeMock = (
+  saveData: Partial<SaveDataType>,
+  existingTabs: MockTab[],
+  windowFocused = true,
+) => {
   const listeners = {
     onStartup: [] as Listener[],
     onCreated: [] as Listener[],
@@ -26,6 +30,7 @@ const createChromeMock = (saveData: Partial<SaveDataType>, existingTabs: MockTab
     move: vi.fn().mockResolvedValue(undefined),
     update: vi.fn().mockResolvedValue(undefined),
     remove: vi.fn().mockResolvedValue(undefined),
+    windowsGet: vi.fn().mockResolvedValue({ focused: windowFocused }),
     windowsUpdate: vi.fn().mockResolvedValue(undefined),
     get: vi.fn().mockResolvedValue({ saveData }),
   };
@@ -44,7 +49,7 @@ const createChromeMock = (saveData: Partial<SaveDataType>, existingTabs: MockTab
       remove: mocks.remove,
     },
     storage: { local: { get: mocks.get } },
-    windows: { update: mocks.windowsUpdate },
+    windows: { get: mocks.windowsGet, update: mocks.windowsUpdate },
   };
 
   return { chrome, listeners, mocks };
@@ -61,8 +66,12 @@ const flushPromises = async () => {
  * auto-avoid はモジュール評価時に chrome.runtime.onStartup を登録するため、
  * chrome をスタブしたうえで毎回モジュールを読み直す。
  */
-const setup = async (saveData: Partial<SaveDataType>, existingTabs: MockTab[]) => {
-  const { chrome, listeners, mocks } = createChromeMock(saveData, existingTabs);
+const setup = async (
+  saveData: Partial<SaveDataType>,
+  existingTabs: MockTab[],
+  windowFocused = true,
+) => {
+  const { chrome, listeners, mocks } = createChromeMock(saveData, existingTabs, windowFocused);
 
   vi.stubGlobal('chrome', chrome);
   vi.resetModules();
@@ -115,6 +124,31 @@ describe('registerAutoAvoidListeners', () => {
       expect(mocks.move).toHaveBeenCalledWith(1, { windowId: 1, index: 4 });
       expect(mocks.update).toHaveBeenCalledWith(1, { active: true });
       expect(mocks.windowsUpdate).toHaveBeenCalledWith(1, { focused: true });
+      expect(mocks.remove).toHaveBeenCalledWith(2);
+    });
+
+    it('対象ウィンドウがフォーカスされていない場合はフォーカスを奪わない', async () => {
+      const existingTabs: MockTab[] = [
+        { id: 1, url: 'https://a.com/', windowId: 1, index: 0, active: false },
+        { id: 2, url: 'https://a.com/', windowId: 1, index: 3, active: true },
+      ];
+      const { listeners, mocks } = await setup(
+        { autoAvoidDuplicate: true },
+        existingTabs,
+        false,
+      );
+
+      await openTab(listeners, {
+        id: 2,
+        url: 'https://a.com/',
+        windowId: 1,
+        index: 3,
+        active: true,
+      });
+
+      expect(mocks.move).toHaveBeenCalledWith(1, { windowId: 1, index: 4 });
+      expect(mocks.update).toHaveBeenCalledWith(1, { active: true });
+      expect(mocks.windowsUpdate).not.toHaveBeenCalled();
       expect(mocks.remove).toHaveBeenCalledWith(2);
     });
   });

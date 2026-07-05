@@ -67,7 +67,13 @@ const resolveCreatedTab = async (createdTab: CreatedTab) => {
         index: createdTab.index + 1,
       });
       await chrome.tabs.update(result.keepTabId, { active: true });
-      await chrome.windows.update(createdTab.windowId, { focused: true });
+
+      const targetWindow = await chrome.windows.get(createdTab.windowId);
+
+      if (targetWindow.focused) {
+        await chrome.windows.update(createdTab.windowId, { focused: true });
+      }
+
       await chrome.tabs.remove(result.closeTabId);
       return;
     }
