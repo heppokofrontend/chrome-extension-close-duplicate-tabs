@@ -1,4 +1,4 @@
-import type { SaveDataType } from './utils/save-data';
+import type { SaveDataType } from '@/utils';
 
 const onClick = (e: MouseEvent) => {
   if (e.currentTarget instanceof HTMLAnchorElement) {

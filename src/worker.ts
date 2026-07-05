@@ -1,9 +1,9 @@
-import type { SaveDataType } from './utils/save-data';
-import { categorizeTabs } from './worker/categorize';
-import { combineTabs } from './worker/combine';
-import { divideTabs } from './worker/divide';
-import { removeDuplicatedTabs } from './worker/remove-duplicates';
-import { sortTabs, type SortType } from './worker/sort';
+import type { SaveDataType } from '@/utils';
+import { categorizeTabs } from '@/worker/categorize';
+import { combineTabs } from '@/worker/combine';
+import { divideTabs } from '@/worker/divide';
+import { removeDuplicatedTabs } from '@/worker/remove-duplicates';
+import { sortTabs, type SortType } from '@/worker/sort';
 
 chrome.runtime.onConnect.addListener((port) => {
   interface Request {

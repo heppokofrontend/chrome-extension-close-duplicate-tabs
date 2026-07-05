@@ -1,6 +1,5 @@
-import type { SaveDataType } from '../utils/save-data';
-import { normalizeUrl, type NormalizedUrl } from '../utils/url';
-import { getCurrentTab, getGroupedTabsByNormalizedUrl } from './utils';
+import { normalizeUrl, type NormalizedUrl, type SaveDataType } from '@/utils';
+import { getCurrentTab, getGroupedTabsByNormalizedUrl } from '@/worker/utils';
 
 interface DuplicateCandidateTab {
   id: number;

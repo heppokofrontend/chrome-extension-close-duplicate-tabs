@@ -7,6 +7,10 @@
     "lib": ["ESNext", "DOM", "DOM.Iterable"],
     "types": ["chrome"],
 
+    "paths": {
+      "@/*": ["./src/*"]
+    },
+
     "strict": true,
     "noUncheckedIndexedAccess": true,
     "noImplicitOverride": true,

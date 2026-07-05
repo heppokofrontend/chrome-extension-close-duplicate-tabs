@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
-import type { NormalizedUrl } from '../utils/url';
-import { pickTabIdsToClose } from './remove-duplicates';
+
+import type { NormalizedUrl } from '@/utils';
+import { pickTabIdsToClose } from '@/worker/remove-duplicates';
 
 const normalize = (url: string) => url as NormalizedUrl;
 

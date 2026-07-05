@@ -1,5 +1,5 @@
-import type { ValidTab } from './types';
-import { getCurrentTab } from './utils';
+import type { ValidTab } from '@/worker/types';
+import { getCurrentTab } from '@/worker/utils';
 
 /** 全ウィンドウを１つにまとめる */
 export const combineTabs = async (tabs: chrome.tabs.Tab[]) => {

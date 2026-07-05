@@ -1,6 +1,5 @@
-import { type SaveDataType, defaultSaveData } from './utils/save-data';
-import { mergeSaveData } from './utils/save-data';
-import type { SortType } from './worker/sort';
+import { mergeSaveData, type SaveDataType, defaultSaveData } from '@/utils';
+import type { SortType } from '@/worker/sort';
 
 const getMessage = (key: string) => chrome.i18n.getMessage(key);
 

@@ -1,5 +1,5 @@
-import type { ValidTab } from './types';
-import { getCurrentTab } from './utils';
+import type { ValidTab } from '@/worker/types';
+import { getCurrentTab } from '@/worker/utils';
 
 /** すべてのタブを別窓にする */
 export const divideTabs = async (tabs: chrome.tabs.Tab[]) => {

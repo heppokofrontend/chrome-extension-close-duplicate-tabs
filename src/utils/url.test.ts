@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { normalizeUrl } from './url';
+
+import { normalizeUrl } from '@/utils';
 
 describe('normalizeUrl', () => {
   it('returns null for an empty or undefined url', () => {
