@@ -47,11 +47,13 @@ const render = async () => {
     const tbody = document.createElement('tbody');
 
     for (const tab of tabs) {
+      const openTabLabel = chrome.i18n.getMessage('duplicates_open_tab', String(tab.id));
+
       tbody.insertAdjacentHTML(
         'afterbegin',
         `
         <tr>
-          <th scope="row"><button type="button" aria-label="${tab.id}を開く">
+          <th scope="row"><button type="button" aria-label="${openTabLabel}">
             <span>${tab.id}</span>
             <img src="./images/open.svg" />
           </button></th>

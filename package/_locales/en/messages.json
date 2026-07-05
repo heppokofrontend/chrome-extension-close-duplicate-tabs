@@ -142,5 +142,13 @@
   },
   "duplicates_empty_message_all": {
     "message": "There are no duplicate tabs in all windows."
+  },
+  "duplicates_open_tab": {
+    "message": "Open tab $TAB_ID$",
+    "placeholders": {
+      "TAB_ID": {
+        "content": "$1"
+      }
+    }
   }
 }

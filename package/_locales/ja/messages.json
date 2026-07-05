@@ -142,5 +142,13 @@
   },
   "duplicates_empty_message_all": {
     "message": "すべてのウィンドウで重複しているタブはありません。"
+  },
+  "duplicates_open_tab": {
+    "message": "$TAB_ID$を開く",
+    "placeholders": {
+      "TAB_ID": {
+        "content": "$1"
+      }
+    }
   }
 }
