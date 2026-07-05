@@ -142,7 +142,7 @@ const showConfirmModal = (() => {
   };
 })();
 
-const save = (newSaveData: SaveDataType) => {
+const save = (newSaveData: Partial<SaveDataType>) => {
   const value = {
     ...STATE.saveData,
     ...newSaveData,
@@ -164,7 +164,7 @@ const loadSaveData = async () => {
       });
     }),
     getSaveData().then((saveData) => {
-      for (const [key, value] of Object.entries<boolean | number>(saveData)) {
+      for (const [key, value] of Object.entries(saveData)) {
         const checkbox = document.querySelector<HTMLInputElement>(`[data-option-type=${key}]`);
 
         if (checkbox && typeof value === 'boolean') {
@@ -329,6 +329,20 @@ const addEvent = () => {
           case 'ignorePathname':
           case 'noConfirm':
             showNoticeModal(optionType);
+            break;
+
+          case 'autoAvoidDuplicate': {
+            if (!STATE.saveData.shown[optionType]) {
+              showNoticeModal(optionType);
+              save({
+                shown: {
+                  ...STATE.saveData.shown,
+                  [optionType]: new Date().toISOString(),
+                },
+              });
+            }
+            break;
+          }
         }
       }
 

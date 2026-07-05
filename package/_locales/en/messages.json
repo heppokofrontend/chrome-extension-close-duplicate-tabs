@@ -26,6 +26,9 @@
   "checkbox_silent": {
     "message": "Do not show confirmation dialog"
   },
+  "checkbox_autoAvoidDuplicate": {
+    "message": "Suppress new duplicate tabs"
+  },
   "btn_remove": {
     "message": "Close duplicate tabs"
   },
@@ -49,6 +52,9 @@
   },
   "hint_forcedChangeURLWhenClickedAnchorLink": {
     "message": "When you click on intra-page links like the table of contents, the URL will be forcibly updated."
+  },
+  "hint_autoAvoidDuplicate": {
+    "message": "When a new tab opens, if an existing tab with the same URL is already open, that existing tab is shown instead. New tab pages and some special URLs are excluded."
   },
   "dialog_comfirm": {
     "message": "Alert"
@@ -115,6 +121,9 @@
   },
   "dialog_noConfirm": {
     "message": "From now on, the task will be executed without displaying a confirmation dialog."
+  },
+  "dialog_autoAvoidDuplicate": {
+    "message": "When a new tab duplicates an existing tab, \nthe new tab will be closed and the existing tab will be switched to."
   },
   "dialog_sort": {
     "message": "Which rules would you like to \nsort your tabs?"
