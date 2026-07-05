@@ -1,10 +1,10 @@
-import type { SaveDataType } from '../constants';
-import { getUrl } from '../utils/url';
-import { getCurrentTab } from './utils';
+import type { SaveDataType } from '../utils/save-data';
+import { normalizeUrl, type NormalizedUrl } from '../utils/url';
+import { getCurrentTab, getGroupedTabsByNormalizedUrl } from './utils';
 
 interface DuplicateCandidateTab {
   id: number;
-  url?: string | undefined;
+  url?: NormalizedUrl;
   windowId: number;
 }
 
@@ -17,11 +17,11 @@ export const pickTabIdsToClose = ({
 }: {
   candidateTabs: DuplicateCandidateTab[];
   currentTabId: number | undefined;
-  currentUrl: string | null;
+  currentUrl: NormalizedUrl | null;
   currentWindowId: number | undefined;
   includeAllWindow: boolean | undefined;
 }): number[] => {
-  const checkedUrl = new Set<string>();
+  const checkedUrl = new Set<NormalizedUrl>();
   const tabList = [...candidateTabs];
 
   if (currentWindowId && includeAllWindow) {
@@ -44,7 +44,7 @@ export const pickTabIdsToClose = ({
   }
 
   return tabList
-    .filter((tab): tab is DuplicateCandidateTab & { url: string } => {
+    .filter((tab): tab is DuplicateCandidateTab & { url: NormalizedUrl } => {
       const { id, url } = tab;
 
       if (url === undefined || currentTabId === id) {
@@ -68,24 +68,9 @@ export const removeDuplicatedTabs = async (
   tabs: chrome.tabs.Tab[],
   options: SaveDataType & { shouldShowDuplicatePage?: boolean },
 ) => {
-  const urlBaseTabList: Record<string, chrome.tabs.Tab[]> = {};
-
-  for (const tab of tabs) {
-    const { id } = tab;
-    const url = getUrl(tab.url, options);
-
-    if (!url || typeof id !== 'number') {
-      continue;
-    }
-
-    urlBaseTabList[url] ??= [];
-    urlBaseTabList[url].push(tab);
-  }
-
+  const groupedTabs = getGroupedTabsByNormalizedUrl(tabs, options);
   const currentTab = await getCurrentTab();
-  const duplicatedEntries = Object.entries(urlBaseTabList).filter(([, { length }]) => {
-    return 2 <= length;
-  });
+  const duplicatedEntries = [...groupedTabs].filter(([, { length }]) => 2 <= length);
 
   if (options.shouldShowDuplicatePage === true) {
     void chrome.storage.session.set({ lastWindowId: currentTab.windowId, duplicatedEntries });
@@ -123,10 +108,9 @@ export const removeDuplicatedTabs = async (
     return;
   }
 
-  const currentUrl = getUrl(currentTab.url, options);
+  const currentUrl = normalizeUrl(currentTab.url, options);
   // pickTabIdsToClose は url の同一性で「残す/閉じる」を決めるため、
-  // 正規化前の url を渡すと ignoreHash などが実質無効化される。
-  // ここでグループ化キー（正規化 URL）を各タブの url に流し込んでおく。
+  // グループ化キー（正規化 URL）を各タブの url に流し込んでおく。
   const candidateTabs = duplicatedEntries.flatMap(([normalizedUrl, tabItems]) =>
     tabItems
       .filter((tab): tab is chrome.tabs.Tab & { id: number } => typeof tab.id === 'number')
