@@ -1,4 +1,4 @@
-import { mergeSaveData, type SaveDataType, defaultSaveData, getSaveData } from '@/utils';
+import { type SaveDataType, defaultSaveData, getSaveData } from '@/utils';
 import type { SortType } from '@/worker/sort';
 
 const getMessage = (key: string) => chrome.i18n.getMessage(key);
@@ -164,9 +164,7 @@ const loadSaveData = async () => {
       });
     }),
     getSaveData().then((saveData) => {
-      const mergedSaveData = mergeSaveData(saveData, defaultSaveData);
-
-      for (const [key, value] of Object.entries<boolean | number>(mergedSaveData)) {
+      for (const [key, value] of Object.entries<boolean | number>(saveData)) {
         const checkbox = document.querySelector<HTMLInputElement>(`[data-option-type=${key}]`);
 
         if (checkbox && typeof value === 'boolean') {
@@ -174,7 +172,7 @@ const loadSaveData = async () => {
         }
       }
 
-      STATE.saveData = mergedSaveData;
+      STATE.saveData = saveData;
     }),
   ]);
 };
