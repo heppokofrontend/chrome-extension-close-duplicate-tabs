@@ -132,11 +132,7 @@ describe('registerAutoAvoidListeners', () => {
         { id: 1, url: 'https://a.com/', windowId: 1, index: 0, active: false },
         { id: 2, url: 'https://a.com/', windowId: 1, index: 3, active: true },
       ];
-      const { listeners, mocks } = await setup(
-        { autoAvoidDuplicate: true },
-        existingTabs,
-        false,
-      );
+      const { listeners, mocks } = await setup({ autoAvoidDuplicate: true }, existingTabs, false);
 
       await openTab(listeners, {
         id: 2,

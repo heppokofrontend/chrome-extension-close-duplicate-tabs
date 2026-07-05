@@ -1,4 +1,10 @@
-import { type SaveDataType, defaultSaveData, getSaveData } from '@/utils';
+import {
+  type SaveDataType,
+  applySaveDataPatch,
+  defaultSaveData,
+  getSaveData,
+  setSaveData,
+} from '@/utils';
 import type { SortType } from '@/worker/sort';
 
 const getMessage = (key: string) => chrome.i18n.getMessage(key);
@@ -148,16 +154,11 @@ const showConfirmModal = (() => {
   };
 })();
 
-const save = (newSaveData: Partial<SaveDataType>) => {
-  const value = {
-    ...STATE.saveData,
-    ...newSaveData,
-  };
-
-  STATE.saveData = value;
-
-  void chrome.storage.local.set({
-    saveData: value,
+const save = (patch: Partial<SaveDataType>) => {
+  STATE.saveData = applySaveDataPatch(STATE.saveData, patch);
+  setSaveData(STATE.saveData).catch((error: unknown) => {
+    // 失敗すると STATE と storage が食い違ったままになるため、痕跡だけは残す。
+    console.error(error);
   });
 };
 
@@ -330,6 +331,8 @@ const addEvent = () => {
     const { optionType } = e.target.dataset;
 
     if (isValidOptionType(optionType)) {
+      const patch: Partial<SaveDataType> = { [optionType]: e.target.checked };
+
       if (e.target.checked && !STATE.saveData.noConfirm) {
         switch (optionType) {
           case 'ignorePathname':
@@ -340,21 +343,14 @@ const addEvent = () => {
           case 'autoAvoidDuplicate': {
             if (!STATE.saveData.shown[optionType]) {
               showNoticeModal(optionType);
-              save({
-                shown: {
-                  ...STATE.saveData.shown,
-                  [optionType]: new Date().toISOString(),
-                },
-              });
+              patch.shown = { [optionType]: new Date().toISOString() };
             }
             break;
           }
         }
       }
 
-      save({
-        [optionType]: e.target.checked,
-      });
+      save(patch);
     }
   };
   const checkboxes = document.querySelectorAll<HTMLInputElement>('[data-option-type]');
