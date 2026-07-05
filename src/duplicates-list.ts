@@ -5,6 +5,19 @@ type ValidTab = chrome.tabs.Tab & {
   url: string;
 };
 
+const escapeHtml = (value: string) =>
+  value.replace(
+    /[&<>"']/g,
+    (char) =>
+      ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;',
+      })[char] as string,
+  );
+
 void getSaveData().then((saveData) => {
   document.body.dataset['includeAllWindow'] = String(saveData.includeAllWindow);
 });
@@ -53,12 +66,12 @@ const render = async () => {
         'afterbegin',
         `
         <tr>
-          <th scope="row"><button type="button" aria-label="${openTabLabel}">
+          <th scope="row"><button type="button" aria-label="${escapeHtml(openTabLabel)}">
             <span>${tab.id}</span>
             <img src="./images/open.svg" />
           </button></th>
           <td class="title">
-            <div>${tab.title ?? ''}</div>
+            <div>${escapeHtml(tab.title ?? '')}</div>
             <div role="alert"><span class="status">${closedMessage}</span></div>
           </td>
         </tr>
