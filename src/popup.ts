@@ -1,4 +1,4 @@
-import { mergeSaveData, type SaveDataType, defaultSaveData } from '@/utils';
+import { mergeSaveData, type SaveDataType, defaultSaveData, getSaveData } from '@/utils';
 import type { SortType } from '@/worker/sort';
 
 const getMessage = (key: string) => chrome.i18n.getMessage(key);
@@ -156,19 +156,14 @@ const save = (newSaveData: SaveDataType) => {
 };
 
 const loadSaveData = async () => {
-  const getValue = <T>(key: string, callback: (items: Record<string, T | undefined>) => void) =>
+  return Promise.all([
     new Promise<void>((resolve) => {
-      chrome.storage.local.get(key, (items) => {
-        callback(items as Record<string, T | undefined>);
+      chrome.storage.local.get('dangerZoneIsOpen', ({ dangerZoneIsOpen }) => {
+        STATE.dangerZoneIsOpen = typeof dangerZoneIsOpen === 'boolean' ? dangerZoneIsOpen : false;
         resolve();
       });
-    });
-
-  return Promise.all([
-    getValue<boolean>('dangerZoneIsOpen', ({ dangerZoneIsOpen }) => {
-      STATE.dangerZoneIsOpen = dangerZoneIsOpen ?? false;
     }),
-    getValue<typeof defaultSaveData>('saveData', ({ saveData }) => {
+    getSaveData().then((saveData) => {
       const mergedSaveData = mergeSaveData(saveData, defaultSaveData);
 
       for (const [key, value] of Object.entries<boolean | number>(mergedSaveData)) {

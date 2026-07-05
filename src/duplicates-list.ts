@@ -1,12 +1,12 @@
-import type { SaveDataType } from '@/utils';
+import { getSaveData } from '@/utils';
 
 type ValidTab = chrome.tabs.Tab & {
   id: number;
   url: string;
 };
 
-chrome.storage.local.get('saveData', ({ saveData }: { saveData: SaveDataType }) => {
-  document.body.dataset['includeAllWindow'] = String(saveData.includeAllWindow ?? false);
+void getSaveData().then((saveData) => {
+  document.body.dataset['includeAllWindow'] = String(saveData.includeAllWindow);
 });
 
 const render = async () => {

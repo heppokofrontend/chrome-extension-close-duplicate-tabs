@@ -32,3 +32,9 @@ export const defaultSaveData: Required<SaveDataType> = {
   noConfirm: false,
   minCategorizeNumber: 1,
 };
+
+export const getSaveData = async () => {
+  const { saveData } = await chrome.storage.local.get('saveData');
+
+  return mergeSaveData(saveData, defaultSaveData);
+};
