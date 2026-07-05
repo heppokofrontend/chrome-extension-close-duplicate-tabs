@@ -12,6 +12,7 @@
   "devDependencies": {
     "@eslint/js": "10.0.1",
     "@types/chrome": "0.2.0",
+    "@types/node": "26.1.0",
     "@vitest/coverage-v8": "4.1.9",
     "esbuild": "0.28.1",
     "eslint": "10.6.0",
@@ -37,18 +38,9 @@
     "url": "git+https://github.com/heppokofrontend/chrome-extension-close-duplicate-tabs.git"
   },
   "scripts": {
-    "build": "npm run typecheck && npm run build:content && npm run build:popup && npm run build:worker && npm run build:duplicates-list && npm run build:i18n",
-    "build:content": "esbuild src/content-scripts.ts --alias:@=./src --bundle --minify --format=iife --target=chrome120 --outfile=package/content-scripts.js",
-    "build:popup": "esbuild src/popup.ts --alias:@=./src --bundle --minify --format=iife --target=chrome120 --outfile=package/popup.js",
-    "build:worker": "esbuild src/worker.ts --alias:@=./src --bundle --minify --format=iife --target=chrome120 --outfile=package/worker.js",
-    "build:duplicates-list": "esbuild src/duplicates-list.ts --alias:@=./src --bundle --minify --format=iife --target=chrome120 --outfile=package/duplicates-list.js",
-    "build:i18n": "esbuild src/i18n.ts --alias:@=./src --bundle --minify --format=iife --target=chrome120 --outfile=package/i18n.js",
+    "build": "npm run typecheck && node esbuild.config.mjs",
     "deploy": "gh-pages -d package -b package",
-    "dev:content": "esbuild src/content-scripts.ts --alias:@=./src --bundle --format=iife --target=chrome120 --sourcemap=inline --outfile=package/content-scripts.js --watch",
-    "dev:popup": "esbuild src/popup.ts --alias:@=./src --bundle --format=iife --target=chrome120 --sourcemap=inline --outfile=package/popup.js --watch",
-    "dev:worker": "esbuild src/worker.ts --alias:@=./src --bundle --format=iife --target=chrome120 --sourcemap=inline --outfile=package/worker.js --watch",
-    "dev:duplicates-list": "esbuild src/duplicates-list.ts --alias:@=./src --bundle --format=iife --target=chrome120 --sourcemap=inline --outfile=package/duplicates-list.js --watch",
-    "dev:i18n": "esbuild src/i18n.ts --alias:@=./src --bundle --format=iife --target=chrome120 --sourcemap=inline --outfile=package/i18n.js --watch",
+    "dev": "node esbuild.config.mjs --watch",
     "format": "prettier . --write",
     "format:check": "prettier . --check",
     "lint": "eslint .",

@@ -9,7 +9,7 @@ import importX from 'eslint-plugin-import-x';
 const tsconfigRootDir = dirname(fileURLToPath(import.meta.url));
 
 export default [
-  { ignores: ['package/**', 'eslint.config.mjs', 'vitest.config.ts'] },
+  { ignores: ['package/**', 'eslint.config.mjs', 'vitest.config.ts', 'esbuild.config.mjs'] },
   js.configs.recommended,
   ...tseslint.configs.strictTypeChecked,
   importX.flatConfigs.typescript,
