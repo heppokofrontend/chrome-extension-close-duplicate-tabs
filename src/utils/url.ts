@@ -1,4 +1,4 @@
-import type { UrlNormalizeOptions } from './save-data';
+import type { UrlNormalizeOptions } from '@/utils';
 
 // 正規化 URL であることを型で示すためのブランド。生の URL 文字列と混ざるとフラグが実質的に
 // 無効化されるため、型で区別して呼び出し側に強制する。

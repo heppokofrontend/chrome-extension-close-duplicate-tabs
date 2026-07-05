@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { defaultSaveData, mergeSaveData } from './save-data';
+
+import { defaultSaveData, mergeSaveData } from '@/utils';
 
 describe('mergeSaveData', () => {
   it('falls back to defaults for undefined or non-object input', () => {

@@ -1,5 +1,5 @@
-import type { UrlNormalizeOptions } from '../../utils/save-data';
-import { normalizeUrl, type NormalizedUrl } from '../../utils/url';
+import type { UrlNormalizeOptions } from '@/utils';
+import { normalizeUrl, type NormalizedUrl } from '@/utils';
 
 /**
  * タブ配列を「正規化 URL → タブ配列」の Map にまとめる。

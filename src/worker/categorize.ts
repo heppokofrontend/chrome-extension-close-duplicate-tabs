@@ -1,7 +1,6 @@
-import type { SaveDataType } from '../utils/save-data';
-import type { ValidTab as BaseValidTab } from './types';
-
-import { getCurrentTab } from './utils';
+import type { SaveDataType } from '@/utils';
+import type { ValidTab as BaseValidTab } from '@/worker/types';
+import { getCurrentTab } from '@/worker/utils';
 
 type ValidTab = BaseValidTab & {
   url: string;

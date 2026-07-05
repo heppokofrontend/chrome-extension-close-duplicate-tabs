@@ -1,4 +1,4 @@
-import type { SaveDataType } from './utils/save-data';
+import type { SaveDataType } from '@/utils';
 
 type ValidTab = chrome.tabs.Tab & {
   id: number;
