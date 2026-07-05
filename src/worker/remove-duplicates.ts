@@ -72,7 +72,11 @@ export const removeDuplicatedTabs = async (
   const duplicatedEntries = [...groupedTabs].filter(([, { length }]) => 2 <= length);
 
   if (options.shouldShowDuplicatePage === true) {
-    void chrome.storage.session.set({ lastWindowId: currentTab.windowId, duplicatedEntries });
+    await chrome.storage.session.set({
+      lastWindowId: currentTab.windowId,
+      duplicatedEntries,
+    });
+
     chrome.windows.get(duplicatedListWindow?.id ?? 0, () => {
       if (chrome.runtime.lastError) {
         void (async () => {

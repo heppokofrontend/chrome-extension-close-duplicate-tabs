@@ -38,7 +38,9 @@ const render = async () => {
   });
 
   const { duplicatedEntries } = await chrome.storage.session.get('duplicatedEntries');
-  const typedDuplicatedEntries = duplicatedEntries as [string, ValidTab[]][];
+  const typedDuplicatedEntries: [string, ValidTab[]][] = Array.isArray(duplicatedEntries)
+    ? (duplicatedEntries as [string, ValidTab[]][])
+    : [];
   const container = document.querySelector('#container');
   const fragment = document.createDocumentFragment();
   const theadSrc = `
