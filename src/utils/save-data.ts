@@ -14,7 +14,7 @@ export type UrlNormalizeOptions = Pick<
   'ignorePathname' | 'ignoreQuery' | 'ignoreHash'
 >;
 
-export const mergeSaveData = <T extends object>(saved: unknown, defaults: T): T => {
+const mergeSaveData = <T extends object>(saved: unknown, defaults: T): T => {
   if (typeof saved !== 'object' || saved === null) {
     return { ...defaults };
   }

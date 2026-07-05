@@ -1,31 +1,43 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi, afterEach } from 'vitest';
 
-import { defaultSaveData, mergeSaveData } from '@/utils';
+import { defaultSaveData, getSaveData } from '@/utils';
 
-describe('mergeSaveData', () => {
-  it('falls back to defaults for undefined or non-object input', () => {
-    expect(mergeSaveData(undefined, defaultSaveData)).toStrictEqual(defaultSaveData);
-    expect(mergeSaveData(null, defaultSaveData)).toStrictEqual(defaultSaveData);
-    expect(mergeSaveData('nope', defaultSaveData)).toStrictEqual(defaultSaveData);
+const mockStoredSaveData = (value: unknown) => {
+  const get = vi.fn().mockResolvedValue({ saveData: value });
+
+  vi.stubGlobal('chrome', { storage: { local: { get } } });
+};
+
+describe('getSaveData', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
   });
 
-  it('overrides defaults with the saved fields', () => {
-    expect(mergeSaveData({ ignorePathname: true }, defaultSaveData)).toStrictEqual({
+  it('falls back to defaults for undefined or non-object stored value', async () => {
+    mockStoredSaveData(undefined);
+    expect(await getSaveData()).toStrictEqual(defaultSaveData);
+
+    mockStoredSaveData(null);
+    expect(await getSaveData()).toStrictEqual(defaultSaveData);
+
+    mockStoredSaveData('nope');
+    expect(await getSaveData()).toStrictEqual(defaultSaveData);
+  });
+
+  it('merges saved fields with defaults, keeping unset fields at their default', async () => {
+    mockStoredSaveData({ ignorePathname: true, noConfirm: true });
+    expect(await getSaveData()).toStrictEqual({
       ...defaultSaveData,
       ignorePathname: true,
-    });
-  });
-
-  it('fills in fields missing from a partial saved object', () => {
-    expect(mergeSaveData({ noConfirm: true }, defaultSaveData)).toStrictEqual({
-      ...defaultSaveData,
       noConfirm: true,
     });
   });
 
-  it('does not mutate the defaults object', () => {
+  it('does not mutate the defaults object', async () => {
     const defaultsCopy = { ...defaultSaveData };
-    mergeSaveData({ ignorePathname: true }, defaultSaveData);
+
+    mockStoredSaveData({ ignorePathname: true });
+    await getSaveData();
     expect(defaultSaveData).toStrictEqual(defaultsCopy);
   });
 });
