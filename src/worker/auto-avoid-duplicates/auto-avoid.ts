@@ -6,6 +6,7 @@ import {
 } from '@/worker/auto-avoid-duplicates/settings';
 import type { CreatedTab } from '@/worker/auto-avoid-duplicates/types';
 import type { ValidTab } from '@/worker/types';
+import { getAllTabs } from '@/worker/utils';
 
 let extensionStartedAt: number | null = null;
 
@@ -31,11 +32,7 @@ const resolveCreatedTab = async (createdTab: CreatedTab) => {
 
   try {
     // includeAllWindow が false のときはカレントウィンドウ以外を候補から外す
-    const query = saveData.includeAllWindow
-      ? ({ windowType: 'normal' } as const)
-      : ({ windowType: 'normal', windowId: createdTab.windowId } as const);
-
-    const allTabs = await chrome.tabs.query(query);
+    const allTabs = await getAllTabs(saveData.includeAllWindow ? undefined : createdTab.windowId);
     const existingTabs = allTabs.filter((tab): tab is ValidTab => {
       return (
         typeof tab.id === 'number' && tab.id !== createdTab.id && !processingTabIds.has(tab.id)
