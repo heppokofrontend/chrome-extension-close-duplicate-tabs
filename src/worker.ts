@@ -1,10 +1,12 @@
-import { registerAutoAvoidListeners } from '@/worker/features/auto-avoid-duplicates';
-import { runCategorize } from '@/worker/features/categorize';
-import { runCombine } from '@/worker/features/combine';
-import { runDivide } from '@/worker/features/divide';
-import { runReload } from '@/worker/features/reload';
-import { runRemove } from '@/worker/features/remove-duplicates';
-import { runSort } from '@/worker/features/sort';
+import {
+  registerAutoAvoidListeners,
+  runCategorize,
+  runCombine,
+  runDivide,
+  runReload,
+  runRemove,
+  runSort,
+} from '@/worker/features';
 import type { TaskRequest } from '@/worker/types';
 
 registerAutoAvoidListeners();
