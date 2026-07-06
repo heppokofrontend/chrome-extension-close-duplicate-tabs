@@ -7,15 +7,21 @@ import {
 
 let duplicatedListWindow: chrome.windows.Window | null = null;
 
+interface Params {
+  tabs: chrome.tabs.Tab[];
+  options: {
+    saveData: SaveDataType;
+    shouldShowDuplicatePage?: boolean | undefined;
+  };
+}
+
 /** 重複したタブを閉じる */
-export const removeDuplicatedTabs = async (
-  tabs: chrome.tabs.Tab[],
-  options: SaveDataType & { shouldShowDuplicatePage?: boolean },
-) => {
+export const removeDuplicatedTabs = async ({ tabs, options }: Params) => {
+  const { saveData, shouldShowDuplicatePage } = options;
   const currentTab = await getCurrentTab();
 
-  if (options.shouldShowDuplicatePage === true) {
-    const groupedTabs = getGroupedTabsByNormalizedUrl(tabs, options);
+  if (shouldShowDuplicatePage === true) {
+    const groupedTabs = getGroupedTabsByNormalizedUrl({ tabs, options: saveData });
     const duplicatedEntries = [...groupedTabs].filter(([, { length }]) => 2 <= length);
 
     await chrome.storage.session.set({
@@ -57,7 +63,11 @@ export const removeDuplicatedTabs = async (
     return;
   }
 
-  const targetTabIdList = getDuplicatedTabIdsToClose(tabs, options, currentTab);
+  const targetTabIdList = getDuplicatedTabIdsToClose({
+    currentTab,
+    tabs,
+    options: saveData,
+  });
 
   for (const id of targetTabIdList) {
     void chrome.tabs.remove(id);

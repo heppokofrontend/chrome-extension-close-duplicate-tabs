@@ -71,23 +71,25 @@ interface TargetTab {
   windowId: number;
 }
 
+interface Params {
+  currentTab: TargetTab;
+  tabs: readonly TargetTab[];
+  options: UrlNormalizeOptions & Pick<SaveDataType, 'includeAllWindow'>;
+}
+
 /**
  * 「重複タブをすべて閉じる」を実行したときに閉じられるタブの ID 一覧を求める。
  *
  * 前提：tabs は includeAllWindow / includePinnedTabs に応じて呼び出し側で絞り込み済みであること
  * （includeAllWindow はカレントウィンドウのタブを「残す側」に優先する並べ替えにのみ使う）。
- *
- * pickTabIdsToClose は url の同一性で「残す/閉じる」を決めるため、
- * グループ化キー（正規化 URL）を各タブの url に流し込んでおく。
  */
-export const getDuplicatedTabIdsToClose = (
-  tabs: readonly TargetTab[],
-  options: UrlNormalizeOptions & Pick<SaveDataType, 'includeAllWindow'>,
-  currentTab: TargetTab,
-): number[] => {
-  const groupedTabs = getGroupedTabsByNormalizedUrl(tabs, options);
+export const getDuplicatedTabIdsToClose = ({ currentTab, tabs, options }: Params): number[] => {
+  const groupedTabs = getGroupedTabsByNormalizedUrl({ tabs, options });
   const duplicatedEntries = [...groupedTabs].filter(([, { length }]) => 2 <= length);
   const currentUrl = normalizeUrl(currentTab.url, options);
+
+  // pickTabIdsToClose は url の同一性で「残す/閉じる」を決めるため、
+  // グループ化キー（正規化 URL）を各タブの url に流し込んでおく。
   const candidateTabs = duplicatedEntries.flatMap(([normalizedUrl, tabItems]) =>
     tabItems
       .filter((tab): tab is TargetTab & { id: number } => typeof tab.id === 'number')

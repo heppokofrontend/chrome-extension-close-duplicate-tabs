@@ -120,96 +120,96 @@ describe('pickTabIdsToClose', () => {
 
 describe('getDuplicatedTabIdsToClose', () => {
   it('returns an empty array when no tabs share a normalized url', () => {
-    const result = getDuplicatedTabIdsToClose(
-      [
+    const result = getDuplicatedTabIdsToClose({
+      currentTab: { id: 1, url: 'https://a.com/', windowId: 1 },
+      tabs: [
         { id: 1, url: 'https://a.com/', windowId: 1 },
         { id: 2, url: 'https://b.com/', windowId: 1 },
       ],
-      {},
-      { id: 1, url: 'https://a.com/', windowId: 1 },
-    );
+      options: {},
+    });
 
     expect(result).toStrictEqual([]);
   });
 
   it('closes every other tab sharing the current tab url and keeps the current tab', () => {
-    const result = getDuplicatedTabIdsToClose(
-      [
+    const result = getDuplicatedTabIdsToClose({
+      currentTab: { id: 1, url: 'https://a.com/', windowId: 1 },
+      tabs: [
         { id: 1, url: 'https://a.com/', windowId: 1 },
         { id: 2, url: 'https://a.com/', windowId: 1 },
         { id: 3, url: 'https://a.com/', windowId: 1 },
       ],
-      {},
-      { id: 1, url: 'https://a.com/', windowId: 1 },
-    );
+      options: {},
+    });
 
     expect(result.toSorted((a, b) => a - b)).toStrictEqual([2, 3]);
   });
 
   it('keeps the first occurrence for duplicate groups unrelated to the current tab', () => {
-    const result = getDuplicatedTabIdsToClose(
-      [
+    const result = getDuplicatedTabIdsToClose({
+      currentTab: { id: 1, url: 'https://a.com/', windowId: 1 },
+      tabs: [
         { id: 1, url: 'https://a.com/', windowId: 1 },
         { id: 2, url: 'https://b.com/', windowId: 1 },
         { id: 3, url: 'https://b.com/', windowId: 1 },
       ],
-      {},
-      { id: 1, url: 'https://a.com/', windowId: 1 },
-    );
+      options: {},
+    });
 
     expect(result).toStrictEqual([3]);
   });
 
   it('treats raw urls as duplicates according to the normalize options', () => {
-    const result = getDuplicatedTabIdsToClose(
-      [
+    const result = getDuplicatedTabIdsToClose({
+      currentTab: { id: 1, url: 'https://a.com/?q=1#top', windowId: 1 },
+      tabs: [
         { id: 1, url: 'https://a.com/?q=1#top', windowId: 1 },
         { id: 2, url: 'https://a.com/?q=1#bottom', windowId: 1 },
         { id: 3, url: 'https://a.com/?q=2', windowId: 1 },
       ],
-      { ignoreHash: true },
-      { id: 1, url: 'https://a.com/?q=1#top', windowId: 1 },
-    );
+      options: { ignoreHash: true },
+    });
 
     expect(result).toStrictEqual([2]);
   });
 
   it('does not treat different urls as duplicates when normalize options are off', () => {
-    const result = getDuplicatedTabIdsToClose(
-      [
+    const result = getDuplicatedTabIdsToClose({
+      currentTab: { id: 1, url: 'https://a.com/#top', windowId: 1 },
+      tabs: [
         { id: 1, url: 'https://a.com/#top', windowId: 1 },
         { id: 2, url: 'https://a.com/#bottom', windowId: 1 },
       ],
-      { ignoreHash: false },
-      { id: 1, url: 'https://a.com/#top', windowId: 1 },
-    );
+      options: { ignoreHash: false },
+    });
 
     expect(result).toStrictEqual([]);
   });
 
   it('keeps the current window tab when includeAllWindow is enabled', () => {
-    const result = getDuplicatedTabIdsToClose(
-      [
+    const result = getDuplicatedTabIdsToClose({
+      currentTab: { id: 1, url: 'https://a.com/', windowId: 1 },
+      tabs: [
         { id: 2, url: 'https://b.com/', windowId: 2 },
         { id: 3, url: 'https://b.com/', windowId: 1 },
       ],
-      { includeAllWindow: true },
-      { id: 1, url: 'https://a.com/', windowId: 1 },
-    );
+      options: { includeAllWindow: true },
+    });
 
     expect(result).toStrictEqual([2]);
   });
 
   it('ignores tabs without an id when picking duplicates', () => {
-    const result = getDuplicatedTabIdsToClose(
-      [
+    const result = getDuplicatedTabIdsToClose({
+      currentTab: { id: 9, url: 'https://b.com/', windowId: 1 },
+      tabs: [
         { url: 'https://a.com/', windowId: 1 },
         { id: 2, url: 'https://a.com/', windowId: 1 },
         { id: 3, url: 'https://a.com/', windowId: 1 },
       ],
-      {},
-      { id: 9, url: 'https://b.com/', windowId: 1 },
-    );
+      options: {},
+    });
 
     expect(result).toStrictEqual([3]);
   });

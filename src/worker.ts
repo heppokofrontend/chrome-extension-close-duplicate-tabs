@@ -1,23 +1,20 @@
-import type { SaveDataType } from '@/utils';
 import { registerAutoAvoidListeners } from '@/worker/auto-avoid-duplicates';
 import { categorizeTabs } from '@/worker/categorize';
 import { combineTabs } from '@/worker/combine';
 import { divideTabs } from '@/worker/divide';
 import { removeDuplicatedTabs } from '@/worker/remove-duplicates';
-import { sortTabs, type SortType } from '@/worker/sort';
+import { sortTabs } from '@/worker/sort';
+import type { TaskRequest } from '@/worker/types';
 
 registerAutoAvoidListeners();
 
 chrome.runtime.onConnect.addListener((port) => {
-  interface Request {
-    taskName?: string;
-    options?: SaveDataType & { sort: SortType; shouldShowDuplicatePage: boolean };
-  }
-
-  const onmessageListener = (request: Request) => {
-    const callTaskFunctions = async ({ taskName, options }: Request) => {
-      const currentWindow = taskName !== 'combine' && !options?.includeAllWindow ? true : undefined;
-      const pinned = options?.includePinnedTabs ? undefined : false;
+  const onmessageListener = (request: TaskRequest) => {
+    const callTaskFunctions = async ({ taskName, options }: TaskRequest) => {
+      const saveData = options?.saveData;
+      const currentWindow =
+        taskName !== 'combine' && !saveData?.includeAllWindow ? true : undefined;
+      const pinned = saveData?.includePinnedTabs ? undefined : false;
       const tabs = await chrome.tabs.query({
         windowType: 'normal',
         currentWindow,
@@ -26,7 +23,13 @@ chrome.runtime.onConnect.addListener((port) => {
 
       switch (taskName) {
         case 'remove':
-          await removeDuplicatedTabs(tabs, options ?? {});
+          await removeDuplicatedTabs({
+            tabs,
+            options: {
+              saveData: saveData ?? {},
+              shouldShowDuplicatePage: options?.shouldShowDuplicatePage,
+            },
+          });
           return;
 
         case 'reload':
@@ -40,7 +43,7 @@ chrome.runtime.onConnect.addListener((port) => {
           return;
 
         case 'categorize':
-          await categorizeTabs(tabs, options?.minCategorizeNumber);
+          await categorizeTabs(tabs, saveData?.minCategorizeNumber);
           return;
 
         case 'divide':

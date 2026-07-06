@@ -1,5 +1,10 @@
 import { normalizeUrl, type NormalizedUrl, type UrlNormalizeOptions } from '@/utils';
 
+interface Params<T> {
+  tabs: readonly T[];
+  options?: UrlNormalizeOptions | undefined;
+}
+
 /**
  * タブ配列を「正規化 URL → タブ配列」の Map にまとめる。
  *
@@ -13,10 +18,10 @@ import { normalizeUrl, type NormalizedUrl, type UrlNormalizeOptions } from '@/ut
  */
 export const getGroupedTabsByNormalizedUrl = <
   T extends { id?: number | undefined; url?: string | undefined },
->(
-  tabs: readonly T[],
-  options?: UrlNormalizeOptions,
-): Map<NormalizedUrl, T[]> => {
+>({
+  tabs,
+  options,
+}: Params<T>): Map<NormalizedUrl, T[]> => {
   const groups = new Map<NormalizedUrl, T[]>();
 
   for (const tab of tabs) {
