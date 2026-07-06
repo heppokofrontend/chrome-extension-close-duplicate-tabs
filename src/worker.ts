@@ -5,6 +5,7 @@ import { divideTabs } from '@/worker/divide';
 import { removeDuplicatedTabs } from '@/worker/remove-duplicates';
 import { sortTabs } from '@/worker/sort';
 import type { TaskRequest } from '@/worker/types';
+import { getTabs } from '@/worker/utils';
 
 registerAutoAvoidListeners();
 
@@ -12,13 +13,11 @@ chrome.runtime.onConnect.addListener((port) => {
   const onmessageListener = (request: TaskRequest) => {
     const callTaskFunctions = async ({ taskName, options }: TaskRequest) => {
       const saveData = options?.saveData;
-      const currentWindow =
-        taskName !== 'combine' && !saveData?.includeAllWindow ? true : undefined;
-      const pinned = saveData?.includePinnedTabs ? undefined : false;
-      const tabs = await chrome.tabs.query({
-        windowType: 'normal',
-        currentWindow,
-        pinned,
+
+      const tabs = await getTabs({
+        // combine は常に全ウィンドウ対象。それ以外は includeAllWindow 設定に従う。
+        includeAllWindow: taskName === 'combine' || (saveData?.includeAllWindow ?? false),
+        includePinnedTabs: saveData?.includePinnedTabs ?? false,
       });
 
       switch (taskName) {
