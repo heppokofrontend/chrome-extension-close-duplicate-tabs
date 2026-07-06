@@ -5,7 +5,7 @@
     <title data-i18n="extName"></title>
     <link rel="stylesheet" href="./styles/common.css" />
     <link rel="stylesheet" href="./styles/popup.css" />
-    <script src="common.js" defer></script>
+    <script src="i18n.js" defer></script>
     <script src="popup.js" defer></script>
   </head>
   <body>
@@ -178,18 +178,37 @@
                   </span>
                   <input
                     type="checkbox"
-                    data-option-type="foucedChangeURLWhenClickedAnchorLink"
-                    aria-describedby="desc-foucedChangeURLWhenClickedAnchorLink"
+                    data-option-type="forcedChangeURLWhenClickedAnchorLink"
+                    aria-describedby="desc-forcedChangeURLWhenClickedAnchorLink"
                   />
-                  <span class="label" data-i18n="checkbox_foucedChangeURLWhenClickedAnchorLink"
+                  <span class="label" data-i18n="checkbox_forcedChangeURLWhenClickedAnchorLink"
                     >loading...</span
                   >
                 </label>
               </p>
 
-              <p class="hint" id="desc-foucedChangeURLWhenClickedAnchorLink">
+              <p class="hint" id="desc-forcedChangeURLWhenClickedAnchorLink">
                 <span aria-label="hint">💡</span>
-                <span data-i18n="hint_foucedChangeURLWhenClickedAnchorLink"></span>
+                <span data-i18n="hint_forcedChangeURLWhenClickedAnchorLink"></span>
+              </p>
+
+              <p>
+                <label>
+                  <span class="img">
+                    <img src="./images/auto-avoid-duplicate.svg" width="16" height="16" alt="" />
+                  </span>
+                  <input
+                    type="checkbox"
+                    data-option-type="autoAvoidDuplicate"
+                    aria-describedby="desc-autoAvoidDuplicate"
+                  />
+                  <span class="label" data-i18n="checkbox_autoAvoidDuplicate">loading...</span>
+                </label>
+              </p>
+
+              <p class="hint" id="desc-autoAvoidDuplicate">
+                <span aria-label="hint">💡</span>
+                <span data-i18n="hint_autoAvoidDuplicate"></span>
               </p>
 
               <p>

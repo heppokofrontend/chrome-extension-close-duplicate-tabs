@@ -1,12 +1,25 @@
-import type { SaveDataType } from './constants';
+import { getSaveData } from '@/utils';
 
 type ValidTab = chrome.tabs.Tab & {
   id: number;
   url: string;
 };
 
-chrome.storage.local.get('saveData', ({ saveData }: { saveData: SaveDataType }) => {
-  document.body.dataset['includeAllWindow'] = String(saveData.includeAllWindow ?? false);
+const escapeHtml = (value: string) =>
+  value.replace(
+    /[&<>"']/g,
+    (char) =>
+      ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;',
+      })[char] as string,
+  );
+
+void getSaveData().then((saveData) => {
+  document.body.dataset['includeAllWindow'] = String(saveData.includeAllWindow);
 });
 
 const render = async () => {
@@ -25,7 +38,9 @@ const render = async () => {
   });
 
   const { duplicatedEntries } = await chrome.storage.session.get('duplicatedEntries');
-  const typedDuplicatedEntries = duplicatedEntries as [string, ValidTab[]][];
+  const typedDuplicatedEntries: [string, ValidTab[]][] = Array.isArray(duplicatedEntries)
+    ? (duplicatedEntries as [string, ValidTab[]][])
+    : [];
   const container = document.querySelector('#container');
   const fragment = document.createDocumentFragment();
   const theadSrc = `
@@ -47,16 +62,18 @@ const render = async () => {
     const tbody = document.createElement('tbody');
 
     for (const tab of tabs) {
+      const openTabLabel = chrome.i18n.getMessage('duplicates_open_tab', String(tab.id));
+
       tbody.insertAdjacentHTML(
         'afterbegin',
         `
         <tr>
-          <th scope="row"><button type="button" aria-label="${tab.id}を開く">
+          <th scope="row"><button type="button" aria-label="${escapeHtml(openTabLabel)}">
             <span>${tab.id}</span>
             <img src="./images/open.svg" />
           </button></th>
           <td class="title">
-            <div>${tab.title ?? ''}</div>
+            <div>${escapeHtml(tab.title ?? '')}</div>
             <div role="alert"><span class="status">${closedMessage}</span></div>
           </td>
         </tr>

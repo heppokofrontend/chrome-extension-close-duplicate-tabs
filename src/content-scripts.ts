@@ -1,4 +1,4 @@
-import type { SaveDataType } from './constants';
+import { getSaveData } from '@/utils';
 
 const onClick = (e: MouseEvent) => {
   if (e.currentTarget instanceof HTMLAnchorElement) {
@@ -6,18 +6,20 @@ const onClick = (e: MouseEvent) => {
   }
 };
 const run = () => {
-  chrome.storage.local.get('saveData', ({ saveData }: { saveData?: SaveDataType }) => {
+  void getSaveData().then((saveData) => {
     const anchors = document.querySelectorAll<HTMLAnchorElement>('a[href^="#"]');
 
     anchors.forEach((a) => {
       a.removeEventListener('click', onClick);
 
-      if (saveData?.foucedChangeURLWhenClickedAnchorLink) {
+      if (saveData.forcedChangeURLWhenClickedAnchorLink) {
         a.addEventListener('click', onClick);
       }
     });
   });
 };
 
-window.addEventListener('focus', run);
+window.addEventListener('focus', () => {
+  run();
+});
 run();

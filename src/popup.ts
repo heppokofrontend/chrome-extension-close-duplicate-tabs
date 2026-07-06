@@ -1,5 +1,11 @@
-import { type SaveDataType, type SortType, defaultSaveData } from './constants';
-import { mergeSaveData } from './utils/save-data';
+import {
+  type SaveDataType,
+  applySaveDataPatch,
+  defaultSaveData,
+  getSaveData,
+  setSaveData,
+} from '@/utils';
+import type { SortType } from '@/worker/sort';
 
 const getMessage = (key: string) => chrome.i18n.getMessage(key);
 
@@ -40,11 +46,11 @@ const showConfirmModal = (() => {
   type Options<T> =
     | {
         type: 'remove';
-        comannds: Commands<T>;
+        commands: Commands<T>;
       }
     | {
         type: 'multiple';
-        comannds: Commands<T>;
+        commands: Commands<T>;
       }
     | {
         type: 'range';
@@ -54,10 +60,10 @@ const showConfirmModal = (() => {
   const confirmModalText = document.getElementById('confirm-text') as HTMLParagraphElement;
   const buttonContainer = document.getElementById('dialog-buttons') as HTMLParagraphElement;
   const templateButton = document.createElement('button');
-  const defaultComannds = ['true', 'false'];
+  const defaultCommands = ['true', 'false'];
 
   templateButton.type = 'button';
-  confirmModal.ariaLabel = getMessage('dialog_comfirm');
+  confirmModal.ariaLabel = getMessage('dialog_confirm');
 
   return <T = 'true' | 'false'>(taskName: string, options?: Options<T>) => {
     const textContent = getMessage(`dialog_${taskName}`);
@@ -73,8 +79,8 @@ const showConfirmModal = (() => {
         case 'range': {
           // FIXME: Type assertion
           const field = document.createElement('label');
-          const min = options.range[0];
-          const max = options.range[options.range.length - 1];
+          const min = options.range[0] ?? 0;
+          const max = options.range[options.range.length - 1] ?? min;
           // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
           let value = STATE.saveData.minCategorizeNumber ?? min;
 
@@ -89,7 +95,13 @@ const showConfirmModal = (() => {
           );
           field.querySelector('input')?.addEventListener('change', (e) => {
             if (e.target instanceof HTMLInputElement) {
-              value = e.target.valueAsNumber;
+              const valueAsNumber = e.target.valueAsNumber;
+              const clamped = Number.isNaN(valueAsNumber)
+                ? value
+                : Math.min(max, Math.max(min, valueAsNumber));
+
+              e.target.valueAsNumber = clamped;
+              value = clamped;
 
               save({
                 ...STATE.saveData,
@@ -121,7 +133,7 @@ const showConfirmModal = (() => {
         }
 
         default: {
-          (options?.comannds ?? (defaultComannds as Commands<T>)).forEach((command) => {
+          (options?.commands ?? (defaultCommands as Commands<T>)).forEach((command) => {
             const button = templateButton.cloneNode();
 
             button.textContent = getMessage(`dialog_command_${String(command)}`);
@@ -142,36 +154,24 @@ const showConfirmModal = (() => {
   };
 })();
 
-const save = (newSaveData: SaveDataType) => {
-  const value = {
-    ...STATE.saveData,
-    ...newSaveData,
-  };
-
-  STATE.saveData = value;
-
-  void chrome.storage.local.set({
-    saveData: value,
+const save = (patch: Partial<SaveDataType>) => {
+  STATE.saveData = applySaveDataPatch(STATE.saveData, patch);
+  setSaveData(STATE.saveData).catch((error: unknown) => {
+    // 失敗すると STATE と storage が食い違ったままになるため、痕跡だけは残す。
+    console.error(error);
   });
 };
 
 const loadSaveData = async () => {
-  const getValue = <T>(key: string, callback: (items: Record<string, T | undefined>) => void) =>
+  return Promise.all([
     new Promise<void>((resolve) => {
-      chrome.storage.local.get(key, (items) => {
-        callback(items as Record<string, T | undefined>);
+      chrome.storage.local.get('dangerZoneIsOpen', ({ dangerZoneIsOpen }) => {
+        STATE.dangerZoneIsOpen = typeof dangerZoneIsOpen === 'boolean' ? dangerZoneIsOpen : false;
         resolve();
       });
-    });
-
-  return Promise.all([
-    getValue<boolean>('dangerZoneIsOpen', ({ dangerZoneIsOpen }) => {
-      STATE.dangerZoneIsOpen = dangerZoneIsOpen ?? false;
     }),
-    getValue<typeof defaultSaveData>('saveData', ({ saveData }) => {
-      const mergedSaveData = mergeSaveData(saveData, defaultSaveData);
-
-      for (const [key, value] of Object.entries<boolean | number>(mergedSaveData)) {
+    getSaveData().then((saveData) => {
+      for (const [key, value] of Object.entries(saveData)) {
         const checkbox = document.querySelector<HTMLInputElement>(`[data-option-type=${key}]`);
 
         if (checkbox && typeof value === 'boolean') {
@@ -179,7 +179,7 @@ const loadSaveData = async () => {
         }
       }
 
-      STATE.saveData = mergedSaveData;
+      STATE.saveData = saveData;
     }),
   ]);
 };
@@ -227,7 +227,7 @@ const addEvent = () => {
 
         const result = await showConfirmModal<'true' | 'show_duplicate' | 'false'>(messageName, {
           type: 'remove',
-          comannds: ['true', 'show_duplicate', 'false'],
+          commands: ['true', 'show_duplicate', 'false'],
         });
 
         if (result === 'false') {
@@ -282,7 +282,7 @@ const addEvent = () => {
       case 'sort': {
         const sortType = await showConfirmModal<SortType>(taskName, {
           type: 'multiple',
-          comannds: ['sortByUrl', 'sortByTitle', 'sortByHostAndTitle', 'false'],
+          commands: ['sortByUrl', 'sortByTitle', 'sortByHostAndTitle', 'false'],
         });
 
         if (sortType === 'false') {
@@ -296,7 +296,7 @@ const addEvent = () => {
       case 'categorize': {
         minCategorizeNumber = await showConfirmModal<typeof minCategorizeNumber>(taskName, {
           type: 'range',
-          range: [...(new Array(10) as [])].map((_, index) => index),
+          range: Array.from({ length: 10 }, (_, index) => index),
         });
 
         if (minCategorizeNumber === 'false') {
@@ -331,17 +331,26 @@ const addEvent = () => {
     const { optionType } = e.target.dataset;
 
     if (isValidOptionType(optionType)) {
+      const patch: Partial<SaveDataType> = { [optionType]: e.target.checked };
+
       if (e.target.checked && !STATE.saveData.noConfirm) {
         switch (optionType) {
           case 'ignorePathname':
           case 'noConfirm':
             showNoticeModal(optionType);
+            break;
+
+          case 'autoAvoidDuplicate': {
+            if (!STATE.saveData.shown[optionType]) {
+              showNoticeModal(optionType);
+              patch.shown = { [optionType]: new Date().toISOString() };
+            }
+            break;
+          }
         }
       }
 
-      save({
-        [optionType]: e.target.checked,
-      });
+      save(patch);
     }
   };
   const checkboxes = document.querySelectorAll<HTMLInputElement>('[data-option-type]');
