@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 
-import { resolveDuplicatedCreatedTab } from '@/worker/auto-avoid-duplicates/resolve-duplicated-created-tab';
-import type { CreatedTab } from '@/worker/auto-avoid-duplicates/types';
+import { resolveDuplicatedCreatedTab } from '@/worker/features/auto-avoid-duplicates/resolve-duplicated-created-tab';
+import type { CreatedTab } from '@/worker/features/auto-avoid-duplicates/types';
 
 const toCreatedTab = (
   tab: Pick<CreatedTab, 'id' | 'url' | 'windowId'> & { pinned?: boolean },

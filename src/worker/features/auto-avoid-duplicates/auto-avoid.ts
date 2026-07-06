@@ -1,10 +1,10 @@
 import { getSaveData } from '@/utils';
-import { resolveDuplicatedCreatedTab } from '@/worker/auto-avoid-duplicates/resolve-duplicated-created-tab';
+import { resolveDuplicatedCreatedTab } from '@/worker/features/auto-avoid-duplicates/resolve-duplicated-created-tab';
 import {
   AUTO_AVOID_DUPLICATES_STARTUP_DELAY,
   AUTO_AVOID_DUPLICATES_TARGETABLE_PROTOCOLS,
-} from '@/worker/auto-avoid-duplicates/settings';
-import type { CreatedTab } from '@/worker/auto-avoid-duplicates/types';
+} from '@/worker/features/auto-avoid-duplicates/settings';
+import type { CreatedTab } from '@/worker/features/auto-avoid-duplicates/types';
 import type { ValidTab } from '@/worker/types';
 import { getAllTabs } from '@/worker/utils';
 

@@ -1,3 +1,6 @@
+import type { SaveDataType } from '@/utils';
+import { getTabs } from '@/worker/utils';
+
 export type SortType = 'sortByUrl' | 'sortByTitle' | 'sortByHostAndTitle' | 'false';
 
 export type SortableTab = {
@@ -65,7 +68,6 @@ export const getSorter = (sortType: SortType | undefined) => {
   return compareByHostAndTitle;
 };
 
-/** タブを並び変える */
 export const sortTabs = async (tabs: chrome.tabs.Tab[], sortType: SortType | undefined) => {
   const tabSet: Record<number, SortableTab[] | undefined> = {};
   const sorter = getSorter(sortType);
@@ -115,4 +117,16 @@ export const sortTabs = async (tabs: chrome.tabs.Tab[], sortType: SortType | und
       index: i + (pinned ? 0 : limit),
     });
   }
+};
+
+interface Params {
+  saveData: SaveDataType;
+  sort: SortType | undefined;
+}
+
+/** タブを並び変える */
+export const runSort = async ({ saveData, sort }: Params) => {
+  const tabs = await getTabs(saveData);
+
+  await sortTabs(tabs, sort);
 };

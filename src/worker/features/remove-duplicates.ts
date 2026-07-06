@@ -3,20 +3,21 @@ import {
   getCurrentTab,
   getDuplicatedTabIdsToClose,
   getGroupedTabsByNormalizedUrl,
+  getTabs,
 } from '@/worker/utils';
 
 let duplicatedListWindow: chrome.windows.Window | null = null;
 
-interface Params {
+const removeDuplicatedTabs = async ({
+  tabs,
+  options,
+}: {
   tabs: chrome.tabs.Tab[];
   options: {
     saveData: SaveDataType;
     shouldShowDuplicatePage?: boolean | undefined;
   };
-}
-
-/** 重複したタブを閉じる */
-export const removeDuplicatedTabs = async ({ tabs, options }: Params) => {
+}) => {
   const { saveData, shouldShowDuplicatePage } = options;
   const currentTab = await getCurrentTab();
 
@@ -72,4 +73,16 @@ export const removeDuplicatedTabs = async ({ tabs, options }: Params) => {
   for (const id of targetTabIdList) {
     void chrome.tabs.remove(id);
   }
+};
+
+interface Params {
+  saveData: SaveDataType;
+  shouldShowDuplicatePage?: boolean | undefined;
+}
+
+/** 重複したタブを閉じる */
+export const runRemove = async ({ saveData, shouldShowDuplicatePage }: Params) => {
+  const tabs = await getTabs(saveData);
+
+  await removeDuplicatedTabs({ tabs, options: { saveData, shouldShowDuplicatePage } });
 };

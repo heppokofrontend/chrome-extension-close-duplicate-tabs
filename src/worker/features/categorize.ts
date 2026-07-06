@@ -1,6 +1,6 @@
 import type { SaveDataType } from '@/utils';
 import type { ValidTab as BaseValidTab } from '@/worker/types';
-import { getCurrentTab } from '@/worker/utils';
+import { getCurrentTab, getTabs } from '@/worker/utils';
 
 type ValidTab = BaseValidTab & {
   url: string;
@@ -10,8 +10,7 @@ type CurrentPinnedTab = BaseValidTab & {
   pinned: true;
 };
 
-/** ホスト名ごとに別窓にする */
-export const categorizeTabs = async (
+const categorizeTabs = async (
   tabs: chrome.tabs.Tab[],
   minCategorizeNumber: SaveDataType['minCategorizeNumber'],
 ) => {
@@ -131,4 +130,15 @@ export const categorizeTabs = async (
       }
     }
   }
+};
+
+interface Params {
+  saveData: SaveDataType;
+}
+
+/** ホスト名ごとに別窓にする */
+export const runCategorize = async ({ saveData }: Params) => {
+  const tabs = await getTabs(saveData);
+
+  await categorizeTabs(tabs, saveData.minCategorizeNumber);
 };
