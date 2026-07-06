@@ -1,60 +1,45 @@
-import { registerAutoAvoidListeners } from '@/worker/auto-avoid-duplicates';
-import { categorizeTabs } from '@/worker/categorize';
-import { combineTabs } from '@/worker/combine';
-import { divideTabs } from '@/worker/divide';
-import { removeDuplicatedTabs } from '@/worker/remove-duplicates';
-import { sortTabs } from '@/worker/sort';
+import { registerAutoAvoidListeners } from '@/worker/features/auto-avoid-duplicates';
+import { runCategorize } from '@/worker/features/categorize';
+import { runCombine } from '@/worker/features/combine';
+import { runDivide } from '@/worker/features/divide';
+import { runReload } from '@/worker/features/reload';
+import { runRemove } from '@/worker/features/remove-duplicates';
+import { runSort } from '@/worker/features/sort';
 import type { TaskRequest } from '@/worker/types';
-import { getTabs } from '@/worker/utils';
 
 registerAutoAvoidListeners();
 
 chrome.runtime.onConnect.addListener((port) => {
   const onmessageListener = (request: TaskRequest) => {
     const callTaskFunctions = async ({ taskName, options }: TaskRequest) => {
-      const saveData = options?.saveData;
-
-      const tabs = await getTabs({
-        // combine は常に全ウィンドウ対象。それ以外は includeAllWindow 設定に従う。
-        includeAllWindow: taskName === 'combine' || (saveData?.includeAllWindow ?? false),
-        includePinnedTabs: saveData?.includePinnedTabs ?? false,
-      });
+      const saveData = options?.saveData ?? {};
 
       switch (taskName) {
         case 'remove':
-          await removeDuplicatedTabs({
-            tabs,
-            options: {
-              saveData: saveData ?? {},
-              shouldShowDuplicatePage: options?.shouldShowDuplicatePage,
-            },
+          await runRemove({
+            saveData,
+            shouldShowDuplicatePage: options?.shouldShowDuplicatePage,
           });
           return;
 
         case 'reload':
-          for (const { id } of tabs) {
-            if (typeof id === 'number') {
-              // NOTE: リロード後に音声を停止させる処理を実装したいが、現状 tabs 経由では不可能な模様
-              void chrome.tabs.reload(id);
-            }
-          }
-
+          await runReload({ saveData });
           return;
 
         case 'categorize':
-          await categorizeTabs(tabs, saveData?.minCategorizeNumber);
+          await runCategorize({ saveData });
           return;
 
         case 'divide':
-          await divideTabs(tabs);
+          await runDivide({ saveData });
           return;
 
         case 'combine':
-          await combineTabs(tabs);
+          await runCombine({ saveData });
           return;
 
         case 'sort':
-          await sortTabs(tabs, options?.sort);
+          await runSort({ saveData, sort: options?.sort });
           return;
       }
     };

@@ -1,5 +1,5 @@
 import { normalizeUrl, type UrlNormalizeOptions } from '@/utils';
-import type { CreatedTab } from '@/worker/auto-avoid-duplicates/types';
+import type { CreatedTab } from '@/worker/features/auto-avoid-duplicates/types';
 import { getGroupedTabsByNormalizedUrl } from '@/worker/utils';
 
 interface CandidateTab {

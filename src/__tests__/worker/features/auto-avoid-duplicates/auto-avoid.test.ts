@@ -76,7 +76,8 @@ const setup = async (
   vi.stubGlobal('chrome', chrome);
   vi.resetModules();
 
-  const { registerAutoAvoidListeners } = await import('@/worker/auto-avoid-duplicates/auto-avoid');
+  const { registerAutoAvoidListeners } =
+    await import('@/worker/features/auto-avoid-duplicates/auto-avoid');
 
   registerAutoAvoidListeners();
 

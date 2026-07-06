@@ -1,5 +1,5 @@
 import type { SaveDataType } from '@/utils';
-import type { SortType } from '@/worker/sort';
+import type { SortType } from '@/worker/features/sort';
 
 export type ValidTab = chrome.tabs.Tab & {
   id: number;

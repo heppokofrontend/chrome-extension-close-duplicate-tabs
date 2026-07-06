@@ -1,8 +1,8 @@
+import type { SaveDataType } from '@/utils';
 import type { ValidTab } from '@/worker/types';
-import { getCurrentTab } from '@/worker/utils';
+import { getCurrentTab, getTabs } from '@/worker/utils';
 
-/** すべてのタブを別窓にする */
-export const divideTabs = async (tabs: chrome.tabs.Tab[]) => {
+const divideTabs = async (tabs: chrome.tabs.Tab[]) => {
   const currentTab = await getCurrentTab();
   const targetTabIdList = tabs
     .filter((tab): tab is ValidTab => typeof tab.id === 'number')
@@ -22,4 +22,15 @@ export const divideTabs = async (tabs: chrome.tabs.Tab[]) => {
   if (currentTab.id) {
     await chrome.windows.update(currentTab.windowId, { focused: true });
   }
+};
+
+interface Params {
+  saveData: SaveDataType;
+}
+
+/** すべてのタブを別窓にする */
+export const runDivide = async ({ saveData }: Params) => {
+  const tabs = await getTabs(saveData);
+
+  await divideTabs(tabs);
 };

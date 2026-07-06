@@ -5,7 +5,7 @@ import {
   getSaveData,
   setSaveData,
 } from '@/utils';
-import type { SortType } from '@/worker/sort';
+import type { SortType } from '@/worker/features/sort';
 import type { TaskRequest } from '@/worker/types';
 
 const getMessage = (key: string) => chrome.i18n.getMessage(key);
