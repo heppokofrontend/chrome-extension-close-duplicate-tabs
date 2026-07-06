@@ -6,6 +6,7 @@ import {
   setSaveData,
 } from '@/utils';
 import type { SortType } from '@/worker/sort';
+import type { TaskRequest } from '@/worker/types';
 
 const getMessage = (key: string) => chrome.i18n.getMessage(key);
 
@@ -185,7 +186,6 @@ const loadSaveData = async () => {
 };
 
 const addEvent = () => {
-  let minCategorizeNumber: number | 'false' = 1;
   const buttons = document.querySelectorAll<HTMLButtonElement>('.buttons button');
   const postMessage = ({
     taskName,
@@ -197,16 +197,16 @@ const addEvent = () => {
     sortType?: SortType;
   }) => {
     const port = chrome.runtime.connect();
-
-    port.postMessage({
+    const message: TaskRequest = {
       taskName,
       options: {
-        ...STATE.saveData,
+        saveData: STATE.saveData,
         shouldShowDuplicatePage,
         sort: sortType,
-        minCategorizeNumber,
       },
-    });
+    };
+
+    port.postMessage(message);
   };
   const onClickEventHandler = async (e: Event) => {
     if (!(e.currentTarget instanceof HTMLButtonElement)) {
@@ -294,7 +294,7 @@ const addEvent = () => {
       }
 
       case 'categorize': {
-        minCategorizeNumber = await showConfirmModal<typeof minCategorizeNumber>(taskName, {
+        const minCategorizeNumber = await showConfirmModal<number | 'false'>(taskName, {
           type: 'range',
           range: Array.from({ length: 10 }, (_, index) => index),
         });

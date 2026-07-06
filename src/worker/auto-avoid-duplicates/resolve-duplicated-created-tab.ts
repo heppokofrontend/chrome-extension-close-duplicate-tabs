@@ -35,9 +35,10 @@ export const resolveDuplicatedCreatedTab = ({
     return null;
   }
 
-  const sameUrlTabs = getGroupedTabsByNormalizedUrl(existingTabs, urlNormalizeOptions).get(
-    targetUrl,
-  );
+  const sameUrlTabs = getGroupedTabsByNormalizedUrl({
+    tabs: existingTabs,
+    options: urlNormalizeOptions,
+  }).get(targetUrl);
   const candidates = (sameUrlTabs ?? []).filter((tab) => {
     if (tab.id === createdTab.id) {
       return false;
