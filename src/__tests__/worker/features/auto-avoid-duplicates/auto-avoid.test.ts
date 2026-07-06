@@ -77,7 +77,7 @@ const setup = async (
   vi.resetModules();
 
   const { registerAutoAvoidListeners } =
-    await import('@/worker/features/auto-avoid-duplicates/auto-avoid');
+    await import('@/worker/features/auto-avoid-duplicates');
 
   registerAutoAvoidListeners();
 
