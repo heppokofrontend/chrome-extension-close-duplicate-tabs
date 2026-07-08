@@ -5,10 +5,34 @@ import {
   getSaveData,
   setSaveData,
 } from '@/utils';
+import { isUpdateBadgeMode } from '@/utils/type-guard';
 import type { SortType } from '@/worker/features/sort';
 import type { TaskRequest } from '@/worker/types';
 
 const getMessage = (key: string) => chrome.i18n.getMessage(key);
+
+const setSelectValue = ({
+  select,
+  optionType,
+  value,
+}: {
+  select: HTMLSelectElement;
+  optionType: string;
+  value: string;
+}) => {
+  // ストレージ由来の value は不正な可能性があるため、実際の <option> と照合し、
+  // 一致しなければ先頭の option（安全なデフォルト）にフォールバックする。
+  const validValues = Array.from(select.options, (option) => option.value);
+  const safeValue = validValues.includes(value) ? value : (select.options[0]?.value ?? value);
+  const valueElement = select.parentElement?.querySelector('.value');
+
+  select.value = safeValue;
+  select.dataset['value'] = safeValue;
+
+  if (valueElement instanceof HTMLElement) {
+    valueElement.textContent = getMessage(`select_visible_value_${optionType}_${safeValue}`);
+  }
+};
 
 const STATE = {
   dangerZoneIsOpen: false,
@@ -173,10 +197,18 @@ const loadSaveData = async () => {
     }),
     getSaveData().then((saveData) => {
       for (const [key, value] of Object.entries(saveData)) {
-        const checkbox = document.querySelector<HTMLInputElement>(`[data-option-type=${key}]`);
+        const control = document.querySelector<HTMLElement>(`[data-option-type=${key}]`);
 
-        if (checkbox && typeof value === 'boolean') {
-          checkbox.checked = value;
+        if (control instanceof HTMLInputElement && typeof value === 'boolean') {
+          control.checked = value;
+        }
+
+        if (control instanceof HTMLSelectElement && typeof value === 'string') {
+          setSelectValue({
+            select: control,
+            optionType: key,
+            value,
+          });
         }
       }
 
@@ -324,6 +356,27 @@ const addEvent = () => {
   };
 
   const onchangeListener = (e: Event) => {
+    if (e.target instanceof HTMLSelectElement) {
+      const { optionType } = e.target.dataset;
+      const { value } = e.target;
+
+      if (optionType === undefined) {
+        return;
+      }
+
+      setSelectValue({
+        select: e.target,
+        optionType,
+        value,
+      });
+
+      if (optionType === 'updateBadgeMode' && isUpdateBadgeMode(value)) {
+        save({ updateBadgeMode: value });
+      }
+
+      return;
+    }
+
     if (!(e.target instanceof HTMLInputElement)) {
       return;
     }
@@ -353,10 +406,10 @@ const addEvent = () => {
       save(patch);
     }
   };
-  const checkboxes = document.querySelectorAll<HTMLInputElement>('[data-option-type]');
+  const controls = document.querySelectorAll<HTMLElement>('[data-option-type]');
 
-  for (const checkbox of checkboxes) {
-    checkbox.addEventListener('change', onchangeListener);
+  for (const control of controls) {
+    control.addEventListener('change', onchangeListener);
   }
 
   const dangerDetails = document.querySelector<HTMLDetailsElement>('#dangerDetails');

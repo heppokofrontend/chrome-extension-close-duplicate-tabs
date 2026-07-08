@@ -1,5 +1,6 @@
 import {
   registerAutoAvoidListeners,
+  registerUpdateBadgeListeners,
   runCategorize,
   runCombine,
   runDivide,
@@ -10,6 +11,7 @@ import {
 import type { TaskRequest } from '@/worker/types';
 
 registerAutoAvoidListeners();
+registerUpdateBadgeListeners();
 
 chrome.runtime.onConnect.addListener((port) => {
   const onmessageListener = (request: TaskRequest) => {

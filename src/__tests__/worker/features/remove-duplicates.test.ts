@@ -62,11 +62,9 @@ const stubChromeForDuplicatePage = ({
     cb();
   });
   const windowsCreate = vi.fn().mockResolvedValue(createdWindow);
-  const windowsUpdate = vi.fn(
-    (_id: number, _opts: chrome.windows.UpdateInfo, cb: () => void) => {
-      cb();
-    },
-  );
+  const windowsUpdate = vi.fn((_id: number, _opts: chrome.windows.UpdateInfo, cb: () => void) => {
+    cb();
+  });
 
   // 実際の Chrome では lastError はコールバック実行中のみ設定される。
   // ここではテスト側で lastError を書き換えて「ウィンドウ無し／生存」の経路を切り替える。

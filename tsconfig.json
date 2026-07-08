@@ -6,9 +6,11 @@
     "moduleDetection": "force",
     "lib": ["ESNext", "DOM", "DOM.Iterable"],
     "types": ["chrome"],
+    "resolveJsonModule": true,
 
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@package/*": ["./package/*"]
     },
 
     "strict": true,
