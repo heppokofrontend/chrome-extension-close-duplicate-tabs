@@ -29,6 +29,34 @@
   "checkbox_autoAvoidDuplicate": {
     "message": "Suppress new duplicate tabs"
   },
+  "select_for_screen_reader_updateBadgeMode": {
+    "message": "On the icon:",
+    "description": "Screen-reader-only accessible name for the icon-badge-mode <select>. Not visible on screen. Screen readers announce this immediately before the currently selected option_updateBadgeMode_* text, so phrase it as a lead-in fragment that reads naturally when followed by that text. The corresponding select_visible_value_updateBadgeMode_* string is exactly this text plus a space plus the matching option_updateBadgeMode_* text — keep all three in sync."
+  },
+  "option_updateBadgeMode_none": {
+    "message": "Don't show a duplicate count",
+    "description": "Text of one <option> in the icon-badge-mode <select>. Read by everyone (sighted users when the native dropdown is open, and screen readers). Screen readers announce it right after select_for_screen_reader_updateBadgeMode, so phrase it as a continuation of that lead-in fragment. select_visible_value_updateBadgeMode_none must equal select_for_screen_reader_updateBadgeMode + ' ' + this text exactly — keep them in sync."
+  },
+  "option_updateBadgeMode_all": {
+    "message": "Show the total number of closable duplicate tabs",
+    "description": "Text of one <option> in the icon-badge-mode <select>. Read by everyone (sighted users when the native dropdown is open, and screen readers). Screen readers announce it right after select_for_screen_reader_updateBadgeMode, so phrase it as a continuation of that lead-in fragment. select_visible_value_updateBadgeMode_all must equal select_for_screen_reader_updateBadgeMode + ' ' + this text exactly — keep them in sync."
+  },
+  "option_updateBadgeMode_current": {
+    "message": "Show the number of duplicates of the current tab",
+    "description": "Text of one <option> in the icon-badge-mode <select>. Read by everyone (sighted users when the native dropdown is open, and screen readers). Screen readers announce it right after select_for_screen_reader_updateBadgeMode, so phrase it as a continuation of that lead-in fragment. select_visible_value_updateBadgeMode_current must equal select_for_screen_reader_updateBadgeMode + ' ' + this text exactly — keep them in sync."
+  },
+  "select_visible_value_updateBadgeMode_none": {
+    "message": "On the icon: Don't show a duplicate count",
+    "description": "Sighted-users-only readout (aria-hidden, excluded from screen readers) of the icon-badge-mode <select>'s current value, shown without opening the dropdown. Must equal select_for_screen_reader_updateBadgeMode + ' ' + option_updateBadgeMode_none exactly, so this text matches word-for-word what a screen reader announces for the same selection."
+  },
+  "select_visible_value_updateBadgeMode_all": {
+    "message": "On the icon: Show the total number of closable duplicate tabs",
+    "description": "Sighted-users-only readout (aria-hidden, excluded from screen readers) of the icon-badge-mode <select>'s current value, shown without opening the dropdown. Must equal select_for_screen_reader_updateBadgeMode + ' ' + option_updateBadgeMode_all exactly, so this text matches word-for-word what a screen reader announces for the same selection."
+  },
+  "select_visible_value_updateBadgeMode_current": {
+    "message": "On the icon: Show the number of duplicates of the current tab",
+    "description": "Sighted-users-only readout (aria-hidden, excluded from screen readers) of the icon-badge-mode <select>'s current value, shown without opening the dropdown. Must equal select_for_screen_reader_updateBadgeMode + ' ' + option_updateBadgeMode_current exactly, so this text matches word-for-word what a screen reader announces for the same selection."
+  },
   "btn_remove": {
     "message": "Close duplicate tabs"
   },

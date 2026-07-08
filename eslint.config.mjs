@@ -56,7 +56,10 @@ export default [
         'error',
         {
           groups: ['builtin', 'external', 'internal', ['parent', 'sibling', 'index']],
-          pathGroups: [{ pattern: '@/**', group: 'internal' }],
+          pathGroups: [
+            { pattern: '@/**', group: 'internal' },
+            { pattern: '@package/**', group: 'internal' },
+          ],
           'newlines-between': 'always',
           alphabetize: { order: 'asc', caseInsensitive: true },
         },

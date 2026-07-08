@@ -1,3 +1,12 @@
+/**
+ * 拡張機能アイコンのバッジに表示する数の種類。
+ * - none: 表示しない
+ * - all: 「重複タブをすべて閉じる」で閉じられるタブの総数
+ * - current: カレントタブと URL が重複しているタブの数
+ */
+export const UPDATE_BADGE_MODES = ['none', 'all', 'current'] as const;
+export type UpdateBadgeMode = (typeof UPDATE_BADGE_MODES)[number];
+
 export type SaveDataType = {
   ignorePathname?: boolean;
   ignoreQuery?: boolean;
@@ -8,6 +17,7 @@ export type SaveDataType = {
   noConfirm?: boolean;
   minCategorizeNumber?: number;
   autoAvoidDuplicate?: boolean;
+  updateBadgeMode?: UpdateBadgeMode;
   /** お知らせダイアログの表示済みキーと、表示した日時（ISO 8601 文字列）の記録。 */
   shown?: Record<string, string>;
 };
@@ -35,6 +45,7 @@ export const defaultSaveData: Required<SaveDataType> = {
   noConfirm: false,
   minCategorizeNumber: 1,
   autoAvoidDuplicate: false,
+  updateBadgeMode: 'none',
   shown: {},
 };
 
