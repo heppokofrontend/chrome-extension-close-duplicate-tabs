@@ -4,7 +4,7 @@ import { build, context } from 'esbuild';
 const entryPoints = [
   'src/content-scripts.ts',
   'src/popup.ts',
-  'src/worker.ts',
+  { in: 'src/worker/index.ts', out: 'worker' },
   'src/duplicates-list.ts',
   'src/i18n.ts',
 ];

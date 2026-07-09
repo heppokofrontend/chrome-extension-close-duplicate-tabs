@@ -29,6 +29,27 @@
   "checkbox_autoAvoidDuplicate": {
     "message": "新しい重複タブを抑制する"
   },
+  "select_for_screen_reader_updateBadgeMode": {
+    "message": "アイコンに"
+  },
+  "option_updateBadgeMode_none": {
+    "message": "重複数を表示しない"
+  },
+  "option_updateBadgeMode_all": {
+    "message": "閉じられる重複タブの総数を表示する"
+  },
+  "option_updateBadgeMode_current": {
+    "message": "現在のタブとの重複数を表示する"
+  },
+  "select_visible_value_updateBadgeMode_none": {
+    "message": "アイコンに重複数を表示しない"
+  },
+  "select_visible_value_updateBadgeMode_all": {
+    "message": "アイコンに閉じられる重複タブの総数を表示する"
+  },
+  "select_visible_value_updateBadgeMode_current": {
+    "message": "アイコンに現在のタブとの重複数を表示する"
+  },
   "btn_remove": {
     "message": "重複したタブを閉じる"
   },
@@ -54,7 +75,7 @@
     "message": "目次などのページ内リンクをクリックしたとき、強制的にURLを更新します。"
   },
   "hint_autoAvoidDuplicate": {
-    "message": "新しいタブが開かれた時、すでに開かれているタブがあればそのタブを開きます。新規タブや、一部の特殊なURLは対象外です。"
+    "message": "新しいタブが開かれる時、すでに開かれているタブがあればそのタブを開きます。新規タブや、一部の特殊なURLは対象外です。"
   },
   "dialog_confirm": {
     "message": "確認"

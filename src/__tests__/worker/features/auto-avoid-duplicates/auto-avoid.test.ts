@@ -55,7 +55,7 @@ const createChromeMock = (
   return { chrome, listeners, mocks };
 };
 
-/** 保留中の microtask を掃き出し、非同期の副作用が完了するのを待つ。 */
+/** Flushes pending microtasks so async side effects have time to complete. */
 const flushPromises = async () => {
   for (let i = 0; i < 10; i += 1) {
     await Promise.resolve();
@@ -63,8 +63,8 @@ const flushPromises = async () => {
 };
 
 /**
- * auto-avoid はモジュール評価時に chrome.runtime.onStartup を登録するため、
- * chrome をスタブしたうえで毎回モジュールを読み直す。
+ * auto-avoid registers chrome.runtime.onStartup at module evaluation time, so
+ * stub chrome and re-import the module fresh every time.
  */
 const setup = async (
   saveData: Partial<SaveDataType>,
@@ -76,14 +76,14 @@ const setup = async (
   vi.stubGlobal('chrome', chrome);
   vi.resetModules();
 
-  const { registerAutoAvoidListeners } = await import('@/worker/auto-avoid-duplicates/auto-avoid');
+  const { registerAutoAvoidListeners } = await import('@/worker/features/auto-avoid-duplicates');
 
   registerAutoAvoidListeners();
 
   return { listeners, mocks };
 };
 
-/** onCreated → onUpdated の順で発火させ、URL 確定タブとして判定を走らせる。 */
+/** Fires onCreated then onUpdated, in order, to run the check as a URL-resolved tab. */
 const openTab = async (
   listeners: ReturnType<typeof createChromeMock>['listeners'],
   tab: MockTab,
@@ -105,8 +105,8 @@ afterEach(() => {
 });
 
 describe('registerAutoAvoidListeners', () => {
-  describe('active な新規重複タブ', () => {
-    it('既存タブを新規タブの隣へ移動しアクティブ化してから新規タブを閉じる', async () => {
+  describe('active new duplicate tab', () => {
+    it('moves the existing tab next to the new tab and activates it before closing the new tab', async () => {
       const existingTabs: MockTab[] = [
         { id: 1, url: 'https://a.com/', windowId: 1, index: 0, active: false },
         { id: 2, url: 'https://a.com/', windowId: 1, index: 3, active: true },
@@ -127,7 +127,7 @@ describe('registerAutoAvoidListeners', () => {
       expect(mocks.remove).toHaveBeenCalledWith(2);
     });
 
-    it('対象ウィンドウがフォーカスされていない場合はフォーカスを奪わない', async () => {
+    it('does not steal focus when the target window is not focused', async () => {
       const existingTabs: MockTab[] = [
         { id: 1, url: 'https://a.com/', windowId: 1, index: 0, active: false },
         { id: 2, url: 'https://a.com/', windowId: 1, index: 3, active: true },
@@ -149,11 +149,11 @@ describe('registerAutoAvoidListeners', () => {
     });
   });
 
-  describe('非active な新規重複タブ（バックグラウンドで開かれた）', () => {
-    it('重複相手がカレントタブ以外なら、既存タブをカレントタブの隣へ移動してから新規タブを閉じる', async () => {
+  describe('non-active new duplicate tab (opened in the background)', () => {
+    it('moves the existing tab next to the current tab and closes the new tab, when the duplicate is not the current tab', async () => {
       const existingTabs: MockTab[] = [
-        { id: 1, url: 'https://a.com/', windowId: 1, index: 0, active: false }, // keep 対象
-        { id: 9, url: 'https://other.com/', windowId: 1, index: 2, active: true }, // カレント
+        { id: 1, url: 'https://a.com/', windowId: 1, index: 0, active: false }, // kept
+        { id: 9, url: 'https://other.com/', windowId: 1, index: 2, active: true }, // current tab
       ];
       const { listeners, mocks } = await setup({ autoAvoidDuplicate: true }, existingTabs);
 
@@ -167,14 +167,14 @@ describe('registerAutoAvoidListeners', () => {
 
       expect(mocks.move).toHaveBeenCalledWith(1, { windowId: 1, index: 3 });
       expect(mocks.remove).toHaveBeenCalledWith(2);
-      // バックグラウンドで開かれたため、フォーカスは奪わない。
+      // Opened in the background, so focus is not stolen.
       expect(mocks.update).not.toHaveBeenCalled();
       expect(mocks.windowsUpdate).not.toHaveBeenCalled();
     });
 
-    it('重複相手がカレントタブ自身なら、移動せず新規タブを閉じるだけ', async () => {
+    it('just closes the new tab without moving anything, when the duplicate is the current tab itself', async () => {
       const existingTabs: MockTab[] = [
-        { id: 1, url: 'https://a.com/', windowId: 1, index: 0, active: true }, // カレント かつ keep 対象
+        { id: 1, url: 'https://a.com/', windowId: 1, index: 0, active: true }, // current tab, also kept
       ];
       const { listeners, mocks } = await setup({ autoAvoidDuplicate: true }, existingTabs);
 
@@ -191,8 +191,8 @@ describe('registerAutoAvoidListeners', () => {
     });
   });
 
-  describe('副作用を起こさないケース', () => {
-    it('autoAvoidDuplicate が無効なら何もしない', async () => {
+  describe('cases with no side effects', () => {
+    it('does nothing when autoAvoidDuplicate is disabled', async () => {
       const existingTabs: MockTab[] = [
         { id: 1, url: 'https://a.com/', windowId: 1, index: 0, active: true },
       ];
@@ -210,7 +210,7 @@ describe('registerAutoAvoidListeners', () => {
       expect(mocks.remove).not.toHaveBeenCalled();
     });
 
-    it('重複が存在しなければ何もしない', async () => {
+    it('does nothing when there is no duplicate', async () => {
       const existingTabs: MockTab[] = [
         { id: 1, url: 'https://b.com/', windowId: 1, index: 0, active: true },
       ];
@@ -227,7 +227,7 @@ describe('registerAutoAvoidListeners', () => {
       expect(mocks.remove).not.toHaveBeenCalled();
     });
 
-    it('対象外プロトコル（chrome:）は判定しない', async () => {
+    it('does not check tabs with a non-targetable protocol (chrome:)', async () => {
       const existingTabs: MockTab[] = [
         { id: 1, url: 'chrome://newtab/', windowId: 1, index: 0, active: true },
       ];
@@ -245,13 +245,13 @@ describe('registerAutoAvoidListeners', () => {
       expect(mocks.remove).not.toHaveBeenCalled();
     });
 
-    it('onCreated を経ていないタブ（URL バー内 navigate）は判定しない', async () => {
+    it('does not check a tab that never went through onCreated (e.g. navigating via the URL bar)', async () => {
       const existingTabs: MockTab[] = [
         { id: 1, url: 'https://a.com/', windowId: 1, index: 0, active: true },
       ];
       const { listeners, mocks } = await setup({ autoAvoidDuplicate: true }, existingTabs);
 
-      // onCreated を発火させず onUpdated だけ発火させる。
+      // Fire only onUpdated, without firing onCreated first.
       for (const l of listeners.onUpdated) {
         l(
           2,
@@ -265,13 +265,13 @@ describe('registerAutoAvoidListeners', () => {
       expect(mocks.remove).not.toHaveBeenCalled();
     });
 
-    it('起動直後の猶予期間中に作成されたタブは監視対象にしない', async () => {
+    it('does not track a tab created during the startup grace period', async () => {
       const existingTabs: MockTab[] = [
         { id: 1, url: 'https://a.com/', windowId: 1, index: 0, active: true },
       ];
       const { listeners, mocks } = await setup({ autoAvoidDuplicate: true }, existingTabs);
 
-      // 起動時刻を「今」に設定し、猶予期間内にする。
+      // Set the startup time to "now", putting us inside the grace period.
       for (const l of listeners.onStartup) {
         l();
       }

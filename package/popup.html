@@ -76,13 +76,33 @@
               <span aria-label="hint">💡</span>
               https://example.com/abc/def<em>?query=hoge&query2=piyo</em>#hash
             </p>
+
+            <p>
+              <label>
+                <!-- 擬似要素を隠すためのaria-hidden -->
+                <span class="img" aria-hidden="true">
+                  <img src="./images/icon.png" width="16" height="16" alt="" />
+                </span>
+                <span class="label" data-i18n="select_for_screen_reader_updateBadgeMode"
+                  >loading...</span
+                >
+                <select data-option-type="updateBadgeMode">
+                  <option value="none" data-i18n="option_updateBadgeMode_none">loading...</option>
+                  <option value="all" data-i18n="option_updateBadgeMode_all">loading...</option>
+                  <option value="current" data-i18n="option_updateBadgeMode_current">
+                    loading...
+                  </option>
+                </select>
+                <span class="value" aria-hidden="true">loading...</span>
+              </label>
+            </p>
           </div>
         </div>
 
-        <details id="dangerDetails">
+        <details class="danger" id="dangerDetails">
           <summary><span>Danger Zone</span></summary>
 
-          <div class="content danger">
+          <div class="content">
             <div class="buttons">
               <p>
                 <button type="button" data-task-name="categorize">

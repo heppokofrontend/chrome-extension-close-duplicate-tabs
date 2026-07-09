@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
 
-import { type SortableTab, getSorter, sortTabs } from '@/worker/sort';
+import { type SortableTab, getSorter, sortTabs } from '@/worker/features/sort';
 
 const makeChromeTab = (overrides: Partial<chrome.tabs.Tab> = {}): chrome.tabs.Tab => ({
   index: 0,

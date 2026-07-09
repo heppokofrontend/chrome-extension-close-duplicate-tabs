@@ -9,7 +9,15 @@ import importX from 'eslint-plugin-import-x';
 const tsconfigRootDir = dirname(fileURLToPath(import.meta.url));
 
 export default [
-  { ignores: ['package/**', 'eslint.config.mjs', 'vitest.config.ts', 'esbuild.config.mjs'] },
+  {
+    ignores: [
+      'package/**',
+      'coverage/**',
+      'eslint.config.mjs',
+      'vitest.config.ts',
+      'esbuild.config.mjs',
+    ],
+  },
   js.configs.recommended,
   ...tseslint.configs.strictTypeChecked,
   importX.flatConfigs.typescript,
@@ -48,7 +56,10 @@ export default [
         'error',
         {
           groups: ['builtin', 'external', 'internal', ['parent', 'sibling', 'index']],
-          pathGroups: [{ pattern: '@/**', group: 'internal' }],
+          pathGroups: [
+            { pattern: '@/**', group: 'internal' },
+            { pattern: '@package/**', group: 'internal' },
+          ],
           'newlines-between': 'always',
           alphabetize: { order: 'asc', caseInsensitive: true },
         },

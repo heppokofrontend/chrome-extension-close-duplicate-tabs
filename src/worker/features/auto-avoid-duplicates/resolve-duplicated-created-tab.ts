@@ -1,5 +1,5 @@
 import { normalizeUrl, type UrlNormalizeOptions } from '@/utils';
-import type { CreatedTab } from '@/worker/auto-avoid-duplicates/types';
+import type { CreatedTab } from '@/worker/features/auto-avoid-duplicates/types';
 import { getGroupedTabsByNormalizedUrl } from '@/worker/utils';
 
 interface CandidateTab {
@@ -35,9 +35,10 @@ export const resolveDuplicatedCreatedTab = ({
     return null;
   }
 
-  const sameUrlTabs = getGroupedTabsByNormalizedUrl(existingTabs, urlNormalizeOptions).get(
-    targetUrl,
-  );
+  const sameUrlTabs = getGroupedTabsByNormalizedUrl({
+    tabs: existingTabs,
+    options: urlNormalizeOptions,
+  }).get(targetUrl);
   const candidates = (sameUrlTabs ?? []).filter((tab) => {
     if (tab.id === createdTab.id) {
       return false;
