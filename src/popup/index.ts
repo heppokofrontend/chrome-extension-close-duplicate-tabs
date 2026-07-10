@@ -105,7 +105,7 @@ const showConfirmModal = (() => {
           // FIXME: Type assertion
           const field = document.createElement('label');
           const min = options.range[0] ?? 0;
-          const max = options.range[options.range.length - 1] ?? min;
+          const max = options.range.at(-1) ?? min;
           // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
           let value = STATE.saveData.minCategorizeNumber ?? min;
 
