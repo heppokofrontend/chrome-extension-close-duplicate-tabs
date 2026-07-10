@@ -100,6 +100,25 @@ const showConfirmModal = (() => {
     confirmModal.showModal();
     confirmModal.focus();
 
+    const renderButtons = ({
+      resolve,
+      commands,
+    }: {
+      resolve: (value: T | 'false') => void;
+      commands: Commands<T>;
+    }) => {
+      commands.forEach((command) => {
+        const button = templateButton.cloneNode();
+
+        button.textContent = getMessage(`dialog_command_${String(command)}`);
+        button.addEventListener('click', () => {
+          resolve(command);
+        });
+
+        buttonContainer.appendChild(button);
+      });
+    };
+
     return new Promise<T | 'false'>((resolve) => {
       switch (options?.type) {
         case 'range': {
@@ -159,15 +178,9 @@ const showConfirmModal = (() => {
         }
 
         default: {
-          (options?.commands ?? (defaultCommands as Commands<T>)).forEach((command) => {
-            const button = templateButton.cloneNode();
-
-            button.textContent = getMessage(`dialog_command_${String(command)}`);
-            button.addEventListener('click', () => {
-              resolve(command);
-            });
-
-            buttonContainer.appendChild(button);
+          renderButtons({
+            resolve,
+            commands: options?.commands ?? (defaultCommands as Commands<T>),
           });
 
           break;
