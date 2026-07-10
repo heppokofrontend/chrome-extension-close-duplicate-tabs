@@ -66,21 +66,22 @@ const showNoticeModal = (() => {
   };
 })();
 
+type Commands<T> = T[];
+type Options<T> =
+  | {
+      type: 'remove';
+      commands: Commands<T>;
+    }
+  | {
+      type: 'multiple';
+      commands: Commands<T>;
+    }
+  | {
+      type: 'range';
+      range: number[];
+    };
+
 const showConfirmModal = (() => {
-  type Commands<T> = T[];
-  type Options<T> =
-    | {
-        type: 'remove';
-        commands: Commands<T>;
-      }
-    | {
-        type: 'multiple';
-        commands: Commands<T>;
-      }
-    | {
-        type: 'range';
-        range: number[];
-      };
   const confirmModal = document.getElementById('confirm') as HTMLDialogElement;
   const confirmModalText = document.getElementById('confirm-text') as HTMLParagraphElement;
   const buttonContainer = document.getElementById('dialog-buttons') as HTMLParagraphElement;
