@@ -87,6 +87,23 @@ const loadSaveData = async () => {
   ]);
 };
 
+type PostMessageParams =
+  | {
+      taskName: 'remove';
+      shouldShowDuplicatePage?: boolean;
+      sortType?: never;
+    }
+  | {
+      taskName: 'sort';
+      shouldShowDuplicatePage?: never;
+      sortType?: SortType;
+    }
+  | {
+      taskName: 'reload' | 'combine' | 'divide' | 'categorize';
+      shouldShowDuplicatePage?: never;
+      sortType?: never;
+    };
+
 const onClickEventHandler = async (e: Event) => {
   if (!(e.currentTarget instanceof HTMLButtonElement)) {
     return;
@@ -95,11 +112,7 @@ const onClickEventHandler = async (e: Event) => {
     taskName,
     shouldShowDuplicatePage = false,
     sortType,
-  }: {
-    taskName: string;
-    shouldShowDuplicatePage?: boolean;
-    sortType?: SortType;
-  }) => {
+  }: PostMessageParams) => {
     const port = chrome.runtime.connect();
     const message: TaskRequest = {
       taskName,
