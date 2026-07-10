@@ -5,7 +5,7 @@ import {
   getSaveData,
   setSaveData,
 } from '@/utils';
-import { isUpdateBadgeMode } from '@/utils/type-guard';
+import { isUpdateBadgeMode, isValidOptionType } from '@/utils/type-guard';
 import type { SortType } from '@/worker/features/sort';
 import type { TaskRequest } from '@/worker/types';
 
@@ -217,8 +217,10 @@ const loadSaveData = async () => {
   ]);
 };
 
-const addEvent = () => {
-  const buttons = document.querySelectorAll<HTMLButtonElement>('.buttons button');
+const onClickEventHandler = async (e: Event) => {
+  if (!(e.currentTarget instanceof HTMLButtonElement)) {
+    return;
+  }
   const postMessage = ({
     taskName,
     shouldShowDuplicatePage = false,
@@ -240,106 +242,165 @@ const addEvent = () => {
 
     port.postMessage(message);
   };
-  const onClickEventHandler = async (e: Event) => {
-    if (!(e.currentTarget instanceof HTMLButtonElement)) {
-      return;
+
+  const taskName = e.currentTarget.dataset['taskName'];
+  const { noConfirm } = STATE.saveData;
+
+  switch (taskName) {
+    case 'remove': {
+      const messageName = STATE.saveData.includeAllWindow ? 'remove_allwin' : taskName;
+
+      if (noConfirm) {
+        postMessage({ taskName });
+        return;
+      }
+
+      const result = await showConfirmModal<'true' | 'show_duplicate' | 'false'>(messageName, {
+        type: 'remove',
+        commands: ['true', 'show_duplicate', 'false'],
+      });
+
+      if (result === 'false') {
+        return;
+      }
+
+      postMessage({ taskName, shouldShowDuplicatePage: result === 'show_duplicate' });
+      break;
     }
 
-    const taskName = e.currentTarget.dataset['taskName'];
-    const { noConfirm } = STATE.saveData;
+    case 'reload': {
+      const messageName = STATE.saveData.includeAllWindow ? 'reload_allwin' : taskName;
 
-    switch (taskName) {
-      case 'remove': {
-        const messageName = STATE.saveData.includeAllWindow ? 'remove_allwin' : taskName;
-
-        if (noConfirm) {
-          postMessage({ taskName });
-          return;
-        }
-
-        const result = await showConfirmModal<'true' | 'show_duplicate' | 'false'>(messageName, {
-          type: 'remove',
-          commands: ['true', 'show_duplicate', 'false'],
-        });
-
-        if (result === 'false') {
-          return;
-        }
-
-        postMessage({ taskName, shouldShowDuplicatePage: result === 'show_duplicate' });
-        break;
+      if (!noConfirm && (await showConfirmModal(messageName)) === 'false') {
+        return;
       }
 
-      case 'reload': {
-        const messageName = STATE.saveData.includeAllWindow ? 'reload_allwin' : taskName;
+      postMessage({ taskName });
+      break;
+    }
 
-        if (!noConfirm && (await showConfirmModal(messageName)) === 'false') {
+    // １つにまとめる
+    case 'combine':
+      if (!noConfirm) {
+        if (
+          (!STATE.saveData.includeAllWindow &&
+            (await showConfirmModal(`${taskName}_all`)) === 'false') ||
+          (await showConfirmModal(taskName)) === 'false'
+        ) {
           return;
         }
-
-        postMessage({ taskName });
-        break;
       }
 
-      // １つにまとめる
-      case 'combine':
-        if (!noConfirm) {
-          if (
-            (!STATE.saveData.includeAllWindow &&
-              (await showConfirmModal(`${taskName}_all`)) === 'false') ||
-            (await showConfirmModal(taskName)) === 'false'
-          ) {
-            return;
-          }
-        }
+      postMessage({ taskName });
+      break;
 
-        postMessage({ taskName });
-        break;
-
-      // 全部別窓にする
-      case 'divide':
-        if (!noConfirm) {
-          if (
-            (STATE.saveData.includeAllWindow &&
-              (await showConfirmModal(`${taskName}_all`)) === 'false') ||
-            (await showConfirmModal(taskName)) === 'false'
-          ) {
-            return;
-          }
-        }
-
-        postMessage({ taskName });
-        break;
-
-      case 'sort': {
-        const sortType = await showConfirmModal<SortType>(taskName, {
-          type: 'multiple',
-          commands: ['sortByUrl', 'sortByTitle', 'sortByHostAndTitle', 'false'],
-        });
-
-        if (sortType === 'false') {
+    // 全部別窓にする
+    case 'divide':
+      if (!noConfirm) {
+        if (
+          (STATE.saveData.includeAllWindow &&
+            (await showConfirmModal(`${taskName}_all`)) === 'false') ||
+          (await showConfirmModal(taskName)) === 'false'
+        ) {
           return;
         }
-
-        postMessage({ taskName, sortType });
-        break;
       }
 
-      case 'categorize': {
-        const minCategorizeNumber = await showConfirmModal<number | 'false'>(taskName, {
-          type: 'range',
-          range: Array.from({ length: 10 }, (_, index) => index),
-        });
+      postMessage({ taskName });
+      break;
 
-        if (minCategorizeNumber === 'false') {
-          return;
+    case 'sort': {
+      const sortType = await showConfirmModal<SortType>(taskName, {
+        type: 'multiple',
+        commands: ['sortByUrl', 'sortByTitle', 'sortByHostAndTitle', 'false'],
+      });
+
+      if (sortType === 'false') {
+        return;
+      }
+
+      postMessage({ taskName, sortType });
+      break;
+    }
+
+    case 'categorize': {
+      const minCategorizeNumber = await showConfirmModal<number | 'false'>(taskName, {
+        type: 'range',
+        range: Array.from({ length: 10 }, (_, index) => index),
+      });
+
+      if (minCategorizeNumber === 'false') {
+        return;
+      }
+
+      postMessage({ taskName });
+      break;
+    }
+  }
+};
+
+const onSelectChange = (e: Event) => {
+  if (e.currentTarget === null || !(e.currentTarget instanceof HTMLSelectElement)) {
+    return;
+  }
+
+  const { optionType } = e.currentTarget.dataset;
+  const { value } = e.currentTarget;
+
+  if (optionType === undefined) {
+    return;
+  }
+
+  setSelectValue({
+    select: e.currentTarget,
+    optionType,
+    value,
+  });
+
+  if (optionType === 'updateBadgeMode' && isUpdateBadgeMode(value)) {
+    save({ updateBadgeMode: value });
+  }
+};
+
+const onCheckboxChange = (e: Event) => {
+  if (
+    e.currentTarget === null ||
+    !(e.currentTarget instanceof HTMLInputElement) ||
+    e.currentTarget.type !== 'checkbox'
+  ) {
+    return;
+  }
+
+  const { optionType } = e.currentTarget.dataset;
+
+  if (!isValidOptionType(optionType)) {
+    return;
+  }
+
+  const patch: Partial<SaveDataType> = { [optionType]: e.currentTarget.checked };
+
+  if (e.currentTarget.checked && !STATE.saveData.noConfirm) {
+    switch (optionType) {
+      case 'ignorePathname':
+      case 'noConfirm':
+        showNoticeModal(optionType);
+        break;
+
+      case 'autoAvoidDuplicate': {
+        if (!STATE.saveData.shown[optionType]) {
+          showNoticeModal(optionType);
+          patch.shown = { [optionType]: new Date().toISOString() };
         }
-
-        postMessage({ taskName });
         break;
       }
     }
-  };
+  }
+
+  save(patch);
+};
+
+const addEvent = () => {
+  const buttons = document.querySelectorAll<HTMLButtonElement>('.buttons button');
 
   for (const button of buttons) {
     button.addEventListener('click', (e) => {
@@ -347,69 +408,16 @@ const addEvent = () => {
     });
   }
 
-  const isValidOptionType = (value: unknown): value is keyof SaveDataType => {
-    if (typeof value !== 'string') {
-      return false;
-    }
+  const selectElements = document.querySelectorAll<HTMLSelectElement>('select[data-option-type]');
 
-    return value in defaultSaveData;
-  };
+  for (const select of selectElements) {
+    select.addEventListener('change', onSelectChange);
+  }
 
-  const onchangeListener = (e: Event) => {
-    if (e.target instanceof HTMLSelectElement) {
-      const { optionType } = e.target.dataset;
-      const { value } = e.target;
+  const checkboxElements = document.querySelectorAll<HTMLInputElement>('input[data-option-type]');
 
-      if (optionType === undefined) {
-        return;
-      }
-
-      setSelectValue({
-        select: e.target,
-        optionType,
-        value,
-      });
-
-      if (optionType === 'updateBadgeMode' && isUpdateBadgeMode(value)) {
-        save({ updateBadgeMode: value });
-      }
-
-      return;
-    }
-
-    if (!(e.target instanceof HTMLInputElement)) {
-      return;
-    }
-
-    const { optionType } = e.target.dataset;
-
-    if (isValidOptionType(optionType)) {
-      const patch: Partial<SaveDataType> = { [optionType]: e.target.checked };
-
-      if (e.target.checked && !STATE.saveData.noConfirm) {
-        switch (optionType) {
-          case 'ignorePathname':
-          case 'noConfirm':
-            showNoticeModal(optionType);
-            break;
-
-          case 'autoAvoidDuplicate': {
-            if (!STATE.saveData.shown[optionType]) {
-              showNoticeModal(optionType);
-              patch.shown = { [optionType]: new Date().toISOString() };
-            }
-            break;
-          }
-        }
-      }
-
-      save(patch);
-    }
-  };
-  const controls = document.querySelectorAll<HTMLElement>('[data-option-type]');
-
-  for (const control of controls) {
-    control.addEventListener('change', onchangeListener);
+  for (const checkbox of checkboxElements) {
+    checkbox.addEventListener('change', onCheckboxChange);
   }
 
   const dangerDetails = document.querySelector<HTMLDetailsElement>('#dangerDetails');
