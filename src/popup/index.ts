@@ -1,7 +1,7 @@
 import { showConfirmModal, showRangeConfirmModal } from '@/popup/dialogs';
 import { STATE, save } from '@/popup/state';
 import { type SaveDataType, getSaveData } from '@/utils';
-import { isUpdateBadgeMode, isValidOptionType } from '@/utils/type-guard';
+import { isUpdateBadgeMode, isValidOptionType, isValidSortType } from '@/utils/type-guard';
 import type { SortType } from '@/worker/features/sort';
 import type { TaskRequest } from '@/worker/types';
 
@@ -94,7 +94,7 @@ const onClickEventHandler = async (e: Event) => {
   const postMessage = ({
     taskName,
     shouldShowDuplicatePage = false,
-    sortType = 'cancel',
+    sortType,
   }: {
     taskName: string;
     shouldShowDuplicatePage?: boolean;
@@ -125,8 +125,8 @@ const onClickEventHandler = async (e: Event) => {
         return;
       }
 
-      const result = await showConfirmModal<'confirm' | 'show_duplicate' | 'cancel'>(messageName, {
-        type: 'remove',
+      const result = await showConfirmModal({
+        taskName: messageName,
         commands: ['confirm', 'show_duplicate', 'cancel'],
       });
 
@@ -141,7 +141,7 @@ const onClickEventHandler = async (e: Event) => {
     case 'reload': {
       const messageName = STATE.saveData.includeAllWindow ? 'reload_allwin' : taskName;
 
-      if (!noConfirm && (await showConfirmModal(messageName)) === 'cancel') {
+      if (!noConfirm && (await showConfirmModal({ taskName: messageName })) === 'cancel') {
         return;
       }
 
@@ -154,8 +154,8 @@ const onClickEventHandler = async (e: Event) => {
       if (!noConfirm) {
         if (
           (!STATE.saveData.includeAllWindow &&
-            (await showConfirmModal(`${taskName}_all`)) === 'cancel') ||
-          (await showConfirmModal(taskName)) === 'cancel'
+            (await showConfirmModal({ taskName: `${taskName}_all` })) === 'cancel') ||
+          (await showConfirmModal({ taskName })) === 'cancel'
         ) {
           return;
         }
@@ -169,8 +169,8 @@ const onClickEventHandler = async (e: Event) => {
       if (!noConfirm) {
         if (
           (STATE.saveData.includeAllWindow &&
-            (await showConfirmModal(`${taskName}_all`)) === 'cancel') ||
-          (await showConfirmModal(taskName)) === 'cancel'
+            (await showConfirmModal({ taskName: `${taskName}_all` })) === 'cancel') ||
+          (await showConfirmModal({ taskName })) === 'cancel'
         ) {
           return;
         }
@@ -180,12 +180,12 @@ const onClickEventHandler = async (e: Event) => {
       break;
 
     case 'sort': {
-      const sortType = await showConfirmModal<SortType>(taskName, {
-        type: 'multiple',
+      const sortType = await showConfirmModal({
+        taskName,
         commands: ['sortByUrl', 'sortByTitle', 'sortByHostAndTitle', 'cancel'],
       });
 
-      if (sortType === 'cancel') {
+      if (!isValidSortType(sortType)) {
         return;
       }
 

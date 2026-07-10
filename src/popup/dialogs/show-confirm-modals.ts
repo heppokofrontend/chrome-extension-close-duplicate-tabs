@@ -2,17 +2,6 @@ import { STATE, save } from '@/popup/state';
 
 const getMessage = (key: string) => chrome.i18n.getMessage(key);
 
-type Commands<T> = T[];
-type Options<T> =
-  | {
-      type: 'remove';
-      commands: Commands<T>;
-    }
-  | {
-      type: 'multiple';
-      commands: Commands<T>;
-    };
-
 const confirmModal = document.getElementById('confirm') as HTMLDialogElement;
 const confirmModalText = document.getElementById('confirm-text') as HTMLParagraphElement;
 const buttonContainer = document.getElementById('dialog-buttons') as HTMLParagraphElement;
@@ -38,20 +27,21 @@ const closeModalWhenDone = <V>(promise: Promise<V>) =>
     confirmModal.close();
   });
 
-export const showConfirmModal = <T = 'confirm' | 'cancel'>(
-  taskName: string,
-  options?: Options<T>,
-) => {
+export const showConfirmModal = ({
+  taskName,
+  commands = defaultCommands,
+}: {
+  taskName: string;
+  commands?: string[];
+}) => {
   openModal(taskName);
 
   return closeModalWhenDone(
-    new Promise<T | 'cancel'>((resolve) => {
-      const commands = options?.commands ?? (defaultCommands as Commands<T>);
-
+    new Promise<string>((resolve) => {
       commands.forEach((command) => {
         const button = templateButton.cloneNode();
 
-        button.textContent = getMessage(`dialog_command_${String(command)}`);
+        button.textContent = getMessage(`dialog_command_${command}`);
         button.addEventListener('click', () => {
           resolve(command);
         });

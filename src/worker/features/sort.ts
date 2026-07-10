@@ -1,7 +1,8 @@
 import type { SaveDataType } from '@/utils';
 import { getTabs } from '@/worker/utils';
 
-export type SortType = 'sortByUrl' | 'sortByTitle' | 'sortByHostAndTitle' | 'cancel';
+export const sortTypes = ['sortByUrl', 'sortByTitle', 'sortByHostAndTitle'] as const;
+export type SortType = (typeof sortTypes)[number];
 
 export type SortableTab = {
   id: number;
@@ -68,7 +69,7 @@ export const getSorter = (sortType: SortType | undefined) => {
   return compareByHostAndTitle;
 };
 
-export const sortTabs = async (tabs: chrome.tabs.Tab[], sortType: SortType | undefined) => {
+export const sortTabs = async (tabs: chrome.tabs.Tab[], sortType?: SortType) => {
   const tabSet: Record<number, SortableTab[] | undefined> = {};
   const sorter = getSorter(sortType);
 
