@@ -1,4 +1,4 @@
-import { showConfirmModal } from '@/popup/dialogs';
+import { showConfirmModal, showRangeConfirmModal } from '@/popup/dialogs';
 import { STATE, save } from '@/popup/state';
 import { type SaveDataType, getSaveData } from '@/utils';
 import { isUpdateBadgeMode, isValidOptionType } from '@/utils/type-guard';
@@ -194,9 +194,10 @@ const onClickEventHandler = async (e: Event) => {
     }
 
     case 'categorize': {
-      const minCategorizeNumber = await showConfirmModal<number | 'cancel'>(taskName, {
-        type: 'range',
-        range: Array.from({ length: 10 }, (_, index) => index),
+      const minCategorizeNumber = await showRangeConfirmModal({
+        taskName,
+        min: 0,
+        max: 9,
       });
 
       if (minCategorizeNumber === 'cancel') {
