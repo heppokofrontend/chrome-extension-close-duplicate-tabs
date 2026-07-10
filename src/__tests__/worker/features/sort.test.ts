@@ -56,13 +56,13 @@ describe('getSorter', () => {
     expect(tabs.toSorted(sorter).map((tab) => tab.id)).toStrictEqual([3, 2, 1]);
   });
 
-  it('falls back to sorting by hostname then title for unknown or falsy sortType', () => {
+  it('falls back to sorting by hostname then title for cancelled or undefined sortType', () => {
     const tabs = [
       makeTab({ id: 1, hostname: 'b.com', title: 'A' }),
       makeTab({ id: 2, hostname: 'a.com', title: 'Z' }),
     ];
 
-    expect(tabs.toSorted(getSorter('false')).map((tab) => tab.id)).toStrictEqual([2, 1]);
+    expect(tabs.toSorted(getSorter('cancel')).map((tab) => tab.id)).toStrictEqual([2, 1]);
     expect(tabs.toSorted(getSorter(undefined)).map((tab) => tab.id)).toStrictEqual([2, 1]);
   });
 

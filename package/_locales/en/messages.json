@@ -96,10 +96,10 @@
   "dialog_command_apply": {
     "message": "Apply"
   },
-  "dialog_command_true": {
+  "dialog_command_confirm": {
     "message": "YES"
   },
-  "dialog_command_false": {
+  "dialog_command_cancel": {
     "message": "Cancel"
   },
   "dialog_command_show_duplicate": {
