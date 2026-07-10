@@ -138,16 +138,18 @@ const onClickEventHandler = async (e: Event) => {
         return;
       }
 
+      const showDuplicate = 'show_duplicate';
+
       const result = await showConfirmModal({
         taskName: messageName,
-        commands: ['confirm', 'show_duplicate', 'cancel'],
+        commands: ['confirm', showDuplicate, 'cancel'],
       });
 
       if (result === 'cancel') {
         return;
       }
 
-      postMessage({ taskName, shouldShowDuplicatePage: result === 'show_duplicate' });
+      postMessage({ taskName, shouldShowDuplicatePage: result === showDuplicate });
       break;
     }
 
