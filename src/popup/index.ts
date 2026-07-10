@@ -1,7 +1,7 @@
-import { showConfirmModal } from '@/popup/dialogs';
+import { showConfirmModal, showRangeConfirmModal } from '@/popup/dialogs';
 import { STATE, save } from '@/popup/state';
 import { type SaveDataType, getSaveData } from '@/utils';
-import { isUpdateBadgeMode, isValidOptionType } from '@/utils/type-guard';
+import { isUpdateBadgeMode, isValidOptionType, isValidSortType } from '@/utils/type-guard';
 import type { SortType } from '@/worker/features/sort';
 import type { TaskRequest } from '@/worker/types';
 
@@ -87,6 +87,23 @@ const loadSaveData = async () => {
   ]);
 };
 
+type PostMessageParams =
+  | {
+      taskName: 'remove';
+      shouldShowDuplicatePage?: boolean;
+      sortType?: never;
+    }
+  | {
+      taskName: 'sort';
+      shouldShowDuplicatePage?: never;
+      sortType?: SortType;
+    }
+  | {
+      taskName: 'reload' | 'combine' | 'divide' | 'categorize';
+      shouldShowDuplicatePage?: never;
+      sortType?: never;
+    };
+
 const onClickEventHandler = async (e: Event) => {
   if (!(e.currentTarget instanceof HTMLButtonElement)) {
     return;
@@ -94,12 +111,8 @@ const onClickEventHandler = async (e: Event) => {
   const postMessage = ({
     taskName,
     shouldShowDuplicatePage = false,
-    sortType = 'cancel',
-  }: {
-    taskName: string;
-    shouldShowDuplicatePage?: boolean;
-    sortType?: SortType;
-  }) => {
+    sortType,
+  }: PostMessageParams) => {
     const port = chrome.runtime.connect();
     const message: TaskRequest = {
       taskName,
@@ -125,23 +138,25 @@ const onClickEventHandler = async (e: Event) => {
         return;
       }
 
-      const result = await showConfirmModal<'confirm' | 'show_duplicate' | 'cancel'>(messageName, {
-        type: 'remove',
-        commands: ['confirm', 'show_duplicate', 'cancel'],
+      const showDuplicate = 'show_duplicate';
+
+      const result = await showConfirmModal({
+        taskName: messageName,
+        commands: ['confirm', showDuplicate, 'cancel'],
       });
 
       if (result === 'cancel') {
         return;
       }
 
-      postMessage({ taskName, shouldShowDuplicatePage: result === 'show_duplicate' });
+      postMessage({ taskName, shouldShowDuplicatePage: result === showDuplicate });
       break;
     }
 
     case 'reload': {
       const messageName = STATE.saveData.includeAllWindow ? 'reload_allwin' : taskName;
 
-      if (!noConfirm && (await showConfirmModal(messageName)) === 'cancel') {
+      if (!noConfirm && (await showConfirmModal({ taskName: messageName })) === 'cancel') {
         return;
       }
 
@@ -154,8 +169,8 @@ const onClickEventHandler = async (e: Event) => {
       if (!noConfirm) {
         if (
           (!STATE.saveData.includeAllWindow &&
-            (await showConfirmModal(`${taskName}_all`)) === 'cancel') ||
-          (await showConfirmModal(taskName)) === 'cancel'
+            (await showConfirmModal({ taskName: `${taskName}_all` })) === 'cancel') ||
+          (await showConfirmModal({ taskName })) === 'cancel'
         ) {
           return;
         }
@@ -169,8 +184,8 @@ const onClickEventHandler = async (e: Event) => {
       if (!noConfirm) {
         if (
           (STATE.saveData.includeAllWindow &&
-            (await showConfirmModal(`${taskName}_all`)) === 'cancel') ||
-          (await showConfirmModal(taskName)) === 'cancel'
+            (await showConfirmModal({ taskName: `${taskName}_all` })) === 'cancel') ||
+          (await showConfirmModal({ taskName })) === 'cancel'
         ) {
           return;
         }
@@ -180,12 +195,12 @@ const onClickEventHandler = async (e: Event) => {
       break;
 
     case 'sort': {
-      const sortType = await showConfirmModal<SortType>(taskName, {
-        type: 'multiple',
+      const sortType = await showConfirmModal({
+        taskName,
         commands: ['sortByUrl', 'sortByTitle', 'sortByHostAndTitle', 'cancel'],
       });
 
-      if (sortType === 'cancel') {
+      if (!isValidSortType(sortType)) {
         return;
       }
 
@@ -194,9 +209,10 @@ const onClickEventHandler = async (e: Event) => {
     }
 
     case 'categorize': {
-      const minCategorizeNumber = await showConfirmModal<number | 'cancel'>(taskName, {
-        type: 'range',
-        range: Array.from({ length: 10 }, (_, index) => index),
+      const minCategorizeNumber = await showRangeConfirmModal({
+        taskName,
+        min: 0,
+        max: 9,
       });
 
       if (minCategorizeNumber === 'cancel') {
