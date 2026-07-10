@@ -1,1 +1,1 @@
-export * from './show-confirm-modal';
+export * from './show-confirm-modals';
