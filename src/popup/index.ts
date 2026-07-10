@@ -363,11 +363,7 @@ const onSelectChange = (e: Event) => {
 };
 
 const onCheckboxChange = (e: Event) => {
-  if (
-    e.currentTarget === null ||
-    !(e.currentTarget instanceof HTMLInputElement) ||
-    e.currentTarget.type !== 'checkbox'
-  ) {
+  if (e.currentTarget === null || !(e.currentTarget instanceof HTMLInputElement)) {
     return;
   }
 
@@ -414,7 +410,9 @@ const addEvent = () => {
     select.addEventListener('change', onSelectChange);
   }
 
-  const checkboxElements = document.querySelectorAll<HTMLInputElement>('input[data-option-type]');
+  const checkboxElements = document.querySelectorAll<HTMLInputElement>(
+    'input[type="checkbox"][data-option-type]',
+  );
 
   for (const checkbox of checkboxElements) {
     checkbox.addEventListener('change', onCheckboxChange);
