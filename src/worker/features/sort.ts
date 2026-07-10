@@ -1,7 +1,7 @@
 import type { SaveDataType } from '@/utils';
 import { getTabs } from '@/worker/utils';
 
-export type SortType = 'sortByUrl' | 'sortByTitle' | 'sortByHostAndTitle' | 'false';
+export type SortType = 'sortByUrl' | 'sortByTitle' | 'sortByHostAndTitle' | 'cancel';
 
 export type SortableTab = {
   id: number;

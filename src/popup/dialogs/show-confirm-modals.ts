@@ -21,12 +21,15 @@ const confirmModal = document.getElementById('confirm') as HTMLDialogElement;
 const confirmModalText = document.getElementById('confirm-text') as HTMLParagraphElement;
 const buttonContainer = document.getElementById('dialog-buttons') as HTMLParagraphElement;
 const templateButton = document.createElement('button');
-const defaultCommands = ['true', 'false'];
+const defaultCommands = ['confirm', 'cancel'];
 
 templateButton.type = 'button';
 confirmModal.ariaLabel = getMessage('dialog_confirm');
 
-export const showConfirmModal = <T = 'true' | 'false'>(taskName: string, options?: Options<T>) => {
+export const showConfirmModal = <T = 'confirm' | 'cancel'>(
+  taskName: string,
+  options?: Options<T>,
+) => {
   const textContent = getMessage(`dialog_${taskName}`);
 
   confirmModalText.textContent = '';
@@ -39,7 +42,7 @@ export const showConfirmModal = <T = 'true' | 'false'>(taskName: string, options
     resolve,
     commands,
   }: {
-    resolve: (value: T | 'false') => void;
+    resolve: (value: T | 'cancel') => void;
     commands: Commands<T>;
   }) => {
     commands.forEach((command) => {
@@ -54,7 +57,7 @@ export const showConfirmModal = <T = 'true' | 'false'>(taskName: string, options
     });
   };
 
-  return new Promise<T | 'false'>((resolve) => {
+  return new Promise<T | 'cancel'>((resolve) => {
     switch (options?.type) {
       case 'range': {
         // FIXME: Type assertion
@@ -104,7 +107,7 @@ export const showConfirmModal = <T = 'true' | 'false'>(taskName: string, options
 
         cancelButton.textContent = getMessage(`dialog_command_false`);
         cancelButton.addEventListener('click', () => {
-          resolve('false');
+          resolve('cancel');
         });
 
         buttonContainer.appendChild(cancelButton);
