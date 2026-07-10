@@ -1,10 +1,5 @@
-import {
-  type SaveDataType,
-  applySaveDataPatch,
-  defaultSaveData,
-  getSaveData,
-  setSaveData,
-} from '@/utils';
+import { STATE, save } from '@/popup/state';
+import { type SaveDataType, getSaveData } from '@/utils';
 import { isUpdateBadgeMode, isValidOptionType } from '@/utils/type-guard';
 import type { SortType } from '@/worker/features/sort';
 import type { TaskRequest } from '@/worker/types';
@@ -32,11 +27,6 @@ const setSelectValue = ({
   if (valueElement instanceof HTMLElement) {
     valueElement.textContent = getMessage(`select_visible_value_${optionType}_${safeValue}`);
   }
-};
-
-const STATE = {
-  dangerZoneIsOpen: false,
-  saveData: defaultSaveData,
 };
 
 const showNoticeModal = (() => {
@@ -192,14 +182,6 @@ const showConfirmModal = (() => {
     });
   };
 })();
-
-const save = (patch: Partial<SaveDataType>) => {
-  STATE.saveData = applySaveDataPatch(STATE.saveData, patch);
-  setSaveData(STATE.saveData).catch((error: unknown) => {
-    // 失敗すると STATE と storage が食い違ったままになるため、痕跡だけは残す。
-    console.error(error);
-  });
-};
 
 const loadSaveData = async () => {
   return Promise.all([
