@@ -1,4 +1,4 @@
-import { save } from '@/popup/state';
+import { save } from '@/popup/utils/state';
 import { setSelectUpdateBadgeModeValue } from '@/popup/utils/set-select-value';
 
 export const onSelectChange = (e: Event) => {

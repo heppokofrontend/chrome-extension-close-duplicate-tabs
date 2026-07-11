@@ -1,7 +1,7 @@
 import { onCheckboxChange } from '@/popup/listeners/checkbox';
 import { onSelectChange } from '@/popup/listeners/select';
 import { runTask } from '@/popup/run-task';
-import { STATE } from '@/popup/state';
+import { STATE } from '@/popup/utils/state';
 import { isValidTaskName } from '@/utils/type-guard';
 
 export const addListener = () => {

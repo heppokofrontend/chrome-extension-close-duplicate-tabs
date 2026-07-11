@@ -1,5 +1,5 @@
 import { addListener } from '@/popup/listeners';
-import { STATE } from '@/popup/state';
+import { STATE } from '@/popup/utils/state';
 import { setSelectUpdateBadgeModeValue } from '@/popup/utils/set-select-value';
 import { getSaveData } from '@/utils';
 

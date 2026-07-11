@@ -1,5 +1,5 @@
 import { showChoicesModal, showConfirmModal, showRangeModal } from '@/popup/dialogs';
-import { STATE } from '@/popup/state';
+import { STATE } from '@/popup/utils/state';
 import type { TaskName, TaskRequest } from '@/types';
 import { isValidSortType } from '@/utils/type-guard';
 import type { SortType } from '@/worker/features/sort';
