@@ -46,6 +46,10 @@ const renderButtons = <T extends string>(commands: readonly T[]) =>
   });
 
 export const showConfirmModal = ({ taskName }: { taskName: string }) => {
+  if (STATE.saveData.noConfirm) {
+    return Promise.resolve<'confirm' | 'cancel'>('confirm');
+  }
+
   openModal(taskName);
   return closeModalWhenDone(renderButtons(['confirm', 'cancel'] as const));
 };

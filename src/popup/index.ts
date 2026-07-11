@@ -133,10 +133,8 @@ const runTask = async (taskName: TaskName) => {
     case 'reload': {
       const resolvedTaskName = STATE.saveData.includeAllWindow ? 'reload_allwin' : taskName;
 
-      if (!noConfirm) {
-        if ((await showConfirmModal({ taskName: resolvedTaskName })) === 'cancel') {
-          return;
-        }
+      if ((await showConfirmModal({ taskName: resolvedTaskName })) === 'cancel') {
+        return;
       }
 
       postMessage({ taskName });
@@ -145,18 +143,16 @@ const runTask = async (taskName: TaskName) => {
 
     // １つにまとめる
     case 'combine': {
-      if (!noConfirm) {
-        const shouldWarnAboutAllWindows = !STATE.saveData.includeAllWindow;
+      const shouldWarnAboutAllWindows = !STATE.saveData.includeAllWindow;
 
-        if (shouldWarnAboutAllWindows) {
-          if ((await showConfirmModal({ taskName: `${taskName}_all` })) === 'cancel') {
-            return;
-          }
-        }
-
-        if ((await showConfirmModal({ taskName })) === 'cancel') {
+      if (shouldWarnAboutAllWindows) {
+        if ((await showConfirmModal({ taskName: `${taskName}_all` })) === 'cancel') {
           return;
         }
+      }
+
+      if ((await showConfirmModal({ taskName })) === 'cancel') {
+        return;
       }
 
       postMessage({ taskName });
@@ -165,18 +161,16 @@ const runTask = async (taskName: TaskName) => {
 
     // 全部別窓にする
     case 'divide': {
-      if (!noConfirm) {
-        const shouldWarnAboutAllWindows = STATE.saveData.includeAllWindow;
+      const shouldWarnAboutAllWindows = STATE.saveData.includeAllWindow;
 
-        if (shouldWarnAboutAllWindows) {
-          if ((await showConfirmModal({ taskName: `${taskName}_all` })) === 'cancel') {
-            return;
-          }
-        }
-
-        if ((await showConfirmModal({ taskName })) === 'cancel') {
+      if (shouldWarnAboutAllWindows) {
+        if ((await showConfirmModal({ taskName: `${taskName}_all` })) === 'cancel') {
           return;
         }
+      }
+
+      if ((await showConfirmModal({ taskName })) === 'cancel') {
+        return;
       }
 
       postMessage({ taskName });
