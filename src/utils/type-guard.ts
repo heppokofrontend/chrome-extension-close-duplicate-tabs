@@ -1,3 +1,4 @@
+import { taskNames, type TaskName } from '@/types';
 import {
   defaultSaveData,
   UPDATE_BADGE_MODES,
@@ -19,4 +20,8 @@ export const isValidOptionType = (value: unknown): value is keyof SaveDataType =
 
 export const isValidSortType = (value: unknown): value is SortType => {
   return typeof value === 'string' && (sortTypes as readonly string[]).includes(value);
+};
+
+export const isValidTaskName = (value: unknown): value is TaskName => {
+  return typeof value === 'string' && (taskNames as readonly string[]).includes(value);
 };

@@ -1,9 +1,14 @@
 import { showConfirmModal, showNoticeModal, showRangeConfirmModal } from '@/popup/dialogs';
 import { STATE, save } from '@/popup/state';
+import type { TaskName, TaskRequest } from '@/types';
 import { type SaveDataType, getMessage, getSaveData } from '@/utils';
-import { isUpdateBadgeMode, isValidOptionType, isValidSortType } from '@/utils/type-guard';
+import {
+  isUpdateBadgeMode,
+  isValidOptionType,
+  isValidSortType,
+  isValidTaskName,
+} from '@/utils/type-guard';
 import type { SortType } from '@/worker/features/sort';
-import type { TaskRequest } from '@/worker/types';
 
 const setSelectValue = ({
   select,
@@ -75,10 +80,7 @@ type PostMessageParams =
       sortType?: never;
     };
 
-const onClickEventHandler = async (e: Event) => {
-  if (!(e.currentTarget instanceof HTMLButtonElement)) {
-    return;
-  }
+const runTask = async (taskName: TaskName) => {
   const postMessage = ({
     taskName,
     shouldShowDuplicatePage = false,
@@ -97,7 +99,6 @@ const onClickEventHandler = async (e: Event) => {
     port.postMessage(message);
   };
 
-  const taskName = e.currentTarget.dataset['taskName'];
   const { noConfirm } = STATE.saveData;
 
   switch (taskName) {
@@ -257,7 +258,15 @@ const addEvent = () => {
 
   for (const button of buttons) {
     button.addEventListener('click', (e) => {
-      void onClickEventHandler(e);
+      if (!(e.currentTarget instanceof HTMLButtonElement)) {
+        return;
+      }
+
+      const taskName = e.currentTarget.dataset['taskName'];
+
+      if (isValidTaskName(taskName)) {
+        void runTask(taskName);
+      }
     });
   }
 
