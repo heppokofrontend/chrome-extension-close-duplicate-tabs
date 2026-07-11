@@ -1,5 +1,6 @@
-import { addListener, setSelectValue } from '@/popup/listeners';
+import { addListener } from '@/popup/listeners';
 import { STATE } from '@/popup/state';
+import { setSelectValue } from '@/popup/utils/set-select-value';
 import { getSaveData } from '@/utils';
 
 const loadSaveData = async () => {
