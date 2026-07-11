@@ -27,6 +27,15 @@ const closeModalWhenDone = <V>(promise: Promise<V>) =>
     confirmModal.close();
   });
 
+const makeButton = (messageKey: string, onClick: () => void) => {
+  const button = templateButton.cloneNode();
+
+  button.textContent = getMessage(messageKey);
+  button.addEventListener('click', onClick);
+
+  return button;
+};
+
 export const showConfirmModal = ({
   taskName,
   commands = defaultCommands,
@@ -39,14 +48,11 @@ export const showConfirmModal = ({
   return closeModalWhenDone(
     new Promise<string>((resolve) => {
       commands.forEach((command) => {
-        const button = templateButton.cloneNode();
-
-        button.textContent = getMessage(`dialog_command_${command}`);
-        button.addEventListener('click', () => {
-          resolve(command);
-        });
-
-        buttonContainer.appendChild(button);
+        buttonContainer.appendChild(
+          makeButton(`dialog_command_${command}`, () => {
+            resolve(command);
+          }),
+        );
       });
     }),
   );
@@ -96,23 +102,17 @@ export const showRangeConfirmModal = ({
       });
       buttonContainer.appendChild(field);
 
-      const okButton = templateButton.cloneNode();
+      buttonContainer.appendChild(
+        makeButton('dialog_command_apply', () => {
+          resolve(value);
+        }),
+      );
 
-      okButton.textContent = getMessage(`dialog_command_apply`);
-      okButton.addEventListener('click', () => {
-        resolve(value);
-      });
-
-      buttonContainer.appendChild(okButton);
-
-      const cancelButton = templateButton.cloneNode();
-
-      cancelButton.textContent = getMessage(`dialog_command_cancel`);
-      cancelButton.addEventListener('click', () => {
-        resolve('cancel');
-      });
-
-      buttonContainer.appendChild(cancelButton);
+      buttonContainer.appendChild(
+        makeButton('dialog_command_cancel', () => {
+          resolve('cancel');
+        }),
+      );
     }),
   );
 };
