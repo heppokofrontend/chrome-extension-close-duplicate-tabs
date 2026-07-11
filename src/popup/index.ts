@@ -1,4 +1,9 @@
-import { showConfirmModal, showNoticeModal, showRangeConfirmModal } from '@/popup/dialogs';
+import {
+  showChoicesModal,
+  showConfirmModal,
+  showNoticeModal,
+  showRangeConfirmModal,
+} from '@/popup/dialogs';
 import { STATE, save } from '@/popup/state';
 import type { TaskName, TaskRequest } from '@/types';
 import { type SaveDataType, getMessage, getSaveData } from '@/utils';
@@ -110,18 +115,18 @@ const runTask = async (taskName: TaskName) => {
         return;
       }
 
-      const showDuplicate = 'show_duplicate';
+      const SHOW_DUPLICATE = 'show_duplicate';
 
-      const result = await showConfirmModal({
+      const result = await showChoicesModal({
         taskName: messageName,
-        commands: ['confirm', showDuplicate, 'cancel'],
+        commands: ['confirm', SHOW_DUPLICATE, 'cancel'],
       });
 
       if (result === 'cancel') {
         return;
       }
 
-      postMessage({ taskName, shouldShowDuplicatePage: result === showDuplicate });
+      postMessage({ taskName, shouldShowDuplicatePage: result === SHOW_DUPLICATE });
       break;
     }
 
@@ -179,7 +184,7 @@ const runTask = async (taskName: TaskName) => {
     }
 
     case 'sort': {
-      const sortType = await showConfirmModal({
+      const sortType = await showChoicesModal({
         taskName,
         commands: ['sortByUrl', 'sortByTitle', 'sortByHostAndTitle', 'cancel'],
       });
