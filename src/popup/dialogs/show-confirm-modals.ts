@@ -5,7 +5,6 @@ const confirmModal = document.getElementById('confirm') as HTMLDialogElement;
 const confirmModalText = document.getElementById('confirm-text') as HTMLParagraphElement;
 const buttonContainer = document.getElementById('dialog-buttons') as HTMLParagraphElement;
 const templateButton = document.createElement('button');
-const defaultCommands = ['confirm', 'cancel'];
 
 templateButton.type = 'button';
 confirmModal.ariaLabel = getMessage('dialog_confirm');
@@ -35,26 +34,31 @@ const makeButton = (messageKey: string, onClick: () => void) => {
   return button;
 };
 
-export const showConfirmModal = ({
+const renderButtons = <T extends string>(commands: readonly T[]) =>
+  new Promise<T>((resolve) => {
+    commands.forEach((command) => {
+      buttonContainer.appendChild(
+        makeButton(`dialog_command_${command}`, () => {
+          resolve(command);
+        }),
+      );
+    });
+  });
+
+export const showConfirmModal = ({ taskName }: { taskName: string }) => {
+  openModal(taskName);
+  return closeModalWhenDone(renderButtons(['confirm', 'cancel'] as const));
+};
+
+export const showChoicesModal = ({
   taskName,
-  commands = defaultCommands,
+  commands,
 }: {
   taskName: string;
-  commands?: string[];
+  commands: string[];
 }) => {
   openModal(taskName);
-
-  return closeModalWhenDone(
-    new Promise<string>((resolve) => {
-      commands.forEach((command) => {
-        buttonContainer.appendChild(
-          makeButton(`dialog_command_${command}`, () => {
-            resolve(command);
-          }),
-        );
-      });
-    }),
-  );
+  return closeModalWhenDone(renderButtons(commands));
 };
 
 export const showRangeConfirmModal = ({
