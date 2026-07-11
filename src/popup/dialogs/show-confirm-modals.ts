@@ -65,7 +65,7 @@ export const showChoicesModal = ({
   return closeModalWhenDone(renderButtons(commands));
 };
 
-export const showRangeConfirmModal = ({
+export const showRangeModal = ({
   taskName,
   min,
   max,
@@ -77,7 +77,7 @@ export const showRangeConfirmModal = ({
   openModal(taskName);
 
   return closeModalWhenDone(
-    new Promise<number | 'cancel'>((resolve) => {
+    new Promise<number>((resolve) => {
       const field = document.createElement('label');
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       let value = STATE.saveData.minCategorizeNumber ?? min;
@@ -117,7 +117,7 @@ export const showRangeConfirmModal = ({
 
       buttonContainer.appendChild(
         makeButton('dialog_command_cancel', () => {
-          resolve('cancel');
+          resolve(Number.NaN);
         }),
       );
     }),

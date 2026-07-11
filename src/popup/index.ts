@@ -2,7 +2,7 @@ import {
   showChoicesModal,
   showConfirmModal,
   showNoticeModal,
-  showRangeConfirmModal,
+  showRangeModal,
 } from '@/popup/dialogs';
 import { STATE, save } from '@/popup/state';
 import type { TaskName, TaskRequest } from '@/types';
@@ -192,13 +192,13 @@ const runTask = async (taskName: TaskName) => {
     }
 
     case 'categorize': {
-      const minCategorizeNumber = await showRangeConfirmModal({
+      const minCategorizeNumber = await showRangeModal({
         taskName,
         min: 0,
         max: 9,
       });
 
-      if (minCategorizeNumber === 'cancel') {
+      if (Number.isNaN(minCategorizeNumber)) {
         return;
       }
 
