@@ -21,125 +21,139 @@ type PostMessageParams =
       sortType?: never;
     };
 
-export const runTask = async (taskName: TaskName) => {
-  const postMessage = ({
+const postMessage = ({
+  taskName,
+  shouldShowDuplicatePage = false,
+  sortType,
+}: PostMessageParams) => {
+  const port = chrome.runtime.connect();
+  const message: TaskRequest = {
     taskName,
-    shouldShowDuplicatePage = false,
-    sortType,
-  }: PostMessageParams) => {
-    const port = chrome.runtime.connect();
-    const message: TaskRequest = {
-      taskName,
-      options: {
-        saveData: STATE.saveData,
-        shouldShowDuplicatePage,
-        sort: sortType,
-      },
-    };
-
-    port.postMessage(message);
+    options: {
+      saveData: STATE.saveData,
+      shouldShowDuplicatePage,
+      sort: sortType,
+    },
   };
 
-  const { noConfirm } = STATE.saveData;
+  port.postMessage(message);
+};
 
+/** 重複したタブを閉じる */
+const requestRemove = async () => {
+  const taskName = 'remove';
+  const messageName = STATE.saveData.includeAllWindow ? 'remove_allwin' : taskName;
+
+  // ここだけ特例で showChoicesModal をスキップする
+  if (STATE.saveData.noConfirm) {
+    postMessage({ taskName });
+    return;
+  }
+
+  const SHOW_DUPLICATE = 'show_duplicate';
+
+  const result = await showChoicesModal({
+    taskName: messageName,
+    commands: ['confirm', SHOW_DUPLICATE, 'cancel'],
+  });
+
+  if (result === 'cancel') {
+    return;
+  }
+
+  postMessage({ taskName, shouldShowDuplicatePage: result === SHOW_DUPLICATE });
+};
+
+/** すべてのタブをリロードする */
+const requestReload = async () => {
+  const taskName = 'reload';
+  const resolvedTaskName = STATE.saveData.includeAllWindow ? 'reload_allwin' : taskName;
+
+  if ((await showConfirmModal({ taskName: resolvedTaskName })) === 'cancel') {
+    return;
+  }
+
+  postMessage({ taskName });
+};
+
+/** 全ウィンドウを１つにまとめる */
+const requestCombine = async () => {
+  const taskName = 'combine';
+  const shouldWarnAboutAllWindows = !STATE.saveData.includeAllWindow;
+
+  if (shouldWarnAboutAllWindows) {
+    if ((await showConfirmModal({ taskName: `${taskName}_all` })) === 'cancel') {
+      return;
+    }
+  }
+
+  if ((await showConfirmModal({ taskName })) === 'cancel') {
+    return;
+  }
+
+  postMessage({ taskName });
+};
+
+/** すべてのタブを別窓にする */
+const requestDivide = async () => {
+  const taskName = 'divide';
+  const shouldWarnAboutAllWindows = STATE.saveData.includeAllWindow;
+
+  if (shouldWarnAboutAllWindows) {
+    if ((await showConfirmModal({ taskName: `${taskName}_all` })) === 'cancel') {
+      return;
+    }
+  }
+
+  if ((await showConfirmModal({ taskName })) === 'cancel') {
+    return;
+  }
+
+  postMessage({ taskName });
+};
+
+/** どのルールでタブを並び替えるか選んでもらう */
+const requestSort = async () => {
+  const taskName = 'sort';
+  const sortType = await showChoicesModal({
+    taskName,
+    commands: ['sortByUrl', 'sortByTitle', 'sortByHostAndTitle', 'cancel'],
+  });
+
+  if (isValidSortType(sortType)) {
+    postMessage({ taskName, sortType });
+  }
+};
+
+/** ホスト名ごとに別窓にする */
+const requestCategorize = async () => {
+  const taskName = 'categorize';
+  const minCategorizeNumber = await showRangeModal({
+    taskName,
+    min: 0,
+    max: 9,
+  });
+
+  if (Number.isNaN(minCategorizeNumber)) {
+    return;
+  }
+
+  postMessage({ taskName });
+};
+
+export const runTask = (taskName: TaskName) => {
   switch (taskName) {
-    case 'remove': {
-      const messageName = STATE.saveData.includeAllWindow ? 'remove_allwin' : taskName;
-
-      if (noConfirm) {
-        postMessage({ taskName });
-        return;
-      }
-
-      const SHOW_DUPLICATE = 'show_duplicate';
-
-      const result = await showChoicesModal({
-        taskName: messageName,
-        commands: ['confirm', SHOW_DUPLICATE, 'cancel'],
-      });
-
-      if (result === 'cancel') {
-        return;
-      }
-
-      postMessage({ taskName, shouldShowDuplicatePage: result === SHOW_DUPLICATE });
-      break;
-    }
-
-    case 'reload': {
-      const resolvedTaskName = STATE.saveData.includeAllWindow ? 'reload_allwin' : taskName;
-
-      if ((await showConfirmModal({ taskName: resolvedTaskName })) === 'cancel') {
-        return;
-      }
-
-      postMessage({ taskName });
-      break;
-    }
-
-    // １つにまとめる
-    case 'combine': {
-      const shouldWarnAboutAllWindows = !STATE.saveData.includeAllWindow;
-
-      if (shouldWarnAboutAllWindows) {
-        if ((await showConfirmModal({ taskName: `${taskName}_all` })) === 'cancel') {
-          return;
-        }
-      }
-
-      if ((await showConfirmModal({ taskName })) === 'cancel') {
-        return;
-      }
-
-      postMessage({ taskName });
-      break;
-    }
-
-    // 全部別窓にする
-    case 'divide': {
-      const shouldWarnAboutAllWindows = STATE.saveData.includeAllWindow;
-
-      if (shouldWarnAboutAllWindows) {
-        if ((await showConfirmModal({ taskName: `${taskName}_all` })) === 'cancel') {
-          return;
-        }
-      }
-
-      if ((await showConfirmModal({ taskName })) === 'cancel') {
-        return;
-      }
-
-      postMessage({ taskName });
-      break;
-    }
-
-    case 'sort': {
-      const sortType = await showChoicesModal({
-        taskName,
-        commands: ['sortByUrl', 'sortByTitle', 'sortByHostAndTitle', 'cancel'],
-      });
-
-      if (isValidSortType(sortType)) {
-        postMessage({ taskName, sortType });
-        return;
-      }
-
-      break;
-    }
-
-    case 'categorize': {
-      const minCategorizeNumber = await showRangeModal({
-        taskName,
-        min: 0,
-        max: 9,
-      });
-
-      if (Number.isNaN(minCategorizeNumber)) {
-        return;
-      }
-
-      postMessage({ taskName });
-      break;
-    }
+    case 'remove':
+      return requestRemove();
+    case 'reload':
+      return requestReload();
+    case 'combine':
+      return requestCombine();
+    case 'divide':
+      return requestDivide();
+    case 'sort':
+      return requestSort();
+    case 'categorize':
+      return requestCategorize();
   }
 };
