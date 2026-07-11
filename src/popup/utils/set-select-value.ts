@@ -1,18 +1,16 @@
-import { getMessage } from '@/utils';
+import { defaultSaveData, getMessage } from '@/utils';
+import { isUpdateBadgeMode } from '@/utils/type-guard';
 
-export const setSelectValue = ({
+/** 検証済みの値を <select> と表示用テキストへ反映する汎用処理。値の検証は呼び出し側の責務。 */
+const setSelectValue = ({
   select,
   optionType,
-  value,
+  safeValue,
 }: {
   select: HTMLSelectElement;
   optionType: string;
-  value: string;
+  safeValue: string;
 }) => {
-  // ストレージ由来の value は不正な可能性があるため、実際の <option> と照合し、
-  // 一致しなければ先頭の option（安全なデフォルト）にフォールバックする。
-  const validValues = Array.from(select.options, (option) => option.value);
-  const safeValue = validValues.includes(value) ? value : (select.options[0]?.value ?? value);
   const valueElement = select.parentElement?.querySelector('.value');
 
   select.value = safeValue;
@@ -21,4 +19,24 @@ export const setSelectValue = ({
   if (valueElement instanceof HTMLElement) {
     valueElement.textContent = getMessage(`select_visible_value_${optionType}_${safeValue}`);
   }
+};
+
+export const setSelectUpdateBadgeModeValue = ({
+  select,
+  value,
+}: {
+  select: HTMLSelectElement;
+  value: unknown;
+}) => {
+  // ストレージ由来の value は不正な可能性があるため、型ガードで検証し、
+  // 一致しなければデフォルト値（安全なフォールバック）を使う。
+  const safeValue = isUpdateBadgeMode(value) ? value : defaultSaveData.updateBadgeMode;
+
+  setSelectValue({
+    select,
+    optionType: 'updateBadgeMode',
+    safeValue,
+  });
+
+  return safeValue;
 };

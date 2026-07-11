@@ -1,6 +1,5 @@
 import { save } from '@/popup/state';
-import { setSelectValue } from '@/popup/utils/set-select-value';
-import { isUpdateBadgeMode } from '@/utils/type-guard';
+import { setSelectUpdateBadgeModeValue } from '@/popup/utils/set-select-value';
 
 export const onSelectChange = (e: Event) => {
   if (!(e.currentTarget instanceof HTMLSelectElement)) {
@@ -8,19 +7,13 @@ export const onSelectChange = (e: Event) => {
   }
 
   const { optionType } = e.currentTarget.dataset;
-  const { value } = e.currentTarget;
 
-  if (optionType === undefined) {
-    return;
-  }
+  if (optionType === 'updateBadgeMode') {
+    const updateBadgeMode = setSelectUpdateBadgeModeValue({
+      select: e.currentTarget,
+      value: e.currentTarget.value,
+    });
 
-  setSelectValue({
-    select: e.currentTarget,
-    optionType,
-    value,
-  });
-
-  if (optionType === 'updateBadgeMode' && isUpdateBadgeMode(value)) {
-    save({ updateBadgeMode: value });
+    save({ updateBadgeMode });
   }
 };

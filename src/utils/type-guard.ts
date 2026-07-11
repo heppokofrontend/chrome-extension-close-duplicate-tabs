@@ -7,8 +7,8 @@ import {
 } from '@/utils/save-data';
 import { sortTypes, type SortType } from '@/worker/features/sort';
 
-export const isUpdateBadgeMode = (value: string): value is UpdateBadgeMode =>
-  (UPDATE_BADGE_MODES as readonly string[]).includes(value);
+export const isUpdateBadgeMode = (value: unknown): value is UpdateBadgeMode =>
+  typeof value === 'string' && (UPDATE_BADGE_MODES as readonly string[]).includes(value);
 
 export const isValidOptionType = (value: unknown): value is keyof SaveDataType => {
   if (typeof value !== 'string') {
