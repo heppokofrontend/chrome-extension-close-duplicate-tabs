@@ -126,10 +126,12 @@ const runTask = async (taskName: TaskName) => {
     }
 
     case 'reload': {
-      const messageName = STATE.saveData.includeAllWindow ? 'reload_allwin' : taskName;
+      const resolvedTaskName = STATE.saveData.includeAllWindow ? 'reload_allwin' : taskName;
 
-      if (!noConfirm && (await showConfirmModal({ taskName: messageName })) === 'cancel') {
-        return;
+      if (!noConfirm) {
+        if ((await showConfirmModal({ taskName: resolvedTaskName })) === 'cancel') {
+          return;
+        }
       }
 
       postMessage({ taskName });
@@ -137,34 +139,44 @@ const runTask = async (taskName: TaskName) => {
     }
 
     // １つにまとめる
-    case 'combine':
+    case 'combine': {
       if (!noConfirm) {
-        if (
-          (!STATE.saveData.includeAllWindow &&
-            (await showConfirmModal({ taskName: `${taskName}_all` })) === 'cancel') ||
-          (await showConfirmModal({ taskName })) === 'cancel'
-        ) {
+        const shouldWarnAboutAllWindows = !STATE.saveData.includeAllWindow;
+
+        if (shouldWarnAboutAllWindows) {
+          if ((await showConfirmModal({ taskName: `${taskName}_all` })) === 'cancel') {
+            return;
+          }
+        }
+
+        if ((await showConfirmModal({ taskName })) === 'cancel') {
           return;
         }
       }
 
       postMessage({ taskName });
       break;
+    }
 
     // 全部別窓にする
-    case 'divide':
+    case 'divide': {
       if (!noConfirm) {
-        if (
-          (STATE.saveData.includeAllWindow &&
-            (await showConfirmModal({ taskName: `${taskName}_all` })) === 'cancel') ||
-          (await showConfirmModal({ taskName })) === 'cancel'
-        ) {
+        const shouldWarnAboutAllWindows = STATE.saveData.includeAllWindow;
+
+        if (shouldWarnAboutAllWindows) {
+          if ((await showConfirmModal({ taskName: `${taskName}_all` })) === 'cancel') {
+            return;
+          }
+        }
+
+        if ((await showConfirmModal({ taskName })) === 'cancel') {
           return;
         }
       }
 
       postMessage({ taskName });
       break;
+    }
 
     case 'sort': {
       const sortType = await showConfirmModal({
@@ -172,11 +184,11 @@ const runTask = async (taskName: TaskName) => {
         commands: ['sortByUrl', 'sortByTitle', 'sortByHostAndTitle', 'cancel'],
       });
 
-      if (!isValidSortType(sortType)) {
+      if (isValidSortType(sortType)) {
+        postMessage({ taskName, sortType });
         return;
       }
 
-      postMessage({ taskName, sortType });
       break;
     }
 
