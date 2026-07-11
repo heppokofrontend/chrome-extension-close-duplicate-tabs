@@ -1,4 +1,5 @@
-const getMessage = (key: string) => chrome.i18n.getMessage(key);
+import { getMessage } from '@/utils';
+
 const targets = document.querySelectorAll<HTMLElement>('[data-i18n]');
 
 for (const elm of targets) {

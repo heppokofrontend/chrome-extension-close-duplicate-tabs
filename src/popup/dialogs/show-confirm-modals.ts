@@ -1,6 +1,5 @@
 import { STATE, save } from '@/popup/state';
-
-const getMessage = (key: string) => chrome.i18n.getMessage(key);
+import { getMessage } from '@/utils';
 
 const confirmModal = document.getElementById('confirm') as HTMLDialogElement;
 const confirmModalText = document.getElementById('confirm-text') as HTMLParagraphElement;

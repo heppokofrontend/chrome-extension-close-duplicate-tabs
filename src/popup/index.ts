@@ -1,11 +1,9 @@
 import { showConfirmModal, showRangeConfirmModal } from '@/popup/dialogs';
 import { STATE, save } from '@/popup/state';
-import { type SaveDataType, getSaveData } from '@/utils';
+import { type SaveDataType, getMessage, getSaveData } from '@/utils';
 import { isUpdateBadgeMode, isValidOptionType, isValidSortType } from '@/utils/type-guard';
 import type { SortType } from '@/worker/features/sort';
 import type { TaskRequest } from '@/worker/types';
-
-const getMessage = (key: string) => chrome.i18n.getMessage(key);
 
 const setSelectValue = ({
   select,
