@@ -4,7 +4,7 @@ import type { TaskName, TaskRequest } from '@/types';
 import { isValidSortType } from '@/utils/type-guard';
 import type { SortType } from '@/worker/features/sort';
 
-type PostMessageParams =
+type SendTaskRequestParams =
   | {
       taskName: 'remove';
       shouldShowDuplicatePage?: boolean;
@@ -21,11 +21,11 @@ type PostMessageParams =
       sortType?: never;
     };
 
-const postMessage = ({
+const sendTaskRequest = ({
   taskName,
   shouldShowDuplicatePage = false,
   sortType,
-}: PostMessageParams) => {
+}: SendTaskRequestParams) => {
   const port = chrome.runtime.connect();
   const message: TaskRequest = {
     taskName,
@@ -46,7 +46,7 @@ const requestRemove = async () => {
 
   // ここだけ特例で showChoicesModal をスキップする
   if (STATE.saveData.noConfirm) {
-    postMessage({ taskName });
+    sendTaskRequest({ taskName });
     return;
   }
 
@@ -61,7 +61,7 @@ const requestRemove = async () => {
     return;
   }
 
-  postMessage({ taskName, shouldShowDuplicatePage: result === SHOW_DUPLICATE });
+  sendTaskRequest({ taskName, shouldShowDuplicatePage: result === SHOW_DUPLICATE });
 };
 
 /** すべてのタブをリロードする */
@@ -73,7 +73,7 @@ const requestReload = async () => {
     return;
   }
 
-  postMessage({ taskName });
+  sendTaskRequest({ taskName });
 };
 
 /** 全ウィンドウを１つにまとめる */
@@ -91,7 +91,7 @@ const requestCombine = async () => {
     return;
   }
 
-  postMessage({ taskName });
+  sendTaskRequest({ taskName });
 };
 
 /** すべてのタブを別窓にする */
@@ -109,7 +109,7 @@ const requestDivide = async () => {
     return;
   }
 
-  postMessage({ taskName });
+  sendTaskRequest({ taskName });
 };
 
 /** どのルールでタブを並び替えるか選んでもらう */
@@ -121,7 +121,7 @@ const requestSort = async () => {
   });
 
   if (isValidSortType(sortType)) {
-    postMessage({ taskName, sortType });
+    sendTaskRequest({ taskName, sortType });
   }
 };
 
@@ -138,7 +138,7 @@ const requestCategorize = async () => {
     return;
   }
 
-  postMessage({ taskName });
+  sendTaskRequest({ taskName });
 };
 
 export const runTask = (taskName: TaskName) => {
