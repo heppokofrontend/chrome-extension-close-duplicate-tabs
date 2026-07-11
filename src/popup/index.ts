@@ -209,7 +209,7 @@ const runTask = async (taskName: TaskName) => {
 };
 
 const onSelectChange = (e: Event) => {
-  if (e.currentTarget === null || !(e.currentTarget instanceof HTMLSelectElement)) {
+  if (!(e.currentTarget instanceof HTMLSelectElement)) {
     return;
   }
 
@@ -232,7 +232,7 @@ const onSelectChange = (e: Event) => {
 };
 
 const onCheckboxChange = (e: Event) => {
-  if (e.currentTarget === null || !(e.currentTarget instanceof HTMLInputElement)) {
+  if (!(e.currentTarget instanceof HTMLInputElement)) {
     return;
   }
 
