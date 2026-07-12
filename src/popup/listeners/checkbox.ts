@@ -14,7 +14,17 @@ export const onCheckboxChange = (e: Event) => {
     return;
   }
 
-  const patch: Partial<SaveDataType> = { [optionType]: e.currentTarget.checked };
+  const { checked } = e.currentTarget;
+
+  // 同じ optionType を複数箇所（例: advanced-path-rules 内の Default 欄）で
+  // 表示している場合、片方の操作で他方が古い値のまま取り残されるのを防ぐ。
+  for (const control of document.querySelectorAll<HTMLInputElement>(
+    `input[type="checkbox"][data-option-type="${optionType}"]`,
+  )) {
+    control.checked = checked;
+  }
+
+  const patch: Partial<SaveDataType> = { [optionType]: checked };
 
   if (e.currentTarget.checked && !STATE.saveData.noConfirm) {
     switch (optionType) {

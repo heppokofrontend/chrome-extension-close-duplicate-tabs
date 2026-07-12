@@ -29,6 +29,9 @@
   "checkbox_autoAvoidDuplicate": {
     "message": "Suppress new duplicate tabs"
   },
+  "checkbox_useAdvancedPathRule": {
+    "message": "Use advanced path rule settings"
+  },
   "select_for_screen_reader_updateBadgeMode": {
     "message": "On the icon:",
     "description": "Screen-reader-only accessible name for the icon-badge-mode <select>. Not visible on screen. Screen readers announce this immediately before the currently selected option_updateBadgeMode_* text, so phrase it as a lead-in fragment that reads naturally when followed by that text. The corresponding select_visible_value_updateBadgeMode_* string is exactly this text plus a space plus the matching option_updateBadgeMode_* text — keep all three in sync."
@@ -83,6 +86,9 @@
   },
   "hint_autoAvoidDuplicate": {
     "message": "When a new tab opens, if an existing tab with the same URL is already open, that existing tab is shown instead. New tab pages and some special URLs are excluded."
+  },
+  "hint_useAdvancedPathRule": {
+    "message": "Configure the URL pattern considered a duplicate individually for each domain."
   },
   "dialog_confirm": {
     "message": "Alert"
@@ -178,5 +184,25 @@
         "content": "$1"
       }
     }
+  },
+  "aria_advancedPathRuleOrigin": {
+    "message": "Origin"
+  },
+  "aria_advancedPathRuleField": {
+    "message": "$ORIGIN$'s $FIELD$",
+    "placeholders": {
+      "ORIGIN": {
+        "content": "$1"
+      },
+      "FIELD": {
+        "content": "$2"
+      }
+    }
+  },
+  "text_advancedPathRuleUnsetOrigin": {
+    "message": "not set"
+  },
+  "btn_advancedPathRuleDelete": {
+    "message": "Delete"
   }
 }
