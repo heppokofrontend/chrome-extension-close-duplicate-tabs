@@ -95,11 +95,11 @@ body {
         0 0 0 4px var(--color-checkbox-border);
     }
 
-    [data-state='loaded'] & .label::before {
+    [data-transition='ready'] & .label::before {
       transition: 0.2s right ease-out;
     }
 
-    [data-state='loaded'] & .label::after {
+    [data-transition='ready'] & .label::after {
       transition: 0.2s background-color ease-out;
     }
 

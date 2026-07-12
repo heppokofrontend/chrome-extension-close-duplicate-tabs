@@ -41,5 +41,5 @@ void init();
 
 // CSS Transitionの有効化
 setTimeout(() => {
-  document.body.dataset['state'] = 'loaded';
+  document.body.dataset['transition'] = 'ready';
 }, 300);
