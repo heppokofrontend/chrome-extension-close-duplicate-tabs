@@ -7,6 +7,13 @@
 export const UPDATE_BADGE_MODES = ['none', 'all', 'current'] as const;
 export type UpdateBadgeMode = (typeof UPDATE_BADGE_MODES)[number];
 
+export type PathRule = {
+  origin: string;
+  pathname: boolean;
+  query: boolean;
+  hash: boolean;
+};
+
 export type SaveDataType = {
   ignorePathname?: boolean;
   ignoreQuery?: boolean;
@@ -18,13 +25,15 @@ export type SaveDataType = {
   minCategorizeNumber?: number;
   autoAvoidDuplicate?: boolean;
   updateBadgeMode?: UpdateBadgeMode;
+  useAdvancedPathRule?: boolean;
+  advancedPathRules?: Record<string, PathRule>;
   /** お知らせダイアログの表示済みキーと、表示した日時（ISO 8601 文字列）の記録。 */
   shown?: Record<string, string>;
 };
 
 export type UrlNormalizeOptions = Pick<
   SaveDataType,
-  'ignorePathname' | 'ignoreQuery' | 'ignoreHash'
+  'ignorePathname' | 'ignoreQuery' | 'ignoreHash' | 'useAdvancedPathRule' | 'advancedPathRules'
 >;
 
 const mergeSaveData = <T extends object>(saved: unknown, defaults: T): T => {
@@ -46,6 +55,8 @@ export const defaultSaveData: Required<SaveDataType> = {
   minCategorizeNumber: 1,
   autoAvoidDuplicate: false,
   updateBadgeMode: 'none',
+  useAdvancedPathRule: false,
+  advancedPathRules: {},
   shown: {},
 };
 

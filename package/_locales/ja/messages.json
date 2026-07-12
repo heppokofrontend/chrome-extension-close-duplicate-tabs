@@ -29,6 +29,9 @@
   "checkbox_autoAvoidDuplicate": {
     "message": "新しい重複タブを抑制する"
   },
+  "checkbox_useAdvancedPathRule": {
+    "message": "高度なパスルール設定を利用する"
+  },
   "select_for_screen_reader_updateBadgeMode": {
     "message": "アイコンに"
   },
@@ -76,6 +79,9 @@
   },
   "hint_autoAvoidDuplicate": {
     "message": "新しいタブが開かれる時、すでに開かれているタブがあればそのタブを開きます。新規タブや、一部の特殊なURLは対象外です。"
+  },
+  "hint_useAdvancedPathRule": {
+    "message": "ドメインごとに重複とみなすURLパターンを個別に設定できます。"
   },
   "dialog_confirm": {
     "message": "確認"
@@ -171,5 +177,25 @@
         "content": "$1"
       }
     }
+  },
+  "aria_advancedPathRuleOrigin": {
+    "message": "オリジン名"
+  },
+  "aria_advancedPathRuleField": {
+    "message": "$ORIGIN$の$FIELD$",
+    "placeholders": {
+      "ORIGIN": {
+        "content": "$1"
+      },
+      "FIELD": {
+        "content": "$2"
+      }
+    }
+  },
+  "text_advancedPathRuleUnsetOrigin": {
+    "message": "未入力"
+  },
+  "btn_advancedPathRuleDelete": {
+    "message": "削除"
   }
 }
