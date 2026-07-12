@@ -1,3 +1,4 @@
+import type { TaskRequest } from '@/types';
 import {
   registerAutoAvoidListeners,
   registerUpdateBadgeListeners,
@@ -8,7 +9,6 @@ import {
   runRemove,
   runSort,
 } from '@/worker/features';
-import type { TaskRequest } from '@/worker/types';
 
 registerAutoAvoidListeners();
 registerUpdateBadgeListeners();

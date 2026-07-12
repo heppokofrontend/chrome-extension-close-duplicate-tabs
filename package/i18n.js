@@ -1,1 +1,1 @@
-"use strict";(()=>{var o=t=>chrome.i18n.getMessage(t),s=document.querySelectorAll("[data-i18n]");for(let t of s){let{i18n:e}=t.dataset;if(!e)continue;let n=o(e);t.textContent=n}})();
+"use strict";(()=>{var r=e=>chrome.i18n.getMessage(e);var s=Promise.resolve();var a=document.querySelectorAll("[data-i18n]");for(let e of a){let{i18n:t}=e.dataset;if(!t)continue;let n=r(t);e.textContent=n}})();

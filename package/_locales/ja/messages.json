@@ -89,10 +89,10 @@
   "dialog_command_apply": {
     "message": "実行"
   },
-  "dialog_command_true": {
+  "dialog_command_confirm": {
     "message": "はい"
   },
-  "dialog_command_false": {
+  "dialog_command_cancel": {
     "message": "キャンセル"
   },
   "dialog_command_show_duplicate": {
