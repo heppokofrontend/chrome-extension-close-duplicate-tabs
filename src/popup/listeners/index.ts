@@ -1,3 +1,4 @@
+import { addAdvancedPathRuleListeners } from '@/popup/listeners/advanced-path-rules';
 import { onCheckboxChange } from '@/popup/listeners/checkbox';
 import { onSelectChange } from '@/popup/listeners/select';
 import { runTask } from '@/popup/run-task';
@@ -34,6 +35,8 @@ export const addListener = () => {
   for (const checkbox of checkboxElements) {
     checkbox.addEventListener('change', onCheckboxChange);
   }
+
+  addAdvancedPathRuleListeners();
 
   const dangerDetails = document.querySelector<HTMLDetailsElement>('#dangerDetails');
   const dangerDetailsSummary = dangerDetails?.querySelector('summary');

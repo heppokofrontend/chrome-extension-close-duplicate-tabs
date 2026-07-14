@@ -4,8 +4,11 @@
   --color-h1-bg: #ddd;
   --color-background: #f1f1f1;
   --color-background-secondary: #fff;
+  --color-textfield: #000;
+  --color-textfield-background: #f1f1f1;
   --color-label-text: #000;
   --color-label-bg: #dfdfdf;
+  --color-label-border: #33333340;
   --color-checkbox-border: #e1e1e1;
   --color-danger-title-text: inherit;
   --color-danger-title-font-weight: normal;
@@ -17,18 +20,22 @@
   --border-details: 1px solid #ff7c7c;
   --border-top-details-content: 0;
   --border-bottom-h1: 0;
+  --border-bottom-h1: 1px solid #33333340;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     --color-outline: #fff;
-    --color-h1-text: #898989;
+    --color-h1-text: #acacac;
     --color-h1-bg: #202124;
     --color-background: #292a2d;
     --color-background-secondary: #202124;
     --color-checkbox-border: #39393b;
+    --color-textfield: #fff;
+    --color-textfield-background: #292a2d;
     --color-label-text: #ddd;
     --color-label-bg: #515254;
+    --color-label-border: #acacac40;
     --color-danger-title-text: #ff7c7c;
     --color-danger-title-font-weight: bold;
     --color-danger-title-bg: #202124;
@@ -62,7 +69,7 @@ body {
 h1 {
   padding: 10px 16px;
   font-family: monospace;
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: normal;
   line-height: 1.2;
   color: var(--color-h1-text);
@@ -73,7 +80,7 @@ h1 {
 }
 
 button {
-  font-size: 11px;
+  font-size: 0.6875rem;
   color: #000;
   background: #42ccc0;
   border: 0;

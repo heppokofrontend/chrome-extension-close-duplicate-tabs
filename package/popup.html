@@ -54,7 +54,7 @@
             </p>
 
             <p class="hint" id="desc-ignoreHash">
-              <span aria-label="hint">💡</span>
+              <span role="img" aria-label="hint">💡</span>
               https://example.com/abc/def?query=hoge&query2=piyo<em>#hash</em>
             </p>
 
@@ -73,9 +73,76 @@
             </p>
 
             <p class="hint" id="desc-ignoreQuery">
-              <span aria-label="hint">💡</span>
+              <span role="img" aria-label="hint">💡</span>
               https://example.com/abc/def<em>?query=hoge&query2=piyo</em>#hash
             </p>
+
+            <section id="advanced-path-rules">
+              <div class="advanced-path-rules">
+                <h2 class="advanced-path-rules__h2">ADVANCED PATH RULES</h2>
+
+                <h3 class="advanced-path-rules__default-heading">Default</h3>
+                <dl>
+                  <dt><label for="default-ignore-pathname">pathname</label></dt>
+                  <dd>
+                    <input
+                      type="checkbox"
+                      data-option-type="ignorePathname"
+                      id="default-ignore-pathname"
+                    />
+                  </dd>
+                  <dt><label for="default-ignore-query">query</label></dt>
+                  <dd>
+                    <input
+                      type="checkbox"
+                      data-option-type="ignoreQuery"
+                      id="default-ignore-query"
+                    />
+                  </dd>
+                  <dt><label for="default-ignore-hash">hash</label></dt>
+                  <dd>
+                    <input type="checkbox" data-option-type="ignoreHash" id="default-ignore-hash" />
+                  </dd>
+                </dl>
+
+                <div id="advanced-path-rules__custom-rules"></div>
+
+                <template id="advanced-path-rule-template">
+                  <section class="advanced-path-rule">
+                    <div class="advanced-path-rules__header">
+                      <h3 class="advanced-path-rules__heading"></h3>
+                      <p>
+                        <input
+                          type="text"
+                          class="advanced-path-rules__origin"
+                          aria-label="Origin"
+                          placeholder="http://localhost:3000"
+                        />
+                      </p>
+                    </div>
+
+                    <dl>
+                      <dt><label>pathname</label></dt>
+                      <dd><input type="checkbox" class="advanced-path-rules__pathname" /></dd>
+                      <dt><label>query</label></dt>
+                      <dd><input type="checkbox" class="advanced-path-rules__query" /></dd>
+                      <dt><label>hash</label></dt>
+                      <dd><input type="checkbox" class="advanced-path-rules__hash" /></dd>
+                      <dt>delete</dt>
+                      <dd>
+                        <button type="button" class="advanced-path-rules__delete">Delete</button>
+                      </dd>
+                    </dl>
+                  </section>
+                </template>
+
+                <p>
+                  <button type="button" id="advanced-path-rules__add">
+                    <span>Add</span>
+                  </button>
+                </p>
+              </div>
+            </section>
 
             <p>
               <label>
@@ -183,11 +250,11 @@
               </p>
 
               <p class="hint" id="desc-ignorePathname">
-                <span aria-label="hint">💡</span>
+                <span role="img" aria-label="hint">💡</span>
                 <span>https://example.com<em>/abc/def</em>?query=hoge&query2=piyo#hash</span>
               </p>
               <p class="hint" id="desc-ignorePathname2">
-                <span aria-label="hint">💡</span>
+                <span role="img" aria-label="hint">💡</span>
                 <span data-i18n="hint_pathname"></span>
               </p>
 
@@ -208,7 +275,7 @@
               </p>
 
               <p class="hint" id="desc-forcedChangeURLWhenClickedAnchorLink">
-                <span aria-label="hint">💡</span>
+                <span role="img" aria-label="hint">💡</span>
                 <span data-i18n="hint_forcedChangeURLWhenClickedAnchorLink"></span>
               </p>
 
@@ -227,8 +294,23 @@
               </p>
 
               <p class="hint" id="desc-autoAvoidDuplicate">
-                <span aria-label="hint">💡</span>
+                <span role="img" aria-label="hint">💡</span>
                 <span data-i18n="hint_autoAvoidDuplicate"></span>
+              </p>
+
+              <p>
+                <label>
+                  <span class="img">
+                    <img src="./images/gear.svg" width="14" height="16" alt="" />
+                  </span>
+                  <input type="checkbox" data-option-type="useAdvancedPathRule" />
+                  <span class="label" data-i18n="checkbox_useAdvancedPathRule">loading...</span>
+                </label>
+              </p>
+
+              <p class="hint" id="desc-useAdvancedPathRule">
+                <span role="img" aria-label="hint">💡</span>
+                <span data-i18n="hint_useAdvancedPathRule"></span>
               </p>
 
               <p>

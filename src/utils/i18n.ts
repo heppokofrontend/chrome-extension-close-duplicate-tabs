@@ -1,1 +1,2 @@
-export const getMessage = (key: string) => chrome.i18n.getMessage(key);
+export const getMessage = (key: string, substitutions?: string | string[]) =>
+  chrome.i18n.getMessage(key, substitutions);

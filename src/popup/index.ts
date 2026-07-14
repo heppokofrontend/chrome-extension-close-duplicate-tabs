@@ -1,4 +1,5 @@
 import { addListener } from '@/popup/listeners';
+import { renderAdvancedPathRules } from '@/popup/listeners/advanced-path-rules';
 import { setSelectUpdateBadgeModeValue } from '@/popup/utils/set-select-value';
 import { STATE } from '@/popup/utils/state';
 import { getSaveData } from '@/utils';
@@ -13,17 +14,19 @@ const loadSaveData = async () => {
     }),
     getSaveData().then((saveData) => {
       for (const [key, value] of Object.entries(saveData)) {
-        const control = document.querySelector<HTMLElement>(`[data-option-type=${key}]`);
+        const controls = document.querySelectorAll<HTMLElement>(`[data-option-type=${key}]`);
 
-        if (control instanceof HTMLInputElement && typeof value === 'boolean') {
-          control.checked = value;
-        }
+        for (const control of controls) {
+          if (control instanceof HTMLInputElement && typeof value === 'boolean') {
+            control.checked = value;
+          }
 
-        if (control instanceof HTMLSelectElement && key === 'updateBadgeMode') {
-          setSelectUpdateBadgeModeValue({
-            select: control,
-            value,
-          });
+          if (control instanceof HTMLSelectElement && key === 'updateBadgeMode') {
+            setSelectUpdateBadgeModeValue({
+              select: control,
+              value,
+            });
+          }
         }
       }
 
@@ -34,12 +37,13 @@ const loadSaveData = async () => {
 
 const init = async () => {
   await loadSaveData();
+  renderAdvancedPathRules();
   addListener();
+
+  // CSS Transitionの有効化
+  setTimeout(() => {
+    document.body.dataset['transition'] = 'ready';
+  }, 300);
 };
 
 void init();
-
-// CSS Transitionの有効化
-setTimeout(() => {
-  document.body.dataset['state'] = 'loaded';
-}, 300);

@@ -49,6 +49,8 @@ const resolveCreatedTab = async (createdTab: CreatedTab) => {
           ignorePathname: saveData.ignorePathname,
           ignoreQuery: saveData.ignoreQuery,
           ignoreHash: saveData.ignoreHash,
+          useAdvancedPathRule: saveData.useAdvancedPathRule,
+          advancedPathRules: saveData.advancedPathRules,
         },
       },
     });
