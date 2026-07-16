@@ -2,11 +2,11 @@
 import { build, context } from 'esbuild';
 
 const entryPoints = [
-  'src/content-scripts.ts',
-  { in: 'src/popup/index.ts', out: 'popup' },
-  { in: 'src/worker/index.ts', out: 'worker' },
-  'src/duplicates-list.ts',
-  'src/i18n.ts',
+  { in: 'src/contexts/content-scripts.ts', out: 'content-scripts' },
+  { in: 'src/contexts/popup/index.ts', out: 'popup' },
+  { in: 'src/contexts/worker/index.ts', out: 'worker' },
+  { in: 'src/contexts/duplicates-list.ts', out: 'duplicates-list' },
+  { in: 'src/contexts/i18n.ts', out: 'i18n' },
 ];
 
 const watch = process.argv.includes('--watch');
