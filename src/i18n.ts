@@ -14,4 +14,5 @@ for (const elm of targets) {
   elm.textContent = textContent;
 }
 
-document.documentElement.lang = chrome.i18n.getUILanguage() === 'ja' ? 'ja' : 'en';
+const primaryLanguage = chrome.i18n.getUILanguage().split(/[-_]/)[0];
+document.documentElement.lang = primaryLanguage === 'ja' ? 'ja' : 'en';
