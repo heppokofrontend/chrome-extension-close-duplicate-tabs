@@ -1,5 +1,5 @@
+import type { SortType } from '@/contexts/worker/features/sort';
 import type { SaveDataType } from '@/utils';
-import type { SortType } from '@/worker/features/sort';
 
 export const taskNames = ['remove', 'reload', 'combine', 'divide', 'sort', 'categorize'] as const;
 export type TaskName = (typeof taskNames)[number];

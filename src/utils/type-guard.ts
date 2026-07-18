@@ -1,3 +1,4 @@
+import { sortTypes, type SortType } from '@/contexts/worker/features/sort';
 import { taskNames, type TaskName } from '@/types';
 import {
   defaultSaveData,
@@ -5,7 +6,6 @@ import {
   type SaveDataType,
   type UpdateBadgeMode,
 } from '@/utils/save-data';
-import { sortTypes, type SortType } from '@/worker/features/sort';
 
 export const isUpdateBadgeMode = (value: unknown): value is UpdateBadgeMode =>
   typeof value === 'string' && (UPDATE_BADGE_MODES as readonly string[]).includes(value);
