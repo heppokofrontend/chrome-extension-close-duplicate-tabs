@@ -1,0 +1,107 @@
+name: Release
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  release:
+    name: Tag and create release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .node-version
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Read package version
+        id: version
+        run: |
+          VERSION=$(node -p 'require("./package.json").version')
+          echo "VERSION=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Determine release tag
+        id: tag
+        run: |
+          echo "TAG=v${{ steps.version.outputs.VERSION }}" >> "$GITHUB_OUTPUT"
+
+      - name: Check whether tag already exists
+        id: tag-check
+        run: |
+          if git ls-remote --tags origin "refs/tags/${{ steps.tag.outputs.TAG }}" | grep -q "${{ steps.tag.outputs.TAG }}"; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Check whether GitHub release already exists
+        id: release-check
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if gh api -H "Accept: application/vnd.github+json" "/repos/${{ github.repository }}/releases/tags/${{ steps.tag.outputs.TAG }}" > /dev/null 2>&1; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Setup GPG for signing
+        if: ${{ env.GPG_PRIVATE_KEY != '' && env.GPG_KEY_ID != '' }}
+        env:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+          GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
+        run: |
+          mkdir -p ~/.gnupg
+          chmod 700 ~/.gnupg
+          echo 'allow-loopback-pinentry' >> ~/.gnupg/gpg-agent.conf
+          printf '%s\n' "$GPG_PRIVATE_KEY" | gpg --batch --import
+          echo "$GPG_KEY_ID:6:" | gpg --import-ownertrust
+          cat > /tmp/gpg-wrapper.sh <<'EOF'
+          #!/bin/sh
+          exec gpg --batch --pinentry-mode loopback --passphrase "" "$@"
+          EOF
+          chmod +x /tmp/gpg-wrapper.sh
+
+      - name: Create git tag
+        if: steps.tag-check.outputs.exists == 'false'
+        env:
+          GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
+        run: |
+          if [ -x /tmp/gpg-wrapper.sh ]; then
+            GPG_UID=$(gpg --list-keys --with-colons "$GPG_KEY_ID" | awk -F: '$1=="uid"{print $10; exit}')
+            GPG_EMAIL="${GPG_UID#*<}"
+            git config user.name "${GPG_UID%% <*}"
+            git config user.email "${GPG_EMAIL%>}"
+            git config user.signingkey "$GPG_KEY_ID"
+            git -c gpg.program=/tmp/gpg-wrapper.sh tag -s "${{ steps.tag.outputs.TAG }}" -m "Release ${{ steps.tag.outputs.TAG }}"
+          else
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git tag -a "${{ steps.tag.outputs.TAG }}" -m "Release ${{ steps.tag.outputs.TAG }}"
+          fi
+          git push origin "${{ steps.tag.outputs.TAG }}"
+
+      - name: Create GitHub release
+        if: steps.release-check.outputs.exists == 'false'
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ steps.tag.outputs.TAG }}
+          name: ${{ steps.tag.outputs.TAG }}
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
