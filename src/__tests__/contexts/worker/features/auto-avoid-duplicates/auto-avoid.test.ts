@@ -288,5 +288,88 @@ describe('registerAutoAvoidListeners', () => {
       expect(mocks.query).not.toHaveBeenCalled();
       expect(mocks.remove).not.toHaveBeenCalled();
     });
+
+    it('ignores tab creation events without a numeric id', async () => {
+      const { listeners, mocks } = await setup({ autoAvoidDuplicate: true }, []);
+
+      for (const l of listeners.onCreated) {
+        l({ id: undefined });
+      }
+      await flushPromises();
+
+      expect(mocks.query).not.toHaveBeenCalled();
+    });
+
+    it('cleans up tracked state when a tab is removed before its create/update flow completes', async () => {
+      const { listeners, mocks } = await setup({ autoAvoidDuplicate: true }, []);
+
+      for (const l of listeners.onCreated) {
+        l({ id: 5 });
+      }
+      for (const l of listeners.onRemoved) {
+        l(5);
+      }
+      // The removed tab id was dropped from tracking, so a late onUpdated for it is a no-op.
+      for (const l of listeners.onUpdated) {
+        l(5, { url: 'https://a.com/' }, { id: 5, url: 'https://a.com/', windowId: 1, index: 0, active: true });
+      }
+      await flushPromises();
+
+      expect(mocks.query).not.toHaveBeenCalled();
+    });
+
+    it('skips re-entrant processing when the same tab id is already being resolved', async () => {
+      const existingTabs: MockTab[] = [
+        { id: 1, url: 'https://a.com/', windowId: 1, index: 0, active: false },
+      ];
+      const { listeners, mocks } = await setup({ autoAvoidDuplicate: true }, existingTabs);
+
+      for (const l of listeners.onCreated) {
+        l({ id: 2 });
+      }
+      for (const l of listeners.onUpdated) {
+        l(2, { url: 'https://a.com/' }, { id: 2, url: 'https://a.com/', windowId: 1, index: 3, active: false });
+      }
+
+      // Let the first resolveCreatedTab(2) chain progress past the getSaveData await, so it
+      // has added id 2 to processingTabIds but has not reached its finally block yet.
+      await Promise.resolve();
+      await Promise.resolve();
+
+      // Simulate the tab id being reused (a new create/update burst for the same id) while
+      // the first resolution is still in-flight.
+      for (const l of listeners.onCreated) {
+        l({ id: 2 });
+      }
+      for (const l of listeners.onUpdated) {
+        l(2, { url: 'https://a.com/' }, { id: 2, url: 'https://a.com/', windowId: 1, index: 3, active: false });
+      }
+
+      await flushPromises();
+
+      // The re-entrant call bailed out immediately, so only one resolution went through.
+      expect(mocks.remove).toHaveBeenCalledTimes(1);
+      expect(mocks.remove).toHaveBeenCalledWith(2);
+    });
+
+    it('queries every window (not just the current one) when includeAllWindow is enabled', async () => {
+      const existingTabs: MockTab[] = [
+        { id: 1, url: 'https://a.com/', windowId: 1, index: 0, active: true },
+      ];
+      const { listeners, mocks } = await setup(
+        { autoAvoidDuplicate: true, includeAllWindow: true },
+        existingTabs,
+      );
+
+      await openTab(listeners, {
+        id: 2,
+        url: 'https://a.com/',
+        windowId: 1,
+        index: 3,
+        active: false,
+      });
+
+      expect(mocks.query).toHaveBeenCalledWith({ windowType: 'normal' });
+    });
   });
 });

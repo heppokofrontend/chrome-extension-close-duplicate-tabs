@@ -116,6 +116,36 @@ describe('pickTabIdsToClose', () => {
 
     expect(result).toStrictEqual([2]);
   });
+
+  it('leaves an already-first current-window tab in place ahead of a later non-current tab', () => {
+    const result = pickTabIdsToClose({
+      candidateTabs: [
+        { id: 2, url: normalize('https://b.com'), windowId: 1 },
+        { id: 3, url: normalize('https://b.com'), windowId: 2 },
+      ],
+      currentTabId: 1,
+      currentUrl: normalize('https://a.com'),
+      currentWindowId: 1,
+      includeAllWindow: true,
+    });
+
+    expect(result).toStrictEqual([3]);
+  });
+
+  it('does not reorder two candidates that are both outside the current window', () => {
+    const result = pickTabIdsToClose({
+      candidateTabs: [
+        { id: 2, url: normalize('https://b.com'), windowId: 5 },
+        { id: 3, url: normalize('https://b.com'), windowId: 6 },
+      ],
+      currentTabId: 1,
+      currentUrl: normalize('https://a.com'),
+      currentWindowId: 1,
+      includeAllWindow: true,
+    });
+
+    expect(result).toStrictEqual([3]);
+  });
 });
 
 describe('getDuplicatedTabIdsToClose', () => {

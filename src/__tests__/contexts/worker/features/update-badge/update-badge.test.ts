@@ -173,6 +173,19 @@ describe('registerUpdateBadgeListeners', () => {
       expect(mocks.setBadgeText).toHaveBeenLastCalledWith({ text: '1' });
     });
 
+    it('clears the badge when the current tab has no normalizable url', async () => {
+      const { mocks } = createChromeMock({
+        saveData: { updateBadgeMode: 'current' },
+        currentTab: { id: 9, url: '', windowId: 1 },
+        tabs: [{ id: 1, url: 'https://a.com/', windowId: 1 }],
+      });
+
+      registerUpdateBadgeListeners();
+      await flushPromises();
+
+      expect(mocks.setBadgeText).toHaveBeenLastCalledWith({ text: '' });
+    });
+
     it('clears the badge when the current tab cannot be found', async () => {
       const { mocks } = createChromeMock({
         saveData: { updateBadgeMode: 'current' },
@@ -311,6 +324,26 @@ describe('registerUpdateBadgeListeners', () => {
       }
       for (const l of listeners.onStorageChanged) {
         l({ saveData: {} }, 'session');
+      }
+      await flushPromises();
+
+      expect(mocks.setBadgeText.mock.calls.length).toBe(initialCalls);
+    });
+
+    it('does not update when a window loses focus (windowId becomes -1)', async () => {
+      const { listeners, mocks } = createChromeMock({
+        saveData: { updateBadgeMode: 'none' },
+        currentTab: { id: 9, url: 'https://a.com/', windowId: 1 },
+        tabs: [],
+      });
+
+      registerUpdateBadgeListeners();
+      await flushPromises();
+
+      const initialCalls = mocks.setBadgeText.mock.calls.length;
+
+      for (const l of listeners.onFocusChanged) {
+        l(-1);
       }
       await flushPromises();
 

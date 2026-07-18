@@ -70,4 +70,15 @@ describe('runDivide', () => {
     expect(windowsCreate).not.toHaveBeenCalled();
     expect(windowsUpdate).toHaveBeenCalledWith(5, { focused: true });
   });
+
+  it('skips refocusing the window when the current tab has no numeric id', async () => {
+    const currentTab = makeChromeTab({ id: undefined, windowId: 5 });
+    const tabs = [makeChromeTab({ id: 1, pinned: false })];
+    const { windowsUpdate, update } = stubChrome(currentTab, tabs);
+
+    await runDivide({ saveData });
+
+    expect(windowsUpdate).not.toHaveBeenCalled();
+    expect(update).toHaveBeenCalledWith(1, { pinned: false });
+  });
 });

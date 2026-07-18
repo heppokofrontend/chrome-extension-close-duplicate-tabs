@@ -255,6 +255,46 @@ describe('addAdvancedPathRuleListeners', () => {
     expect(document.querySelector('[data-key="k1"]')).toBeNull();
     expect(Object.keys(getLastSavedAdvancedPathRules())).toStrictEqual(['k2']);
   });
+
+  it('does nothing when the rule template is missing from the DOM', async () => {
+    requireElement(document, '#advanced-path-rule-template').remove();
+
+    const { addAdvancedPathRuleListeners } =
+      await import('@/contexts/popup/listeners/advanced-path-rules');
+    addAdvancedPathRuleListeners();
+    clickAddButton();
+
+    expect(document.querySelectorAll('.advanced-path-rule')).toHaveLength(0);
+  });
+
+  it('does nothing when the template is missing a required element (delete button)', async () => {
+    const template = document.querySelector('#advanced-path-rule-template');
+
+    if (!(template instanceof HTMLTemplateElement)) {
+      throw new TypeError('template not found');
+    }
+
+    requireElement(template.content, '.advanced-path-rules__delete').remove();
+
+    const { addAdvancedPathRuleListeners } =
+      await import('@/contexts/popup/listeners/advanced-path-rules');
+    addAdvancedPathRuleListeners();
+    clickAddButton();
+
+    expect(document.querySelectorAll('.advanced-path-rule')).toHaveLength(0);
+  });
+
+  it('does nothing when the add button is clicked and the custom-rules container is missing', async () => {
+    requireElement(document, '#advanced-path-rules__custom-rules').remove();
+
+    const { addAdvancedPathRuleListeners } =
+      await import('@/contexts/popup/listeners/advanced-path-rules');
+    addAdvancedPathRuleListeners();
+    clickAddButton();
+
+    expect(document.querySelectorAll('.advanced-path-rule')).toHaveLength(0);
+    expect(getSave()).not.toHaveBeenCalled();
+  });
 });
 
 describe('renderAdvancedPathRules', () => {
@@ -274,5 +314,20 @@ describe('renderAdvancedPathRules', () => {
     expect(requireInput(section, '.advanced-path-rules__pathname').checked).toBe(true);
     expect(requireInput(section, '.advanced-path-rules__query').checked).toBe(false);
     expect(requireInput(section, '.advanced-path-rules__hash').checked).toBe(true);
+  });
+
+  it('does nothing when the custom-rules container is missing', async () => {
+    getState().saveData.advancedPathRules = {
+      k1: { origin: 'https://foo.example', pathname: true, query: false, hash: true },
+    };
+    requireElement(document, '#advanced-path-rules__custom-rules').remove();
+
+    const { renderAdvancedPathRules } =
+      await import('@/contexts/popup/listeners/advanced-path-rules');
+
+    expect(() => {
+      renderAdvancedPathRules();
+    }).not.toThrow();
+    expect(document.querySelectorAll('.advanced-path-rule')).toHaveLength(0);
   });
 });
