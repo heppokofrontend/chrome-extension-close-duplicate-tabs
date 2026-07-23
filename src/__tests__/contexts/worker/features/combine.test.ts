@@ -70,4 +70,15 @@ describe('runCombine', () => {
     expect(update).toHaveBeenCalledWith(2, { pinned: false });
     expect(update).toHaveBeenCalledWith(99, { active: true });
   });
+
+  it('skips re-activating when the current tab has no numeric id', async () => {
+    const currentTab = makeChromeTab({ id: undefined, windowId: 1, active: true });
+    const tabs = [makeChromeTab({ id: 1, windowId: 2, pinned: false })];
+    const { update } = stubChrome(currentTab, tabs);
+
+    await runCombine({ saveData });
+
+    expect(update).not.toHaveBeenCalledWith(undefined, { active: true });
+    expect(update).toHaveBeenCalledWith(1, { pinned: false });
+  });
 });

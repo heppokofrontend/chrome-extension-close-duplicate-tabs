@@ -82,28 +82,38 @@
                 <h2 class="advanced-path-rules__h2">ADVANCED PATH RULES</h2>
 
                 <h3 class="advanced-path-rules__default-heading">Default</h3>
-                <dl>
-                  <dt><label for="default-ignore-pathname">pathname</label></dt>
-                  <dd>
-                    <input
-                      type="checkbox"
-                      data-option-type="ignorePathname"
-                      id="default-ignore-pathname"
-                    />
-                  </dd>
-                  <dt><label for="default-ignore-query">query</label></dt>
-                  <dd>
-                    <input
-                      type="checkbox"
-                      data-option-type="ignoreQuery"
-                      id="default-ignore-query"
-                    />
-                  </dd>
-                  <dt><label for="default-ignore-hash">hash</label></dt>
-                  <dd>
-                    <input type="checkbox" data-option-type="ignoreHash" id="default-ignore-hash" />
-                  </dd>
-                </dl>
+                <ul class="advanced-path-rules__actions">
+                  <li>
+                    <label for="default-ignore-pathname">pathname</label>
+                    <span
+                      ><input
+                        type="checkbox"
+                        data-option-type="ignorePathname"
+                        id="default-ignore-pathname"
+                      />
+                    </span>
+                  </li>
+                  <li>
+                    <label for="default-ignore-query">query</label>
+                    <span
+                      ><input
+                        type="checkbox"
+                        data-option-type="ignoreQuery"
+                        id="default-ignore-query"
+                      />
+                    </span>
+                  </li>
+                  <li>
+                    <label for="default-ignore-hash">hash</label>
+                    <span
+                      ><input
+                        type="checkbox"
+                        data-option-type="ignoreHash"
+                        id="default-ignore-hash"
+                      />
+                    </span>
+                  </li>
+                </ul>
 
                 <div id="advanced-path-rules__custom-rules"></div>
 
@@ -112,27 +122,37 @@
                     <div class="advanced-path-rules__header">
                       <h3 class="advanced-path-rules__heading"></h3>
                       <p>
-                        <input
-                          type="text"
-                          class="advanced-path-rules__origin"
-                          aria-label="Origin"
-                          placeholder="http://localhost:3000"
-                        />
+                        <label>
+                          <span class="advanced-path-rules__origin-label">Origin / Host</span>
+                          <input type="text" class="advanced-path-rules__origin" placeholder="" />
+                        </label>
+                        <datalist></datalist>
                       </p>
                     </div>
 
-                    <dl>
-                      <dt><label>pathname</label></dt>
-                      <dd><input type="checkbox" class="advanced-path-rules__pathname" /></dd>
-                      <dt><label>query</label></dt>
-                      <dd><input type="checkbox" class="advanced-path-rules__query" /></dd>
-                      <dt><label>hash</label></dt>
-                      <dd><input type="checkbox" class="advanced-path-rules__hash" /></dd>
-                      <dt>delete</dt>
-                      <dd>
+                    <ul class="advanced-path-rules__actions">
+                      <li>
+                        <label for="">pathname</label>
+                        <span>
+                          <input id="" type="checkbox" class="advanced-path-rules__pathname" />
+                        </span>
+                      </li>
+                      <li>
+                        <label for="">query</label>
+                        <span>
+                          <input id="" type="checkbox" class="advanced-path-rules__query" />
+                        </span>
+                      </li>
+                      <li>
+                        <label for="">hash</label>
+                        <span>
+                          <input id="" type="checkbox" class="advanced-path-rules__hash" />
+                        </span>
+                      </li>
+                      <li>
                         <button type="button" class="advanced-path-rules__delete">Delete</button>
-                      </dd>
-                    </dl>
+                      </li>
+                    </ul>
                   </section>
                 </template>
 

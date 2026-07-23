@@ -197,5 +197,8 @@
   },
   "btn_advancedPathRuleDelete": {
     "message": "削除"
+  },
+  "error_saveFailed": {
+    "message": "設定の保存に失敗しました。もう一度お試しください。"
   }
 }

@@ -192,4 +192,80 @@ describe('runCategorize', () => {
 
     expect(windowsCreate).not.toHaveBeenCalled();
   });
+
+  it('url または id を持たないタブは振り分け対象から除外する', async () => {
+    const saveData: SaveDataType = {
+      includeAllWindow: false,
+      includePinnedTabs: false,
+      minCategorizeNumber: 0,
+    };
+    const currentTab = makeChromeTab({ id: 9, url: 'https://other.com/', windowId: 1 });
+    const tabs = [
+      makeChromeTab({ id: 1, url: 'https://a.com/x', windowId: 1 }),
+      makeChromeTab({ id: undefined, url: 'https://b.com/x', windowId: 1 }),
+      makeChromeTab({ id: 2, url: undefined, windowId: 1 }),
+      makeChromeTab({ id: 3, url: 'https://c.com/x', windowId: 1 }),
+    ];
+
+    const query = vi.fn((arg: chrome.tabs.QueryInfo) =>
+      Promise.resolve(arg.active ? [currentTab] : tabs),
+    );
+    const windowsCreate = vi
+      .fn()
+      .mockResolvedValueOnce({ id: 100 })
+      .mockResolvedValueOnce({ id: 101 });
+    const windowsUpdate = vi.fn().mockResolvedValue(undefined);
+    const move = vi.fn().mockResolvedValue(undefined);
+    const update = vi.fn().mockResolvedValue(undefined);
+    const get = vi.fn().mockResolvedValue({ id: 9, windowId: 1 });
+
+    vi.stubGlobal('chrome', {
+      tabs: { query, move, update, get },
+      windows: { create: windowsCreate, update: windowsUpdate },
+    });
+
+    await runCategorize({ saveData });
+    await flushPromises();
+
+    // id/url が欠けたタブ (b.com) は無視され、a.com と c.com の 2 窓だけが作られる。
+    expect(windowsCreate.mock.calls).toStrictEqual([[{ tabId: 1 }], [{ tabId: 3 }]]);
+  });
+
+  it('新規ウィンドウが数値の id を返さない場合、そのホストの移動処理をスキップする', async () => {
+    const saveData: SaveDataType = {
+      includeAllWindow: false,
+      includePinnedTabs: false,
+      minCategorizeNumber: 0,
+    };
+    const currentTab = makeChromeTab({ id: 9, url: 'https://other.com/', windowId: 1 });
+    const tabs = [
+      makeChromeTab({ id: 1, url: 'https://a.com/x', windowId: 1 }),
+      makeChromeTab({ id: 2, url: 'https://a.com/y', windowId: 1 }),
+      makeChromeTab({ id: 3, url: 'https://b.com/x', windowId: 1 }),
+      makeChromeTab({ id: 4, url: 'https://b.com/y', windowId: 1 }),
+    ];
+
+    const query = vi.fn((arg: chrome.tabs.QueryInfo) =>
+      Promise.resolve(arg.active ? [currentTab] : tabs),
+    );
+    // a.com 側は id を返さない不正なウィンドウ作成結果とする。
+    const windowsCreate = vi.fn().mockResolvedValueOnce({}).mockResolvedValueOnce({ id: 101 });
+    const windowsUpdate = vi.fn().mockResolvedValue(undefined);
+    const move = vi.fn().mockResolvedValue(undefined);
+    const update = vi.fn().mockResolvedValue(undefined);
+    const get = vi.fn().mockResolvedValue({ id: 9, windowId: 1 });
+
+    vi.stubGlobal('chrome', {
+      tabs: { query, move, update, get },
+      windows: { create: windowsCreate, update: windowsUpdate },
+    });
+
+    await runCategorize({ saveData });
+    await flushPromises();
+
+    // a.com は windowId が取れないため tabs.move/update が呼ばれない。
+    expect(move).not.toHaveBeenCalledWith(2, expect.anything());
+    // b.com 側は通常どおり処理される。
+    expect(move).toHaveBeenCalledWith(4, { windowId: 101, index: -1 });
+  });
 });
