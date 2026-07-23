@@ -233,71 +233,7 @@ body {
     border-radius: 6px;
     max-height: 70vh;
     overflow-y: auto;
-
-    section {
-      margin: 0.75rem 0 0;
-      padding: 0.75rem 0 0;
-      border-top: 1px solid var(--color-label-border);
-    }
-
-    .advanced-path-rules__h2 {
-      text-align: center;
-      font-size: 0.625rem;
-      padding: 0.5em 0 0;
-    }
-
-    .advanced-path-rules__header {
-      position: relative;
-      margin: 0 0 0.25rem;
-    }
-
-    .advanced-path-rules__default-heading,
-    .advanced-path-rules__heading,
-    .advanced-path-rules__origin {
-      all: unset;
-      outline: revert;
-      box-sizing: border-box;
-      display: block;
-      width: 100%;
-      font-weight: bold;
-      min-height: 1lh;
-      padding: 0 0 0 0.25em;
-      white-space: pre;
-      line-height: 2;
-      font-size: 0.875rem;
-      border-radius: 4px;
-    }
-
-    .advanced-path-rules__heading,
-    .advanced-path-rules__origin {
-      color: var(--color-textfield);
-      background: var(--color-textfield-background);
-    }
-
-    .advanced-path-rules__heading {
-      position: absolute;
-      left: 0;
-      top: 0;
-      opacity: 0;
-      pointer-events: none;
-    }
-
-    dl {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      grid-template-rows: auto auto;
-      text-align: center;
-
-      dt {
-        grid-row: 1 / 2;
-      }
-
-      dd {
-        grid-row: 2 / 3;
-        display: grid;
-        place-items: center;
-      }
-    }
+    scrollbar-gutter: stable;
 
     input[type='checkbox'] {
       margin: 0.5em auto;
@@ -310,12 +246,111 @@ body {
 
     button {
       padding: 0.5em;
-      font-size: 0.6875rem;
-      width: 100%;
     }
 
     > p:last-child {
       margin-top: 24px;
+
+      button {
+        width: 100%;
+      }
+    }
+
+    section {
+      margin: 0.75rem 0 0;
+      border-top: 1px solid var(--color-label-border);
+    }
+
+    .advanced-path-rules__h2 {
+      text-align: center;
+      font-size: 0.625rem;
+      padding: 0.5em 0 0;
+    }
+
+    .advanced-path-rules__header {
+      position: relative;
+    }
+
+    .advanced-path-rules__default-heading,
+    .advanced-path-rules__heading,
+    .advanced-path-rules__origin {
+      all: unset;
+      outline: revert;
+      box-sizing: border-box;
+      display: block;
+      width: 100%;
+      font-weight: bold;
+      min-height: 1lh;
+      white-space: pre;
+      line-height: 2;
+      font-size: 0.875rem;
+      border-radius: 4px;
+    }
+
+    .advanced-path-rules__heading,
+    .advanced-path-rules__origin {
+      color: var(--color-textfield);
+      background: var(--color-textfield-background);
+    }
+
+    .advanced-path-rules__default-heading,
+    .advanced-path-rules__origin {
+      padding: 0 0 0 0.25rem;
+    }
+
+    .advanced-path-rules__heading {
+      position: absolute;
+      left: 0;
+      top: 0;
+      opacity: 0;
+      pointer-events: none;
+      padding: 0 0 0 0.25rem;
+    }
+
+    .advanced-path-rules__origin {
+      /* datalistの矢印位置調整  */
+      line-height: 1;
+      padding-block: 0.3593755rem;
+    }
+
+    .advanced-path-rules__origin-label {
+      color: var(--color-h1-text);
+      font-size: 0.625rem;
+      display: block;
+      width: fit-content;
+      margin: 0.375rem 0;
+      line-height: 1;
+    }
+
+    .advanced-path-rules__delete {
+      width: 4.375rem;
+      border-radius: 100px;
+    }
+
+    .advanced-path-rules__actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem 1rem;
+      text-align: center;
+      padding: 0 0 0 0.25rem;
+      font-size: 0.75rem;
+
+      li {
+        display: flex;
+        align-items: center;
+        flex-direction: row-reverse;
+        gap: 0.25rem;
+
+        &:nth-of-type(4) {
+          flex-grow: 1;
+        }
+      }
+    }
+  }
+
+  #advanced-path-rules__custom-rules {
+    .advanced-path-rules__actions {
+      margin: 0.5rem 0 0;
     }
   }
 }

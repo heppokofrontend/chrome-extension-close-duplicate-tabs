@@ -13,7 +13,8 @@ vi.mock('@/contexts/popup/utils/state', () => ({ STATE, save }));
 
 type MutableSaveData = Required<SaveDataType>;
 
-const getState = () => STATE as unknown as { saveData: MutableSaveData };
+const getState = () =>
+  STATE as unknown as { saveData: MutableSaveData; currentTabOrigin: string | null };
 const getSave = () =>
   save as unknown as ReturnType<typeof vi.fn<(patch: Partial<SaveDataType>) => void>>;
 
@@ -31,21 +32,33 @@ const FIXTURE_HTML = `
             aria-label="Origin"
             placeholder="http://localhost:3000"
           />
+          <datalist></datalist>
         </p>
       </div>
 
-      <dl>
-        <dt><label>pathname</label></dt>
-        <dd><input type="checkbox" class="advanced-path-rules__pathname" /></dd>
-        <dt><label>query</label></dt>
-        <dd><input type="checkbox" class="advanced-path-rules__query" /></dd>
-        <dt><label>hash</label></dt>
-        <dd><input type="checkbox" class="advanced-path-rules__hash" /></dd>
-        <dt>delete</dt>
-        <dd>
+      <ul>
+        <li>
+          <label for="">pathname</label>
+          <span>
+            <input id="" type="checkbox" class="advanced-path-rules__pathname" />
+          </span>
+        </li>
+        <li>
+          <label for="">query</label>
+          <span>
+            <input id="" type="checkbox" class="advanced-path-rules__query" />
+          </span>
+        </li>
+        <li>
+          <label for="">hash</label>
+          <span>
+            <input id="" type="checkbox" class="advanced-path-rules__hash" />
+          </span>
+        </li>
+        <li>
           <button type="button" class="advanced-path-rules__delete">Delete</button>
-        </dd>
-      </dl>
+        </li>
+      </ul>
     </section>
   </template>
   <p><button type="button" id="advanced-path-rules__add">Add</button></p>
@@ -126,6 +139,7 @@ beforeEach(() => {
   vi.resetModules();
   save.mockClear();
   getState().saveData = structuredClone(defaultSaveData);
+  getState().currentTabOrigin = null;
   document.body.innerHTML = FIXTURE_HTML;
   vi.stubGlobal('chrome', { i18n: { getMessage: stubGetMessage } });
 });
@@ -282,6 +296,87 @@ describe('addAdvancedPathRuleListeners', () => {
     clickAddButton();
 
     expect(document.querySelectorAll('.advanced-path-rule')).toHaveLength(0);
+  });
+
+  it('uses the current tab origin as the origin input placeholder when available', async () => {
+    getState().currentTabOrigin = 'https://www.google.com';
+
+    const { addAdvancedPathRuleListeners } =
+      await import('@/contexts/popup/listeners/advanced-path-rules');
+    addAdvancedPathRuleListeners();
+    clickAddButton();
+
+    const section = requireElement(document, '.advanced-path-rule');
+
+    expect(requireInput(section, '.advanced-path-rules__origin').placeholder).toBe(
+      'https://www.google.com',
+    );
+  });
+
+  it('keeps the template placeholder when the current tab origin is unavailable', async () => {
+    getState().currentTabOrigin = null;
+
+    const { addAdvancedPathRuleListeners } =
+      await import('@/contexts/popup/listeners/advanced-path-rules');
+    addAdvancedPathRuleListeners();
+    clickAddButton();
+
+    const section = requireElement(document, '.advanced-path-rule');
+
+    expect(requireInput(section, '.advanced-path-rules__origin').placeholder).toBe(
+      'http://localhost:3000',
+    );
+  });
+
+  it('links the origin input to its datalist via id/list and seeds an option matching the placeholder', async () => {
+    getState().currentTabOrigin = 'https://www.google.com';
+
+    const { addAdvancedPathRuleListeners } =
+      await import('@/contexts/popup/listeners/advanced-path-rules');
+    addAdvancedPathRuleListeners();
+    clickAddButton();
+
+    const section = requireElement(document, '.advanced-path-rule');
+    const originInput = requireInput(section, '.advanced-path-rules__origin');
+    const datalist = requireElement(section, 'datalist');
+
+    expect(originInput.getAttribute('list')).toBe(datalist.id);
+    expect(datalist.id).not.toBe('');
+    expect(
+      [...datalist.querySelectorAll<HTMLOptionElement>('option')].map((option) => option.value),
+    ).toStrictEqual(['https://www.google.com']);
+  });
+
+  it('links id/list per row without seeding an option when the current tab origin is unavailable', async () => {
+    getState().currentTabOrigin = null;
+
+    const { addAdvancedPathRuleListeners } =
+      await import('@/contexts/popup/listeners/advanced-path-rules');
+    addAdvancedPathRuleListeners();
+    clickAddButton();
+
+    const section = requireElement(document, '.advanced-path-rule');
+    const originInput = requireInput(section, '.advanced-path-rules__origin');
+    const datalist = requireElement(section, 'datalist');
+
+    expect(originInput.getAttribute('list')).toBe(datalist.id);
+    expect(datalist.querySelectorAll('option')).toHaveLength(0);
+  });
+
+  it('gives each row a unique datalist id so multiple rules do not collide', async () => {
+    getState().currentTabOrigin = 'https://www.google.com';
+
+    const { addAdvancedPathRuleListeners } =
+      await import('@/contexts/popup/listeners/advanced-path-rules');
+    addAdvancedPathRuleListeners();
+
+    clickAddButton();
+    clickAddButton();
+
+    const datalistIds = [...document.querySelectorAll('datalist')].map((datalist) => datalist.id);
+
+    expect(datalistIds).toHaveLength(2);
+    expect(new Set(datalistIds).size).toBe(2);
   });
 
   it('does nothing when the add button is clicked and the custom-rules container is missing', async () => {
