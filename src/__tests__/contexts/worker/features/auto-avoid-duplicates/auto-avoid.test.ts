@@ -311,7 +311,11 @@ describe('registerAutoAvoidListeners', () => {
       }
       // The removed tab id was dropped from tracking, so a late onUpdated for it is a no-op.
       for (const l of listeners.onUpdated) {
-        l(5, { url: 'https://a.com/' }, { id: 5, url: 'https://a.com/', windowId: 1, index: 0, active: true });
+        l(
+          5,
+          { url: 'https://a.com/' },
+          { id: 5, url: 'https://a.com/', windowId: 1, index: 0, active: true },
+        );
       }
       await flushPromises();
 
@@ -328,7 +332,11 @@ describe('registerAutoAvoidListeners', () => {
         l({ id: 2 });
       }
       for (const l of listeners.onUpdated) {
-        l(2, { url: 'https://a.com/' }, { id: 2, url: 'https://a.com/', windowId: 1, index: 3, active: false });
+        l(
+          2,
+          { url: 'https://a.com/' },
+          { id: 2, url: 'https://a.com/', windowId: 1, index: 3, active: false },
+        );
       }
 
       // Let the first resolveCreatedTab(2) chain progress past the getSaveData await, so it
@@ -342,7 +350,11 @@ describe('registerAutoAvoidListeners', () => {
         l({ id: 2 });
       }
       for (const l of listeners.onUpdated) {
-        l(2, { url: 'https://a.com/' }, { id: 2, url: 'https://a.com/', windowId: 1, index: 3, active: false });
+        l(
+          2,
+          { url: 'https://a.com/' },
+          { id: 2, url: 'https://a.com/', windowId: 1, index: 3, active: false },
+        );
       }
 
       await flushPromises();

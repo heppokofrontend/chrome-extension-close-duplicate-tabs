@@ -13,17 +13,20 @@ describe('getGroupedTabsByNormalizedUrl', () => {
     });
 
     expect([...result]).toStrictEqual([
-      ['https://a.com/', [{ id: 1, url: 'https://a.com/' }, { id: 2, url: 'https://a.com/' }]],
+      [
+        'https://a.com/',
+        [
+          { id: 1, url: 'https://a.com/' },
+          { id: 2, url: 'https://a.com/' },
+        ],
+      ],
       ['https://b.com/', [{ id: 3, url: 'https://b.com/' }]],
     ]);
   });
 
   it('ignores tabs without a numeric id', () => {
     const result = getGroupedTabsByNormalizedUrl({
-      tabs: [
-        { url: 'https://a.com/' },
-        { id: 2, url: 'https://a.com/' },
-      ],
+      tabs: [{ url: 'https://a.com/' }, { id: 2, url: 'https://a.com/' }],
     });
 
     expect([...result]).toStrictEqual([['https://a.com/', [{ id: 2, url: 'https://a.com/' }]]]);
@@ -50,7 +53,13 @@ describe('getGroupedTabsByNormalizedUrl', () => {
     });
 
     expect([...result]).toStrictEqual([
-      ['https://a.com/', [{ id: 1, url: 'https://a.com/#top' }, { id: 2, url: 'https://a.com/#bottom' }]],
+      [
+        'https://a.com/',
+        [
+          { id: 1, url: 'https://a.com/#top' },
+          { id: 2, url: 'https://a.com/#bottom' },
+        ],
+      ],
     ]);
   });
 });

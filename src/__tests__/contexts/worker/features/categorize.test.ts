@@ -249,10 +249,7 @@ describe('runCategorize', () => {
       Promise.resolve(arg.active ? [currentTab] : tabs),
     );
     // a.com 側は id を返さない不正なウィンドウ作成結果とする。
-    const windowsCreate = vi
-      .fn()
-      .mockResolvedValueOnce({})
-      .mockResolvedValueOnce({ id: 101 });
+    const windowsCreate = vi.fn().mockResolvedValueOnce({}).mockResolvedValueOnce({ id: 101 });
     const windowsUpdate = vi.fn().mockResolvedValue(undefined);
     const move = vi.fn().mockResolvedValue(undefined);
     const update = vi.fn().mockResolvedValue(undefined);

@@ -159,10 +159,12 @@ describe('runSort', () => {
   });
 
   it('queries tabs per saveData scope and sorts them', async () => {
-    const query = vi.fn().mockResolvedValue([
-      makeChromeTab({ id: 1, url: 'https://b.com/', title: 'B' }),
-      makeChromeTab({ id: 2, url: 'https://a.com/', title: 'A' }),
-    ]);
+    const query = vi
+      .fn()
+      .mockResolvedValue([
+        makeChromeTab({ id: 1, url: 'https://b.com/', title: 'B' }),
+        makeChromeTab({ id: 2, url: 'https://a.com/', title: 'A' }),
+      ]);
     const move = vi.fn();
     vi.stubGlobal('chrome', { tabs: { query, move } });
 
