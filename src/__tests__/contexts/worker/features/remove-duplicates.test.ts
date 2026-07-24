@@ -50,7 +50,7 @@ const stubChromeForDuplicatePage = ({
 }: {
   currentTab: chrome.tabs.Tab;
   tabs: chrome.tabs.Tab[];
-  createdWindow: { id: number; tabs?: { id: number }[] };
+  createdWindow: { id?: number; tabs?: { id: number }[] } | undefined;
 }) => {
   const query = vi.fn((arg: chrome.tabs.QueryInfo) =>
     Promise.resolve(arg.active ? [currentTab] : tabs),
@@ -201,6 +201,97 @@ describe('runRemove', () => {
         expect.any(Function),
       );
       expect(mocks.reload).toHaveBeenCalledWith(55, { bypassCache: false });
+    });
+
+    it('falls back to null when windows.create resolves a falsy value', async () => {
+      const currentTab = makeChromeTab({ id: 9, url: 'https://other.com/', windowId: 7 });
+      const tabs = [
+        makeChromeTab({ id: 1, url: 'https://dup.com/', windowId: 7 }),
+        makeChromeTab({ id: 2, url: 'https://dup.com/', windowId: 7 }),
+      ];
+      const { chrome, mocks } = stubChromeForDuplicatePage({
+        currentTab,
+        tabs,
+        createdWindow: undefined,
+      });
+
+      const runRemove = await loadRunRemove();
+
+      // 1回目：lastError あり → 新規作成。create が偽値を返すため duplicatedListWindow は null のまま。
+      await runRemove({ saveData, shouldShowDuplicatePage: true });
+      await flushPromises();
+
+      expect(mocks.windowsCreate).toHaveBeenCalledTimes(1);
+
+      // 2回目：ウィンドウ生存扱いにしても、保持している duplicatedListWindow が null なので
+      // targetWindowId は number にならず、フォーカス／リロードへは進まない。
+      chrome.runtime.lastError = undefined;
+
+      await runRemove({ saveData, shouldShowDuplicatePage: true });
+      await flushPromises();
+
+      expect(mocks.windowsUpdate).not.toHaveBeenCalled();
+      expect(mocks.reload).not.toHaveBeenCalled();
+    });
+
+    it('skips focusing/reloading when the kept window has no numeric id', async () => {
+      const currentTab = makeChromeTab({ id: 9, url: 'https://other.com/', windowId: 7 });
+      const tabs = [
+        makeChromeTab({ id: 1, url: 'https://dup.com/', windowId: 7 }),
+        makeChromeTab({ id: 2, url: 'https://dup.com/', windowId: 7 }),
+      ];
+      const { chrome, mocks } = stubChromeForDuplicatePage({
+        currentTab,
+        tabs,
+        createdWindow: {},
+      });
+
+      const runRemove = await loadRunRemove();
+
+      // 1回目：lastError あり → 新規作成。create が id を持たないオブジェクトを返す。
+      await runRemove({ saveData, shouldShowDuplicatePage: true });
+      await flushPromises();
+
+      expect(mocks.windowsCreate).toHaveBeenCalledTimes(1);
+
+      // 2回目：ウィンドウ生存扱い → だが id が number でないため、フォーカス／リロードには進まない。
+      chrome.runtime.lastError = undefined;
+
+      await runRemove({ saveData, shouldShowDuplicatePage: true });
+      await flushPromises();
+
+      expect(mocks.windowsUpdate).not.toHaveBeenCalled();
+      expect(mocks.reload).not.toHaveBeenCalled();
+    });
+
+    it('focuses the surviving window but skips reload when it has no tabs yet', async () => {
+      const currentTab = makeChromeTab({ id: 9, url: 'https://other.com/', windowId: 7 });
+      const tabs = [
+        makeChromeTab({ id: 1, url: 'https://dup.com/', windowId: 7 }),
+        makeChromeTab({ id: 2, url: 'https://dup.com/', windowId: 7 }),
+      ];
+      const { chrome, mocks } = stubChromeForDuplicatePage({
+        currentTab,
+        tabs,
+        createdWindow: { id: 100, tabs: [] },
+      });
+
+      const runRemove = await loadRunRemove();
+
+      await runRemove({ saveData, shouldShowDuplicatePage: true });
+      await flushPromises();
+
+      chrome.runtime.lastError = undefined;
+
+      await runRemove({ saveData, shouldShowDuplicatePage: true });
+      await flushPromises();
+
+      expect(mocks.windowsUpdate).toHaveBeenCalledWith(
+        100,
+        { focused: true, state: 'normal' },
+        expect.any(Function),
+      );
+      expect(mocks.reload).not.toHaveBeenCalled();
     });
   });
 });

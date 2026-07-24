@@ -1,14 +1,27 @@
-import { type SaveDataType, applySaveDataPatch, defaultSaveData, setSaveData } from '@/utils';
+import {
+  type SaveDataType,
+  applySaveDataPatch,
+  defaultSaveData,
+  getMessage,
+  setSaveData,
+} from '@/utils';
 
 export const STATE = {
   dangerZoneIsOpen: false,
   saveData: defaultSaveData,
+  /** Advanced Path Rule の origin 入力欄に placeholder として表示する、現在アクティブなタブの origin。取得不可時は null。 */
+  currentTabOrigin: null as string | null,
 };
 
 export const save = (patch: Partial<SaveDataType>) => {
-  STATE.saveData = applySaveDataPatch(STATE.saveData, patch);
+  const previous = STATE.saveData;
+
+  STATE.saveData = applySaveDataPatch(previous, patch);
   setSaveData(STATE.saveData).catch((error: unknown) => {
-    // 失敗すると STATE と storage が食い違ったままになるため、痕跡だけは残す。
+    // 失敗した書き込みの内容で STATE が storage と食い違ったままにならないよう、
+    // 書き込み前の値へ巻き戻したうえでユーザーにも知らせる。
+    STATE.saveData = previous;
     console.error(error);
+    window.alert(getMessage('error_saveFailed'));
   });
 };

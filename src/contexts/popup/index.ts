@@ -35,8 +35,18 @@ const loadSaveData = async () => {
   ]);
 };
 
+const loadCurrentTabOrigin = async () => {
+  const [currentTab] = await chrome.tabs.query({ active: true, currentWindow: true });
+
+  try {
+    STATE.currentTabOrigin = currentTab?.url ? new URL(currentTab.url).origin : null;
+  } catch {
+    STATE.currentTabOrigin = null;
+  }
+};
+
 const init = async () => {
-  await loadSaveData();
+  await Promise.all([loadSaveData(), loadCurrentTabOrigin()]);
   renderAdvancedPathRules();
   addListener();
 

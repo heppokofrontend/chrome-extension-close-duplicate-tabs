@@ -156,6 +156,16 @@ describe('resolveDuplicatedCreatedTab', () => {
     });
   });
 
+  it('returns null when the created tab has no url to normalize', () => {
+    const result = resolveDuplicatedCreatedTab({
+      createdTab: toCreatedTab({ id: 2, url: '', windowId: 1 }),
+      existingTabs: [{ id: 1, url: 'https://a.com/', windowId: 1 }],
+      userSettings: { includeAllWindow: false, includePinnedTabs: false },
+    });
+
+    expect(result).toBeNull();
+  });
+
   it('does not mistakenly include the target tab itself as a candidate', () => {
     const result = resolveDuplicatedCreatedTab({
       createdTab: toCreatedTab({ id: 1, url: 'https://a.com/', windowId: 1 }),

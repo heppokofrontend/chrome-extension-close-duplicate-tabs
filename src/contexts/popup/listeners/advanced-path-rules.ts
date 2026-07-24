@@ -39,6 +39,7 @@ const createRuleSection = (key: string, rule: PathRule) => {
   const section = fragment.querySelector('.advanced-path-rule');
   const heading = fragment.querySelector('h3');
   const originInput = fragment.querySelector<HTMLInputElement>('.advanced-path-rules__origin');
+  const datalist = fragment.querySelector('datalist');
   const deleteButton = fragment.querySelector('.advanced-path-rules__delete');
 
   if (!(section instanceof HTMLElement) || !heading || !originInput || !deleteButton) {
@@ -54,6 +55,21 @@ const createRuleSection = (key: string, rule: PathRule) => {
   section.setAttribute('aria-labelledby', heading.id);
   originInput.setAttribute('aria-label', getMessage('aria_advancedPathRuleOrigin'));
   originInput.value = rule.origin;
+
+  if (datalist) {
+    datalist.id = `advanced-path-rule-origin-datalist-${key}`;
+    originInput.setAttribute('list', datalist.id);
+  }
+
+  if (STATE.currentTabOrigin) {
+    originInput.placeholder = STATE.currentTabOrigin;
+
+    if (datalist) {
+      const option = document.createElement('option');
+      option.value = STATE.currentTabOrigin;
+      datalist.append(option);
+    }
+  }
 
   for (const field of RULE_CHECKBOX_FIELDS) {
     const checkbox = fragment.querySelector<HTMLInputElement>(`.advanced-path-rules__${field}`);
@@ -140,7 +156,7 @@ const attachRuleListeners = (fragmentOrSection: DocumentFragment | HTMLElement, 
       input.addEventListener('change', onRuleCheckboxChange(key, field));
       input.id = `advanced-path-rule-${field}-${key}`;
 
-      const label = input.parentElement?.previousElementSibling?.firstElementChild;
+      const label = input.parentElement?.previousElementSibling;
 
       if (label instanceof HTMLLabelElement) {
         label.htmlFor = input.id;

@@ -1,7 +1,7 @@
 {
   "name": "chrome-extension-close-duplicate-tabs",
   "description": "This is a Google Chrome extension that closes duplicate tabs in the current window.",
-  "version": "1.5.2",
+  "version": "1.5.3",
   "author": "heppokofrontend",
   "allowScripts": {
     "esbuild@0.28.1": true
@@ -23,7 +23,9 @@
     "gh-pages": "6.3.0",
     "globals": "17.7.0",
     "http-server": "14.1.1",
+    "husky": "9.1.7",
     "jsdom": "29.1.1",
+    "lint-staged": "17.0.8",
     "prettier": "3.9.4",
     "typescript": "6.0.3",
     "typescript-eslint": "8.62.1",
@@ -32,6 +34,10 @@
   "homepage": "https://github.com/heppokofrontend/chrome-extension-close-duplicate-tabs#readme",
   "keywords": [],
   "license": "MIT",
+  "lint-staged": {
+    "*.{js,mjs,ts,tsx}": "eslint --fix",
+    "*": "prettier --write --ignore-unknown"
+  },
   "packageManager": "npm@11.17.0",
   "repository": {
     "type": "git",
@@ -46,6 +52,7 @@
     "lint-check": "eslint .",
     "lint-fix": "eslint . --fix",
     "predeploy": "npm run build",
+    "prepare": "husky",
     "serve": "http-server ./ -o index.html",
     "test": "vitest run",
     "test:watch": "vitest",

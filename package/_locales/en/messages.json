@@ -204,5 +204,8 @@
   },
   "btn_advancedPathRuleDelete": {
     "message": "Delete"
+  },
+  "error_saveFailed": {
+    "message": "Failed to save settings. Please try again."
   }
 }
