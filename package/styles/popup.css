@@ -255,7 +255,6 @@ details {
     background: var(--color-label-bg);
     border: 1px solid var(--color-label-border);
     border-radius: 6px;
-    overflow: hidden;
 
     input[type='checkbox'] {
       margin: 0.5em auto;
@@ -283,6 +282,11 @@ details {
       text-align: center;
       font-size: 0.75rem;
       padding: 0.875rem 0.5rem;
+      border-radius: 6px;
+    }
+
+    &[open] .advanced-path-rules__summary {
+      border-radius: 6px 6px 0 0;
     }
 
     .advanced-path-rules__header {
@@ -290,20 +294,10 @@ details {
     }
 
     .advanced-path-rules__content {
-      padding: 0.25rem 0.5rem 0 0;
-      margin: 0 0 0 0.5rem;
+      padding: 0.5rem 0.75rem 0;
       border-top: 1px solid var(--color-label-border);
       max-height: calc(70vh - 2.5rem);
       overflow-y: auto;
-      scrollbar-gutter: stable;
-
-      > p:last-child {
-        margin-top: 2rem;
-
-        button {
-          width: 100%;
-        }
-      }
     }
 
     .advanced-path-rules__default-heading,
@@ -381,6 +375,16 @@ details {
         }
       }
     }
+
+    .advanced-path-rules__add-wrapper {
+      position: sticky;
+      bottom: 1rem;
+      margin-top: 2.75rem;
+
+      button {
+        width: 100%;
+      }
+    }
   }
 
   #advanced-path-rules__custom-rules {
@@ -388,11 +392,6 @@ details {
       margin: 0.5rem 0 0;
     }
   }
-}
-
-p:has(#advanced-path-rules__add) {
-  position: sticky;
-  bottom: 0.5rem;
 }
 
 #advanced-path-rules__add {
@@ -438,24 +437,20 @@ p:has(#advanced-path-rules__add) {
  * -------------------------------------------------------------------------- */
 details.danger {
   margin-top: 30px;
-  overflow: hidden;
   border: var(--border-details);
-  border-radius: 4px;
+  border-radius: 6px;
 
   summary {
+    position: relative;
+    border-radius: 6px;
     padding: 15px 10px;
     font-weight: var(--color-danger-title-font-weight);
     color: var(--color-danger-title-text);
     background-color: var(--color-danger-title-bg);
   }
 
-  summary:focus-visible {
-    box-shadow: none;
-  }
-
-  summary:focus-visible span {
-    border-radius: 4px;
-    box-shadow: 0 0 0 3px var(--color-outline);
+  &[open] summary {
+    border-radius: 6px 6px 0 0;
   }
 
   .content {
