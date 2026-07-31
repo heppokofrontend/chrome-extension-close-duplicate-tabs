@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## v1.5.4
+
+- The Danger Zone and Advanced Path Rules sections now animate open/close with a smooth transition instead of snapping instantly.
+- Buttons, labels, and section headers now brighten on hover instead of dimming, and the hover effect now also applies to labels.
+
 ## v1.5.3
 
 - Advanced Path Rule: the Origin/Host field now suggests the current tab's origin as a placeholder and dropdown option, making it faster to add a rule for the site you're on.
