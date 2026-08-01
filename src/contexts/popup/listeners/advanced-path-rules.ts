@@ -1,4 +1,4 @@
-import { STATE, save } from '@/contexts/popup/utils/state';
+import { STATE, save } from '@/contexts/popup/state';
 import { getMessage, type PathRule } from '@/utils';
 
 const TEMPLATE_ID = 'advanced-path-rule-template';

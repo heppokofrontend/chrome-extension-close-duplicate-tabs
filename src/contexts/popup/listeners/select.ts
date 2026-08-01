@@ -1,5 +1,5 @@
+import { save } from '@/contexts/popup/state';
 import { setSelectUpdateBadgeModeValue } from '@/contexts/popup/utils/set-select-value';
-import { save } from '@/contexts/popup/utils/state';
 
 export const onSelectChange = (e: Event) => {
   if (!(e.currentTarget instanceof HTMLSelectElement)) {

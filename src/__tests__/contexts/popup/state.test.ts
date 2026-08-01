@@ -20,7 +20,7 @@ describe('save', () => {
   it('applies the patch to STATE.saveData and persists it', async () => {
     setSaveData.mockResolvedValue(undefined);
 
-    const { STATE, save } = await import('@/contexts/popup/utils/state');
+    const { STATE, save } = await import('@/contexts/popup/state');
 
     save({ noConfirm: true });
 
@@ -33,7 +33,7 @@ describe('save', () => {
     vi.stubGlobal('alert', vi.fn());
     vi.spyOn(console, 'error').mockImplementation(() => undefined);
 
-    const { STATE, save } = await import('@/contexts/popup/utils/state');
+    const { STATE, save } = await import('@/contexts/popup/state');
     const previous = STATE.saveData;
 
     save({ noConfirm: true });

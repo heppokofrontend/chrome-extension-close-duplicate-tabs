@@ -6,6 +6,13 @@ import {
   setSaveData,
 } from '@/utils';
 
+export const DETAILS_OPEN_STATUS_KEYS = {
+  dangerZoneDetails: 'dangerZone',
+  advancedPathRulesDetails: 'advancedPathRules',
+} as const;
+
+export type DetailsOpenStatusKey = keyof typeof DETAILS_OPEN_STATUS_KEYS;
+
 export const STATE = {
   dialogOpenStatus: {
     dangerZone: false,

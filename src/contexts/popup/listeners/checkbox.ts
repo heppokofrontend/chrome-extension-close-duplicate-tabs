@@ -1,5 +1,5 @@
 import { showNoticeModal } from '@/contexts/popup/components/dialogs';
-import { STATE, save } from '@/contexts/popup/utils/state';
+import { STATE, save } from '@/contexts/popup/state';
 import { type SaveDataType } from '@/utils';
 import { isValidOptionType } from '@/utils/type-guard';
 

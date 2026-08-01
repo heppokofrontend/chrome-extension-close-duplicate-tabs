@@ -3,7 +3,7 @@ import {
   showConfirmModal,
   showRangeModal,
 } from '@/contexts/popup/components/dialogs';
-import { STATE } from '@/contexts/popup/utils/state';
+import { STATE } from '@/contexts/popup/state';
 import type { SortType } from '@/contexts/worker/features/sort';
 import type { TaskName, TaskRequest } from '@/types';
 import { isValidSortType } from '@/utils/type-guard';

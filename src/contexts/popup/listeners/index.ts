@@ -1,6 +1,6 @@
+import { initDetailsElements } from '@/contexts/popup/components/disclosures';
 import { addAdvancedPathRuleListeners } from '@/contexts/popup/listeners/advanced-path-rules';
 import { onCheckboxChange } from '@/contexts/popup/listeners/checkbox';
-import { initDetailsElements } from '@/contexts/popup/listeners/details';
 import { onSelectChange } from '@/contexts/popup/listeners/select';
 import { runTask } from '@/contexts/popup/run-task';
 import { isValidTaskName } from '@/utils/type-guard';

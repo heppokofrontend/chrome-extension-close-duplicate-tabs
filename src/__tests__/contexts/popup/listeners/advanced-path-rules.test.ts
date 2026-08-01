@@ -9,7 +9,7 @@ const { STATE, save } = vi.hoisted(() => {
   };
 });
 
-vi.mock('@/contexts/popup/utils/state', () => ({ STATE, save }));
+vi.mock('@/contexts/popup/state', () => ({ STATE, save }));
 
 type MutableSaveData = Required<SaveDataType>;
 

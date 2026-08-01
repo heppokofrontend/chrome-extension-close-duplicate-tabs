@@ -1,4 +1,4 @@
-import { STATE, save } from '@/contexts/popup/utils/state';
+import { STATE, save } from '@/contexts/popup/state';
 import { getMessage } from '@/utils';
 
 const confirmModal = document.getElementById('confirm') as HTMLDialogElement;
