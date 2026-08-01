@@ -1,4 +1,8 @@
-import { showChoicesModal, showConfirmModal, showRangeModal } from '@/contexts/popup/dialogs';
+import {
+  showChoicesModal,
+  showConfirmModal,
+  showRangeModal,
+} from '@/contexts/popup/components/dialogs';
 import { STATE } from '@/contexts/popup/utils/state';
 import type { SortType } from '@/contexts/worker/features/sort';
 import type { TaskName, TaskRequest } from '@/types';
