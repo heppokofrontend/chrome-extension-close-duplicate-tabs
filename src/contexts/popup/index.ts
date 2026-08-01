@@ -1,8 +1,9 @@
-import { addListener } from '@/contexts/popup/listeners';
 import { renderAdvancedPathRules } from '@/contexts/popup/listeners/advanced-path-rules';
 import { STATE } from '@/contexts/popup/state';
 import { setSelectUpdateBadgeModeValue } from '@/contexts/popup/utils/set-select-value';
 import { getSaveData, isBooleanRecord } from '@/utils';
+
+import { addListener } from './effects';
 
 const loadSaveData = async () => {
   return Promise.all([
