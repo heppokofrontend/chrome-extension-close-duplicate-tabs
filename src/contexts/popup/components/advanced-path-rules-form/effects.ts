@@ -1,16 +1,14 @@
 import { STATE, save } from '@/contexts/popup/state';
 import { getMessage, type PathRule } from '@/utils';
 
-const TEMPLATE_ID = 'advanced-path-rule-template';
+import { RULE_CHECKBOX_FIELDS, type RuleCheckboxField } from './constants';
+import { buildRuleSection } from './renderers';
+import { headingTextFor } from './utils';
+
 const CONTAINER_ID = 'advanced-path-rules__custom-rules';
 const ADD_BUTTON_ID = 'advanced-path-rules__add';
 
-const RULE_CHECKBOX_FIELDS = ['pathname', 'query', 'hash'] as const;
-type RuleCheckboxField = (typeof RULE_CHECKBOX_FIELDS)[number];
-
 const defaultRule: PathRule = { origin: '', pathname: false, query: false, hash: false };
-
-const headingTextFor = (origin: string) => origin || getMessage('text_advancedPathRuleUnsetOrigin');
 
 const patchRule = (key: string, patch: Partial<PathRule>) => {
   const current = STATE.saveData.advancedPathRules[key] ?? defaultRule;
@@ -21,72 +19,6 @@ const patchRule = (key: string, patch: Partial<PathRule>) => {
       [key]: { ...current, ...patch },
     },
   });
-};
-
-const createRuleSection = (key: string, rule: PathRule) => {
-  const template = document.getElementById(TEMPLATE_ID);
-
-  if (!(template instanceof HTMLTemplateElement)) {
-    return null;
-  }
-
-  const fragment = template.content.cloneNode(true);
-
-  if (!(fragment instanceof DocumentFragment)) {
-    return null;
-  }
-
-  const section = fragment.querySelector('.advanced-path-rule');
-  const heading = fragment.querySelector('h3');
-  const originInput = fragment.querySelector<HTMLInputElement>('.advanced-path-rules__origin');
-  const datalist = fragment.querySelector('datalist');
-  const deleteButton = fragment.querySelector('.advanced-path-rules__delete');
-
-  if (!(section instanceof HTMLElement) || !heading || !originInput || !deleteButton) {
-    return null;
-  }
-
-  deleteButton.textContent = getMessage('btn_advancedPathRuleDelete');
-
-  section.id = `advanced-path-rule-${key}`;
-  section.dataset['key'] = key;
-  heading.id = `added-${key}`;
-  heading.textContent = headingTextFor(rule.origin);
-  section.setAttribute('aria-labelledby', heading.id);
-  originInput.setAttribute('aria-label', getMessage('aria_advancedPathRuleOrigin'));
-  originInput.value = rule.origin;
-
-  if (datalist) {
-    datalist.id = `advanced-path-rule-origin-datalist-${key}`;
-    originInput.setAttribute('list', datalist.id);
-  }
-
-  if (STATE.currentTabOrigin) {
-    originInput.placeholder = STATE.currentTabOrigin;
-
-    if (datalist) {
-      const option = document.createElement('option');
-      option.value = STATE.currentTabOrigin;
-      datalist.append(option);
-    }
-  }
-
-  for (const field of RULE_CHECKBOX_FIELDS) {
-    const checkbox = fragment.querySelector<HTMLInputElement>(`.advanced-path-rules__${field}`);
-    checkbox?.setAttribute(
-      'aria-label',
-      getMessage('aria_advancedPathRuleField', [
-        rule.origin || getMessage('text_advancedPathRuleUnsetOrigin'),
-        field,
-      ]),
-    );
-
-    if (checkbox) {
-      checkbox.checked = rule[field];
-    }
-  }
-
-  return fragment;
 };
 
 const onOriginInput = (key: string) => (e: Event) => {
@@ -170,7 +102,7 @@ const attachRuleListeners = (fragmentOrSection: DocumentFragment | HTMLElement, 
 };
 
 const addRule = (container: HTMLElement, key: string, rule: PathRule) => {
-  const fragment = createRuleSection(key, rule);
+  const fragment = buildRuleSection(key, rule);
 
   if (!fragment) {
     return;

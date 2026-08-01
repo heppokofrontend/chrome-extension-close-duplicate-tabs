@@ -1,4 +1,4 @@
-import { renderAdvancedPathRules } from '@/contexts/popup/listeners/advanced-path-rules';
+import { renderAdvancedPathRules } from '@/contexts/popup/components/advanced-path-rules-form';
 import { STATE } from '@/contexts/popup/state';
 import { setSelectUpdateBadgeModeValue } from '@/contexts/popup/utils/set-select-value';
 import { getSaveData, isBooleanRecord } from '@/utils';

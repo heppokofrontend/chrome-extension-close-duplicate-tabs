@@ -151,7 +151,7 @@ describe('addAdvancedPathRuleListeners', () => {
     getState().saveData.ignoreHash = true;
 
     const { addAdvancedPathRuleListeners } =
-      await import('@/contexts/popup/listeners/advanced-path-rules');
+      await import('@/contexts/popup/components/advanced-path-rules-form/effects');
     addAdvancedPathRuleListeners();
 
     clickAddButton();
@@ -167,7 +167,7 @@ describe('addAdvancedPathRuleListeners', () => {
 
   it('shows the unset-origin placeholder in the heading when origin is empty', async () => {
     const { addAdvancedPathRuleListeners } =
-      await import('@/contexts/popup/listeners/advanced-path-rules');
+      await import('@/contexts/popup/components/advanced-path-rules-form/effects');
     addAdvancedPathRuleListeners();
     clickAddButton();
 
@@ -184,7 +184,7 @@ describe('addAdvancedPathRuleListeners', () => {
 
   it('generates a unique key per click so multiple rules can coexist', async () => {
     const { addAdvancedPathRuleListeners } =
-      await import('@/contexts/popup/listeners/advanced-path-rules');
+      await import('@/contexts/popup/components/advanced-path-rules-form/effects');
     addAdvancedPathRuleListeners();
 
     clickAddButton();
@@ -200,7 +200,7 @@ describe('addAdvancedPathRuleListeners', () => {
 
   it('updates the heading and checkbox aria-labels live as the origin input changes', async () => {
     const { addAdvancedPathRuleListeners } =
-      await import('@/contexts/popup/listeners/advanced-path-rules');
+      await import('@/contexts/popup/components/advanced-path-rules-form/effects');
     addAdvancedPathRuleListeners();
     clickAddButton();
 
@@ -218,7 +218,7 @@ describe('addAdvancedPathRuleListeners', () => {
 
   it('persists origin and checkbox edits under the same key, merging into advancedPathRules', async () => {
     const { addAdvancedPathRuleListeners } =
-      await import('@/contexts/popup/listeners/advanced-path-rules');
+      await import('@/contexts/popup/components/advanced-path-rules-form/effects');
     addAdvancedPathRuleListeners();
     clickAddButton();
 
@@ -254,7 +254,7 @@ describe('addAdvancedPathRuleListeners', () => {
     };
 
     const { renderAdvancedPathRules, addAdvancedPathRuleListeners } =
-      await import('@/contexts/popup/listeners/advanced-path-rules');
+      await import('@/contexts/popup/components/advanced-path-rules-form/effects');
     renderAdvancedPathRules();
     addAdvancedPathRuleListeners();
 
@@ -274,7 +274,7 @@ describe('addAdvancedPathRuleListeners', () => {
     requireElement(document, '#advanced-path-rule-template').remove();
 
     const { addAdvancedPathRuleListeners } =
-      await import('@/contexts/popup/listeners/advanced-path-rules');
+      await import('@/contexts/popup/components/advanced-path-rules-form/effects');
     addAdvancedPathRuleListeners();
     clickAddButton();
 
@@ -291,7 +291,7 @@ describe('addAdvancedPathRuleListeners', () => {
     requireElement(template.content, '.advanced-path-rules__delete').remove();
 
     const { addAdvancedPathRuleListeners } =
-      await import('@/contexts/popup/listeners/advanced-path-rules');
+      await import('@/contexts/popup/components/advanced-path-rules-form/effects');
     addAdvancedPathRuleListeners();
     clickAddButton();
 
@@ -302,7 +302,7 @@ describe('addAdvancedPathRuleListeners', () => {
     getState().currentTabOrigin = 'https://www.google.com';
 
     const { addAdvancedPathRuleListeners } =
-      await import('@/contexts/popup/listeners/advanced-path-rules');
+      await import('@/contexts/popup/components/advanced-path-rules-form/effects');
     addAdvancedPathRuleListeners();
     clickAddButton();
 
@@ -317,7 +317,7 @@ describe('addAdvancedPathRuleListeners', () => {
     getState().currentTabOrigin = null;
 
     const { addAdvancedPathRuleListeners } =
-      await import('@/contexts/popup/listeners/advanced-path-rules');
+      await import('@/contexts/popup/components/advanced-path-rules-form/effects');
     addAdvancedPathRuleListeners();
     clickAddButton();
 
@@ -332,7 +332,7 @@ describe('addAdvancedPathRuleListeners', () => {
     getState().currentTabOrigin = 'https://www.google.com';
 
     const { addAdvancedPathRuleListeners } =
-      await import('@/contexts/popup/listeners/advanced-path-rules');
+      await import('@/contexts/popup/components/advanced-path-rules-form/effects');
     addAdvancedPathRuleListeners();
     clickAddButton();
 
@@ -351,7 +351,7 @@ describe('addAdvancedPathRuleListeners', () => {
     getState().currentTabOrigin = null;
 
     const { addAdvancedPathRuleListeners } =
-      await import('@/contexts/popup/listeners/advanced-path-rules');
+      await import('@/contexts/popup/components/advanced-path-rules-form/effects');
     addAdvancedPathRuleListeners();
     clickAddButton();
 
@@ -367,7 +367,7 @@ describe('addAdvancedPathRuleListeners', () => {
     getState().currentTabOrigin = 'https://www.google.com';
 
     const { addAdvancedPathRuleListeners } =
-      await import('@/contexts/popup/listeners/advanced-path-rules');
+      await import('@/contexts/popup/components/advanced-path-rules-form/effects');
     addAdvancedPathRuleListeners();
 
     clickAddButton();
@@ -383,7 +383,7 @@ describe('addAdvancedPathRuleListeners', () => {
     requireElement(document, '#advanced-path-rules__custom-rules').remove();
 
     const { addAdvancedPathRuleListeners } =
-      await import('@/contexts/popup/listeners/advanced-path-rules');
+      await import('@/contexts/popup/components/advanced-path-rules-form/effects');
     addAdvancedPathRuleListeners();
     clickAddButton();
 
@@ -399,7 +399,7 @@ describe('renderAdvancedPathRules', () => {
     };
 
     const { renderAdvancedPathRules } =
-      await import('@/contexts/popup/listeners/advanced-path-rules');
+      await import('@/contexts/popup/components/advanced-path-rules-form/effects');
     renderAdvancedPathRules();
 
     const section = requireElement(document, '.advanced-path-rule');
@@ -418,7 +418,7 @@ describe('renderAdvancedPathRules', () => {
     requireElement(document, '#advanced-path-rules__custom-rules').remove();
 
     const { renderAdvancedPathRules } =
-      await import('@/contexts/popup/listeners/advanced-path-rules');
+      await import('@/contexts/popup/components/advanced-path-rules-form/effects');
 
     expect(() => {
       renderAdvancedPathRules();
