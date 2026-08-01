@@ -1,3 +1,7 @@
+const $$ = <T extends Element>(selector: string) => document.querySelectorAll<T>(selector);
+
 export const UI = {
-  details: document.querySelectorAll<HTMLDetailsElement>('details'),
+  optionCheckboxes: $$<HTMLInputElement>('input[type="checkbox"][data-option-type]'),
+  optionSelects: $$<HTMLSelectElement>('select[data-option-type]'),
+  details: $$<HTMLDetailsElement>('details'),
 };
