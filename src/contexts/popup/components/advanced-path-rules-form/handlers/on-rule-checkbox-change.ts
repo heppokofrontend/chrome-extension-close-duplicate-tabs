@@ -1,5 +1,7 @@
-import { patchRule } from '@/contexts/popup/components/advanced-path-rules-form/effects';
-import { isRuleCheckboxField } from '@/contexts/popup/components/advanced-path-rules-form/utils';
+import {
+  isRuleCheckboxField,
+  patchRule,
+} from '@/contexts/popup/components/advanced-path-rules-form/utils';
 
 export const onRuleCheckboxChange = (e: Event) => {
   if (!(e.currentTarget instanceof HTMLInputElement)) {

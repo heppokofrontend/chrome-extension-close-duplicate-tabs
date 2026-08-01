@@ -1,6 +1,8 @@
 import { RULE_CHECKBOX_FIELDS } from '@/contexts/popup/components/advanced-path-rules-form/constants';
-import { patchRule } from '@/contexts/popup/components/advanced-path-rules-form/effects';
-import { headingTextFor } from '@/contexts/popup/components/advanced-path-rules-form/utils';
+import {
+  headingTextFor,
+  patchRule,
+} from '@/contexts/popup/components/advanced-path-rules-form/utils';
 import { getMessage } from '@/utils';
 
 export const onOriginInput = (e: Event) => {

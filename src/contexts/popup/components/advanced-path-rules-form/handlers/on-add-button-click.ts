@@ -1,5 +1,5 @@
-import { patchRule } from '@/contexts/popup/components/advanced-path-rules-form/effects';
 import { buildRuleSection } from '@/contexts/popup/components/advanced-path-rules-form/renderers/build-rule-section';
+import { patchRule } from '@/contexts/popup/components/advanced-path-rules-form/utils';
 import { UI } from '@/contexts/popup/constants';
 import { STATE } from '@/contexts/popup/state';
 import { type PathRule } from '@/utils';
