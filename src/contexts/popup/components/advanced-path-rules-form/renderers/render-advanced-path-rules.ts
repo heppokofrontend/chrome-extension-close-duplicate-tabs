@@ -1,6 +1,7 @@
-import { buildRuleSection } from '@/contexts/popup/components/advanced-path-rules-form/effects';
 import { UI } from '@/contexts/popup/constants';
 import { STATE } from '@/contexts/popup/state';
+
+import { buildRuleSection } from './build-rule-section';
 
 /** storage から読み込んだ advancedPathRules を元に、保存済みルールの UI を復元する。 */
 export const renderAdvancedPathRules = () => {
