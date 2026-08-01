@@ -5,7 +5,7 @@ import {
   UPDATE_BADGE_MODES,
   type SaveDataType,
   type UpdateBadgeMode,
-} from '@/utils/save-data';
+} from '@/utils/storage';
 
 export const isBooleanRecord = (value: unknown): value is Record<string, boolean> =>
   typeof value === 'object' &&
