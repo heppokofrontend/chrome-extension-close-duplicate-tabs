@@ -2,14 +2,18 @@ import { UI } from '@/contexts/popup/constants';
 import { STATE, save } from '@/contexts/popup/state';
 import { getMessage, type PathRule } from '@/utils';
 
-import { RULE_CHECKBOX_FIELDS, type RuleCheckboxField } from './constants';
+import { RULE_CHECKBOX_FIELDS } from './constants';
+import {
+  onAddButtonClick,
+  onDeleteButtonClick,
+  onOriginInput,
+  onRuleCheckboxChange,
+} from './handlers';
 import { headingTextFor } from './utils';
-
-const ADD_BUTTON_ID = 'advanced-path-rules__add';
 
 const defaultRule: PathRule = { origin: '', pathname: false, query: false, hash: false };
 
-const patchRule = (key: string, patch: Partial<PathRule>) => {
+export const patchRule = (key: string, patch: Partial<PathRule>) => {
   const current = STATE.saveData.advancedPathRules[key] ?? defaultRule;
 
   save({
@@ -18,59 +22,6 @@ const patchRule = (key: string, patch: Partial<PathRule>) => {
       [key]: { ...current, ...patch },
     },
   });
-};
-
-const onOriginInput = (key: string) => (e: Event) => {
-  if (!(e.currentTarget instanceof HTMLInputElement)) {
-    return;
-  }
-
-  const section = e.currentTarget.closest('.advanced-path-rule');
-  const heading = section?.querySelector('h3');
-  const origin = e.currentTarget.value;
-
-  if (heading) {
-    heading.textContent = headingTextFor(origin);
-  }
-
-  for (const field of RULE_CHECKBOX_FIELDS) {
-    section
-      ?.querySelector(`.advanced-path-rules__${field}`)
-      ?.setAttribute(
-        'aria-label',
-        getMessage('aria_advancedPathRuleField', [
-          origin || getMessage('text_advancedPathRuleUnsetOrigin'),
-          field,
-        ]),
-      );
-  }
-
-  patchRule(key, { origin });
-};
-
-const onRuleCheckboxChange = (key: string, field: RuleCheckboxField) => (e: Event) => {
-  if (!(e.currentTarget instanceof HTMLInputElement)) {
-    return;
-  }
-
-  patchRule(key, { [field]: e.currentTarget.checked });
-};
-
-const deleteRule = (key: string) => {
-  save({
-    advancedPathRules: Object.fromEntries(
-      Object.entries(STATE.saveData.advancedPathRules).filter(([k]) => k !== key),
-    ),
-  });
-};
-
-const onDeleteClick = (key: string) => (e: Event) => {
-  if (!(e.currentTarget instanceof HTMLElement)) {
-    return;
-  }
-
-  e.currentTarget.closest('.advanced-path-rule')?.remove();
-  deleteRule(key);
 };
 
 const attachRuleListeners = (fragmentOrSection: DocumentFragment | HTMLElement, key: string) => {
@@ -97,7 +48,7 @@ const attachRuleListeners = (fragmentOrSection: DocumentFragment | HTMLElement, 
 
   fragmentOrSection
     .querySelector<HTMLButtonElement>('.advanced-path-rules__delete')
-    ?.addEventListener('click', onDeleteClick(key));
+    ?.addEventListener('click', onDeleteButtonClick(key));
 };
 
 const getTemplate = () => {
@@ -185,23 +136,5 @@ export const buildRuleSection = (key: string, rule: PathRule) => {
 };
 
 export const addAdvancedPathRuleListeners = () => {
-  const addButton = document.getElementById(ADD_BUTTON_ID);
-
-  addButton?.addEventListener('click', () => {
-    const key = String(performance.now());
-    const initialRule: PathRule = {
-      origin: '',
-      pathname: STATE.saveData.ignorePathname,
-      query: STATE.saveData.ignoreQuery,
-      hash: STATE.saveData.ignoreHash,
-    };
-
-    const fragment = buildRuleSection(key, initialRule);
-
-    if (fragment) {
-      UI.advancedPathRulesContainer.append(fragment);
-    }
-
-    patchRule(key, initialRule);
-  });
+  UI.advancedPathRuleAddButton.addEventListener('click', onAddButtonClick);
 };

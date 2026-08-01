@@ -9,4 +9,5 @@ export const UI = {
   details: $$<HTMLDetailsElement>('details'),
   advancedPathRulesContainer: $<HTMLElement>('#advanced-path-rules__custom-rules')!,
   advancedPathRuleTemplate: $<HTMLTemplateElement>('#advanced-path-rule-template')!,
+  advancedPathRuleAddButton: $<HTMLButtonElement>('#advanced-path-rules__add')!,
 };

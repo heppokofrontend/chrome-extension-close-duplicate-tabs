@@ -15,5 +15,6 @@ describe('popup constants.ts UI', () => {
     expect(UI.details.length).toBeGreaterThan(0);
     expect(UI.advancedPathRulesContainer).not.toBeNull();
     expect(UI.advancedPathRuleTemplate).not.toBeNull();
+    expect(UI.advancedPathRuleAddButton).not.toBeNull();
   });
 });
