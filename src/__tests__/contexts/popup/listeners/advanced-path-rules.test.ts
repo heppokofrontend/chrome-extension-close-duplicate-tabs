@@ -253,8 +253,10 @@ describe('addAdvancedPathRuleListeners', () => {
       k2: { origin: 'https://b.example', pathname: true, query: true, hash: true },
     };
 
-    const { renderAdvancedPathRules, addAdvancedPathRuleListeners } =
+    const { addAdvancedPathRuleListeners } =
       await import('@/contexts/popup/components/advanced-path-rules-form/effects');
+    const { renderAdvancedPathRules } =
+      await import('@/contexts/popup/components/advanced-path-rules-form/renderers/render-advanced-path-rules');
     renderAdvancedPathRules();
     addAdvancedPathRuleListeners();
 
@@ -268,17 +270,6 @@ describe('addAdvancedPathRuleListeners', () => {
     expect(document.querySelectorAll('.advanced-path-rule')).toHaveLength(1);
     expect(document.querySelector('[data-key="k1"]')).toBeNull();
     expect(Object.keys(getLastSavedAdvancedPathRules())).toStrictEqual(['k2']);
-  });
-
-  it('does nothing when the rule template is missing from the DOM', async () => {
-    requireElement(document, '#advanced-path-rule-template').remove();
-
-    const { addAdvancedPathRuleListeners } =
-      await import('@/contexts/popup/components/advanced-path-rules-form/effects');
-    addAdvancedPathRuleListeners();
-    clickAddButton();
-
-    expect(document.querySelectorAll('.advanced-path-rule')).toHaveLength(0);
   });
 
   it('does nothing when the template is missing a required element (delete button)', async () => {
@@ -378,18 +369,6 @@ describe('addAdvancedPathRuleListeners', () => {
     expect(datalistIds).toHaveLength(2);
     expect(new Set(datalistIds).size).toBe(2);
   });
-
-  it('does nothing when the add button is clicked and the custom-rules container is missing', async () => {
-    requireElement(document, '#advanced-path-rules__custom-rules').remove();
-
-    const { addAdvancedPathRuleListeners } =
-      await import('@/contexts/popup/components/advanced-path-rules-form/effects');
-    addAdvancedPathRuleListeners();
-    clickAddButton();
-
-    expect(document.querySelectorAll('.advanced-path-rule')).toHaveLength(0);
-    expect(getSave()).not.toHaveBeenCalled();
-  });
 });
 
 describe('renderAdvancedPathRules', () => {
@@ -399,7 +378,7 @@ describe('renderAdvancedPathRules', () => {
     };
 
     const { renderAdvancedPathRules } =
-      await import('@/contexts/popup/components/advanced-path-rules-form/effects');
+      await import('@/contexts/popup/components/advanced-path-rules-form/renderers/render-advanced-path-rules');
     renderAdvancedPathRules();
 
     const section = requireElement(document, '.advanced-path-rule');
@@ -409,20 +388,5 @@ describe('renderAdvancedPathRules', () => {
     expect(requireInput(section, '.advanced-path-rules__pathname').checked).toBe(true);
     expect(requireInput(section, '.advanced-path-rules__query').checked).toBe(false);
     expect(requireInput(section, '.advanced-path-rules__hash').checked).toBe(true);
-  });
-
-  it('does nothing when the custom-rules container is missing', async () => {
-    getState().saveData.advancedPathRules = {
-      k1: { origin: 'https://foo.example', pathname: true, query: false, hash: true },
-    };
-    requireElement(document, '#advanced-path-rules__custom-rules').remove();
-
-    const { renderAdvancedPathRules } =
-      await import('@/contexts/popup/components/advanced-path-rules-form/effects');
-
-    expect(() => {
-      renderAdvancedPathRules();
-    }).not.toThrow();
-    expect(document.querySelectorAll('.advanced-path-rule')).toHaveLength(0);
   });
 });

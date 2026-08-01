@@ -1,11 +1,10 @@
+import { UI } from '@/contexts/popup/constants';
 import { STATE, save } from '@/contexts/popup/state';
 import { getMessage, type PathRule } from '@/utils';
 
 import { RULE_CHECKBOX_FIELDS, type RuleCheckboxField } from './constants';
-import { buildRuleSection } from './renderers';
 import { headingTextFor } from './utils';
 
-const CONTAINER_ID = 'advanced-path-rules__custom-rules';
 const ADD_BUTTON_ID = 'advanced-path-rules__add';
 
 const defaultRule: PathRule = { origin: '', pathname: false, query: false, hash: false };
@@ -101,39 +100,94 @@ const attachRuleListeners = (fragmentOrSection: DocumentFragment | HTMLElement, 
     ?.addEventListener('click', onDeleteClick(key));
 };
 
-const addRule = (container: HTMLElement, key: string, rule: PathRule) => {
-  const fragment = buildRuleSection(key, rule);
+const getTemplate = () => {
+  const fragment = UI.advancedPathRuleTemplate.content.cloneNode(true);
 
-  if (!fragment) {
-    return;
+  if (fragment instanceof DocumentFragment) {
+    const section = fragment.querySelector('.advanced-path-rule');
+    const heading = fragment.querySelector('h3');
+    const originInput = fragment.querySelector('.advanced-path-rules__origin');
+    const datalist = fragment.querySelector('datalist');
+    const deleteButton = fragment.querySelector('.advanced-path-rules__delete');
+
+    if (
+      section instanceof HTMLElement &&
+      heading instanceof HTMLElement &&
+      originInput instanceof HTMLInputElement &&
+      deleteButton instanceof HTMLButtonElement
+    ) {
+      return {
+        fragment,
+        section,
+        heading,
+        originInput,
+        datalist,
+        deleteButton,
+      };
+    }
+  }
+
+  return null;
+};
+
+export const buildRuleSection = (key: string, rule: PathRule) => {
+  const template = getTemplate();
+
+  if (template === null) {
+    return null;
+  }
+
+  const { fragment, section, heading, originInput, datalist, deleteButton } = template;
+
+  deleteButton.textContent = getMessage('btn_advancedPathRuleDelete');
+
+  section.id = `advanced-path-rule-${key}`;
+  section.dataset['key'] = key;
+  heading.id = `added-${key}`;
+  heading.textContent = headingTextFor(rule.origin);
+  section.setAttribute('aria-labelledby', heading.id);
+  originInput.setAttribute('aria-label', getMessage('aria_advancedPathRuleOrigin'));
+  originInput.value = rule.origin;
+
+  if (datalist) {
+    datalist.id = `advanced-path-rule-origin-datalist-${key}`;
+    originInput.setAttribute('list', datalist.id);
+  }
+
+  if (STATE.currentTabOrigin) {
+    originInput.placeholder = STATE.currentTabOrigin;
+
+    if (datalist) {
+      const option = document.createElement('option');
+      option.value = STATE.currentTabOrigin;
+      datalist.append(option);
+    }
+  }
+
+  for (const field of RULE_CHECKBOX_FIELDS) {
+    const checkbox = fragment.querySelector<HTMLInputElement>(`.advanced-path-rules__${field}`);
+    checkbox?.setAttribute(
+      'aria-label',
+      getMessage('aria_advancedPathRuleField', [
+        rule.origin || getMessage('text_advancedPathRuleUnsetOrigin'),
+        field,
+      ]),
+    );
+
+    if (checkbox) {
+      checkbox.checked = rule[field];
+    }
   }
 
   attachRuleListeners(fragment, key);
-  container.append(fragment);
-};
 
-/** storage から読み込んだ advancedPathRules を元に、保存済みルールの UI を復元する。 */
-export const renderAdvancedPathRules = () => {
-  const container = document.getElementById(CONTAINER_ID);
-
-  if (!container) {
-    return;
-  }
-
-  for (const [key, rule] of Object.entries(STATE.saveData.advancedPathRules)) {
-    addRule(container, key, rule);
-  }
+  return fragment;
 };
 
 export const addAdvancedPathRuleListeners = () => {
   const addButton = document.getElementById(ADD_BUTTON_ID);
-  const container = document.getElementById(CONTAINER_ID);
 
   addButton?.addEventListener('click', () => {
-    if (!container) {
-      return;
-    }
-
     const key = String(performance.now());
     const initialRule: PathRule = {
       origin: '',
@@ -142,7 +196,12 @@ export const addAdvancedPathRuleListeners = () => {
       hash: STATE.saveData.ignoreHash,
     };
 
-    addRule(container, key, initialRule);
+    const fragment = buildRuleSection(key, initialRule);
+
+    if (fragment) {
+      UI.advancedPathRulesContainer.append(fragment);
+    }
+
     patchRule(key, initialRule);
   });
 };
