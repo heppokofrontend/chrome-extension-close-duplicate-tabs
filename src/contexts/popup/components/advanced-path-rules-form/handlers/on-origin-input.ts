@@ -3,8 +3,14 @@ import { patchRule } from '@/contexts/popup/components/advanced-path-rules-form/
 import { headingTextFor } from '@/contexts/popup/components/advanced-path-rules-form/utils';
 import { getMessage } from '@/utils';
 
-export const onOriginInput = (key: string) => (e: Event) => {
+export const onOriginInput = (e: Event) => {
   if (!(e.currentTarget instanceof HTMLInputElement)) {
+    return;
+  }
+
+  const { key } = e.currentTarget.dataset;
+
+  if (key === undefined || key === '') {
     return;
   }
 

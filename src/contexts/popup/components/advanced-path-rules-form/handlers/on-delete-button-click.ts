@@ -1,7 +1,13 @@
 import { STATE, save } from '@/contexts/popup/state';
 
-export const onDeleteButtonClick = (key: string) => (e: Event) => {
+export const onDeleteButtonClick = (e: Event) => {
   if (!(e.currentTarget instanceof HTMLElement)) {
+    return;
+  }
+
+  const { key } = e.currentTarget.dataset;
+
+  if (key === undefined || key === '') {
     return;
   }
 

@@ -2,7 +2,7 @@ import { UI } from '@/contexts/popup/constants';
 import { STATE, save } from '@/contexts/popup/state';
 import { getMessage, type PathRule } from '@/utils';
 
-import { RULE_CHECKBOX_FIELDS } from './constants';
+import { RULE_CHECKBOX_FIELDS, type RuleCheckboxField } from './constants';
 import {
   onAddButtonClick,
   onDeleteButtonClick,
@@ -24,31 +24,18 @@ export const patchRule = (key: string, patch: Partial<PathRule>) => {
   });
 };
 
-const attachRuleListeners = (fragmentOrSection: DocumentFragment | HTMLElement, key: string) => {
-  fragmentOrSection
-    .querySelector<HTMLInputElement>('.advanced-path-rules__origin')
-    ?.addEventListener('input', onOriginInput(key));
+const attachRuleListeners = (elements: {
+  originInput: HTMLInputElement;
+  checkboxInputs: Partial<Record<RuleCheckboxField, HTMLInputElement>>;
+  deleteButton: HTMLButtonElement;
+}) => {
+  elements.originInput.addEventListener('input', onOriginInput);
 
   for (const field of RULE_CHECKBOX_FIELDS) {
-    const input = fragmentOrSection.querySelector<HTMLInputElement>(
-      `.advanced-path-rules__${field}`,
-    );
-
-    if (input) {
-      input.addEventListener('change', onRuleCheckboxChange(key, field));
-      input.id = `advanced-path-rule-${field}-${key}`;
-
-      const label = input.parentElement?.previousElementSibling;
-
-      if (label instanceof HTMLLabelElement) {
-        label.htmlFor = input.id;
-      }
-    }
+    elements.checkboxInputs[field]?.addEventListener('change', onRuleCheckboxChange);
   }
 
-  fragmentOrSection
-    .querySelector<HTMLButtonElement>('.advanced-path-rules__delete')
-    ?.addEventListener('click', onDeleteButtonClick(key));
+  elements.deleteButton.addEventListener('click', onDeleteButtonClick);
 };
 
 const getTemplate = () => {
@@ -91,6 +78,7 @@ export const buildRuleSection = (key: string, rule: PathRule) => {
   const { fragment, section, heading, originInput, datalist, deleteButton } = template;
 
   deleteButton.textContent = getMessage('btn_advancedPathRuleDelete');
+  deleteButton.dataset['key'] = key;
 
   section.id = `advanced-path-rule-${key}`;
   section.dataset['key'] = key;
@@ -99,6 +87,7 @@ export const buildRuleSection = (key: string, rule: PathRule) => {
   section.setAttribute('aria-labelledby', heading.id);
   originInput.setAttribute('aria-label', getMessage('aria_advancedPathRuleOrigin'));
   originInput.value = rule.origin;
+  originInput.dataset['key'] = key;
 
   if (datalist) {
     datalist.id = `advanced-path-rule-origin-datalist-${key}`;
@@ -115,22 +104,37 @@ export const buildRuleSection = (key: string, rule: PathRule) => {
     }
   }
 
+  const checkboxInputs: Partial<Record<RuleCheckboxField, HTMLInputElement>> = {};
+
   for (const field of RULE_CHECKBOX_FIELDS) {
     const checkbox = fragment.querySelector<HTMLInputElement>(`.advanced-path-rules__${field}`);
-    checkbox?.setAttribute(
+
+    if (!checkbox) {
+      continue;
+    }
+
+    checkbox.setAttribute(
       'aria-label',
       getMessage('aria_advancedPathRuleField', [
         rule.origin || getMessage('text_advancedPathRuleUnsetOrigin'),
         field,
       ]),
     );
+    checkbox.checked = rule[field];
+    checkbox.id = `advanced-path-rule-${field}-${key}`;
+    checkbox.dataset['key'] = key;
+    checkbox.dataset['field'] = field;
 
-    if (checkbox) {
-      checkbox.checked = rule[field];
+    const label = checkbox.parentElement?.previousElementSibling;
+
+    if (label instanceof HTMLLabelElement) {
+      label.htmlFor = checkbox.id;
     }
+
+    checkboxInputs[field] = checkbox;
   }
 
-  attachRuleListeners(fragment, key);
+  attachRuleListeners({ originInput, checkboxInputs, deleteButton });
 
   return fragment;
 };
