@@ -3,7 +3,7 @@ import { STATE, save } from '@/contexts/popup/state';
 import { type SaveDataType } from '@/utils';
 import { isValidOptionType } from '@/utils/type-guard';
 
-export const onCheckboxChange = (e: Event) => {
+export const onOptionCheckboxChange = (e: Event) => {
   if (!(e.currentTarget instanceof HTMLInputElement)) {
     return;
   }

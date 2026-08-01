@@ -1,7 +1,8 @@
-import { onSummaryClick } from '@/contexts/popup/components/disclosures/handlers';
-import { checkIsValidDetailsElement } from '@/contexts/popup/components/disclosures/utils';
 import { UI } from '@/contexts/popup/constants';
 import { DETAILS_OPEN_STATUS_KEYS, STATE } from '@/contexts/popup/state';
+
+import { onSummaryClick } from './handlers';
+import { checkIsValidDetailsElement } from './utils';
 
 export const initDetailsElements = () => {
   UI.details.forEach((detailsElement) => {

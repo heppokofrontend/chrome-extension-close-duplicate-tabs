@@ -1,7 +1,7 @@
 import { initDetailsElements } from '@/contexts/popup/components/disclosures';
+import { initOptionCheckboxes } from '@/contexts/popup/components/option-checkbox';
+import { initOptionSelects } from '@/contexts/popup/components/option-select';
 import { addAdvancedPathRuleListeners } from '@/contexts/popup/listeners/advanced-path-rules';
-import { onCheckboxChange } from '@/contexts/popup/listeners/checkbox';
-import { onSelectChange } from '@/contexts/popup/listeners/select';
 import { runTask } from '@/contexts/popup/run-task';
 import { isValidTaskName } from '@/utils/type-guard';
 
@@ -22,20 +22,8 @@ export const addListener = () => {
     });
   }
 
-  const selectElements = document.querySelectorAll<HTMLSelectElement>('select[data-option-type]');
-
-  for (const select of selectElements) {
-    select.addEventListener('change', onSelectChange);
-  }
-
-  const checkboxElements = document.querySelectorAll<HTMLInputElement>(
-    'input[type="checkbox"][data-option-type]',
-  );
-
-  for (const checkbox of checkboxElements) {
-    checkbox.addEventListener('change', onCheckboxChange);
-  }
-
+  initOptionSelects();
+  initOptionCheckboxes();
   addAdvancedPathRuleListeners();
   initDetailsElements();
 };
