@@ -1,9 +1,12 @@
 import { renderAdvancedPathRules } from '@/contexts/popup/components/advanced-path-rules-form';
+import { addAdvancedPathRuleListeners } from '@/contexts/popup/components/advanced-path-rules-form';
+import { initDetailsElements } from '@/contexts/popup/components/disclosures';
+import { initOptionCheckboxes } from '@/contexts/popup/components/option-checkbox';
+import { initOptionSelects } from '@/contexts/popup/components/option-select';
+import { initRunButtons } from '@/contexts/popup/components/run-buttons';
 import { STATE } from '@/contexts/popup/state';
 import { setSelectUpdateBadgeModeValue } from '@/contexts/popup/utils/set-select-value';
 import { getSaveData, isBooleanRecord } from '@/utils';
-
-import { addListener } from './effects';
 
 const loadSaveData = async () => {
   return Promise.all([
@@ -47,6 +50,14 @@ const loadCurrentTabOrigin = async () => {
   } catch {
     STATE.currentTabOrigin = null;
   }
+};
+
+const addListener = () => {
+  initRunButtons();
+  initOptionSelects();
+  initOptionCheckboxes();
+  addAdvancedPathRuleListeners();
+  initDetailsElements();
 };
 
 const init = async () => {
