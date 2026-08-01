@@ -1,7 +1,7 @@
 import { runTask } from '@/contexts/popup/run-task';
 import { isValidTaskName } from '@/utils/type-guard';
 
-export const onButtonClick = (e: Event) => {
+export const onRunButtonClick = (e: Event) => {
   if (!(e.currentTarget instanceof HTMLButtonElement)) {
     return;
   }
