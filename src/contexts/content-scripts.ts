@@ -1,4 +1,4 @@
-import { getSaveData } from '@/utils';
+import { getStorage } from '@/utils';
 
 const onClick = (e: MouseEvent) => {
   if (e.currentTarget instanceof HTMLAnchorElement) {
@@ -6,7 +6,7 @@ const onClick = (e: MouseEvent) => {
   }
 };
 const run = () => {
-  void getSaveData().then((saveData) => {
+  void getStorage('saveData').then((saveData) => {
     const anchors = document.querySelectorAll<HTMLAnchorElement>('a[href^="#"]');
 
     anchors.forEach((a) => {

@@ -1,4 +1,4 @@
-import { getSaveData } from '@/utils';
+import { getStorage } from '@/utils';
 
 type ValidTab = chrome.tabs.Tab & {
   id: number;
@@ -18,7 +18,7 @@ const escapeHtml = (value: string) =>
       })[char] as string,
   );
 
-void getSaveData().then((saveData) => {
+void getStorage('saveData').then((saveData) => {
   document.body.dataset['includeAllWindow'] = String(saveData.includeAllWindow);
 });
 

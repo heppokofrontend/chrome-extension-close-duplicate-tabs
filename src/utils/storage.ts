@@ -44,6 +44,11 @@ const mergeSaveData = <T extends object>(saved: unknown, defaults: T): T => {
   return { ...defaults, ...(saved as Partial<T>) };
 };
 
+const isBooleanRecord = (value: unknown): value is Record<string, boolean> =>
+  typeof value === 'object' &&
+  value !== null &&
+  Object.values(value).every((v) => typeof v === 'boolean');
+
 export const defaultSaveData: Required<SaveDataType> = {
   ignorePathname: false,
   ignoreQuery: false,
@@ -60,11 +65,22 @@ export const defaultSaveData: Required<SaveDataType> = {
   shown: {},
 };
 
-export const getSaveData = async () => {
-  const { saveData } = await chrome.storage.local.get('saveData');
+export function getStorage(key: 'saveData'): Promise<Required<SaveDataType>>;
+export function getStorage(key: 'dialogOpenStatus'): Promise<Record<string, boolean>>;
+export function getStorage(key: string): Promise<unknown>;
+export async function getStorage(key: string) {
+  const result = await chrome.storage.local.get(key);
 
-  return mergeSaveData(saveData, defaultSaveData);
-};
+  if (key === 'saveData') {
+    return mergeSaveData(result['saveData'], defaultSaveData);
+  }
+
+  if (key === 'dialogOpenStatus') {
+    return isBooleanRecord(result['dialogOpenStatus']) ? result['dialogOpenStatus'] : {};
+  }
+
+  return result[key];
+}
 
 /**
  * 既存の保存データにパッチを重ねた新しい値を返す純粋関数。

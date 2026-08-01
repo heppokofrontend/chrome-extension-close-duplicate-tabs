@@ -1,9 +1,15 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
 
-import { applySaveDataPatch, defaultSaveData, getSaveData, setSaveData } from '@/utils';
+import { applySaveDataPatch, defaultSaveData, getStorage, setSaveData } from '@/utils';
 
 const mockStoredSaveData = (value: unknown) => {
   const get = vi.fn().mockResolvedValue({ saveData: value });
+
+  vi.stubGlobal('chrome', { storage: { local: { get } } });
+};
+
+const mockStoredDialogOpenStatus = (value: unknown) => {
+  const get = vi.fn().mockResolvedValue({ dialogOpenStatus: value });
 
   vi.stubGlobal('chrome', { storage: { local: { get } } });
 };
@@ -14,25 +20,25 @@ const mockStorageSet = (set = vi.fn().mockResolvedValue(undefined)) => {
   return set;
 };
 
-describe('getSaveData', () => {
+describe('getStorage', () => {
   afterEach(() => {
     vi.unstubAllGlobals();
   });
 
   it('falls back to defaults for undefined or non-object stored value', async () => {
     mockStoredSaveData(undefined);
-    expect(await getSaveData()).toStrictEqual(defaultSaveData);
+    expect(await getStorage('saveData')).toStrictEqual(defaultSaveData);
 
     mockStoredSaveData(null);
-    expect(await getSaveData()).toStrictEqual(defaultSaveData);
+    expect(await getStorage('saveData')).toStrictEqual(defaultSaveData);
 
     mockStoredSaveData('nope');
-    expect(await getSaveData()).toStrictEqual(defaultSaveData);
+    expect(await getStorage('saveData')).toStrictEqual(defaultSaveData);
   });
 
   it('merges saved fields with defaults, keeping unset fields at their default', async () => {
     mockStoredSaveData({ ignorePathname: true, noConfirm: true });
-    expect(await getSaveData()).toStrictEqual({
+    expect(await getStorage('saveData')).toStrictEqual({
       ...defaultSaveData,
       ignorePathname: true,
       noConfirm: true,
@@ -43,8 +49,27 @@ describe('getSaveData', () => {
     const defaultsCopy = { ...defaultSaveData };
 
     mockStoredSaveData({ ignorePathname: true });
-    await getSaveData();
+    await getStorage('saveData');
     expect(defaultSaveData).toStrictEqual(defaultsCopy);
+  });
+
+  it('returns the stored value for dialogOpenStatus when it is a boolean record', async () => {
+    mockStoredDialogOpenStatus({ dangerZone: true, advancedPathRules: false });
+    expect(await getStorage('dialogOpenStatus')).toStrictEqual({
+      dangerZone: true,
+      advancedPathRules: false,
+    });
+  });
+
+  it('falls back to an empty object for dialogOpenStatus when the stored value is not a boolean record', async () => {
+    mockStoredDialogOpenStatus(undefined);
+    expect(await getStorage('dialogOpenStatus')).toStrictEqual({});
+
+    mockStoredDialogOpenStatus({ dangerZone: 'yes' });
+    expect(await getStorage('dialogOpenStatus')).toStrictEqual({});
+
+    mockStoredDialogOpenStatus('nope');
+    expect(await getStorage('dialogOpenStatus')).toStrictEqual({});
   });
 });
 
