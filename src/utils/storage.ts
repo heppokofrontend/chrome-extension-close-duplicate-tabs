@@ -84,19 +84,19 @@ export async function getLocalStorage(key: string) {
   return result[key];
 }
 
-const isValidTab = (tab: unknown): tab is TabWithIdAndUrl =>
-  typeof tab === 'object' &&
-  tab !== null &&
-  'id' in tab &&
-  'url' in tab &&
-  typeof tab.id === 'number' &&
-  typeof tab.url === 'string';
-
 const isDuplicateEntry = (entry: unknown): entry is [string, TabWithIdAndUrl[]] =>
   Array.isArray(entry) &&
   typeof entry[0] === 'string' &&
   Array.isArray(entry[1]) &&
-  entry[1].every(isValidTab);
+  entry[1].every(
+    (tab: unknown): tab is TabWithIdAndUrl =>
+      typeof tab === 'object' &&
+      tab !== null &&
+      'id' in tab &&
+      'url' in tab &&
+      typeof tab.id === 'number' &&
+      typeof tab.url === 'string',
+  );
 
 export function getSessionStorage(key: 'duplicatedEntries'): Promise<[string, TabWithIdAndUrl[]][]>;
 export function getSessionStorage(key: 'lastWindowId'): Promise<number | null>;
