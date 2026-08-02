@@ -1,3 +1,4 @@
+import { UI } from '@/contexts/duplicates-list/constants';
 import { getStorage } from '@/utils';
 
 type ValidTab = chrome.tabs.Tab & {
@@ -25,8 +26,7 @@ void getStorage('saveData').then((saveData) => {
 const render = async () => {
   const { lastWindowId } = await chrome.storage.session.get('lastWindowId');
 
-  const returnButton = document.querySelector('#return button');
-  returnButton?.addEventListener('click', () => {
+  UI.returnButton.addEventListener('click', () => {
     if (typeof lastWindowId === 'number') {
       chrome.windows.update(lastWindowId, { focused: true }, () => {
         if (chrome.runtime.lastError) {
@@ -41,7 +41,6 @@ const render = async () => {
   const typedDuplicatedEntries: [string, ValidTab[]][] = Array.isArray(duplicatedEntries)
     ? (duplicatedEntries as [string, ValidTab[]][])
     : [];
-  const container = document.querySelector('#container');
   const fragment = document.createDocumentFragment();
   const theadSrc = `
     <thead>
@@ -109,7 +108,7 @@ const render = async () => {
     fragment.appendChild(section);
   }
 
-  container?.appendChild(fragment);
+  UI.container.appendChild(fragment);
 };
 
 void render();

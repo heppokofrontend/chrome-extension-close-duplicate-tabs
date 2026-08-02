@@ -1,0 +1,8 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+/* eslint-disable @typescript-eslint/no-unnecessary-type-parameters */
+const $ = <T extends Element>(selector: string) => document.querySelector<T>(selector)!;
+
+export const UI = {
+  returnButton: $<HTMLButtonElement>('#return button'),
+  container: $<HTMLElement>('#container'),
+};
