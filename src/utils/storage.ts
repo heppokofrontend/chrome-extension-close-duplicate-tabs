@@ -36,6 +36,11 @@ export type UrlNormalizeOptions = Pick<
   'ignorePathname' | 'ignoreQuery' | 'ignoreHash' | 'useAdvancedPathRule' | 'advancedPathRules'
 >;
 
+export type ValidTab = chrome.tabs.Tab & {
+  id: number;
+  url: string;
+};
+
 const mergeSaveData = <T extends object>(saved: unknown, defaults: T): T => {
   if (typeof saved !== 'object' || saved === null) {
     return { ...defaults };
@@ -80,6 +85,34 @@ export async function getLocalStorage(key: string) {
   }
 
   return result[key];
+}
+
+const isDuplicateEntry = (entry: unknown): entry is [string, ValidTab[]] =>
+  Array.isArray(entry) && typeof entry[0] === 'string' && Array.isArray(entry[1]);
+
+export function getSessionStorage(key: 'duplicatedEntries'): Promise<[string, ValidTab[]][]>;
+export function getSessionStorage(key: 'lastWindowId'): Promise<number | null>;
+export async function getSessionStorage(key: string) {
+  const result = await chrome.storage.session.get(key);
+
+  switch (key) {
+    case 'duplicatedEntries':
+      return Array.isArray(result['duplicatedEntries'])
+        ? result['duplicatedEntries'].filter(isDuplicateEntry)
+        : [];
+    case 'lastWindowId': {
+      const lastWindowId = result['lastWindowId'];
+
+      if (typeof lastWindowId === 'number') {
+        return Number.isNaN(lastWindowId) ? null : lastWindowId;
+      }
+
+      return null;
+    }
+
+    default:
+      return result[key];
+  }
 }
 
 /**

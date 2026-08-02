@@ -1,10 +1,12 @@
 import { UI } from '@/contexts/duplicates-list/constants';
+import { getSessionStorage } from '@/utils';
 
 export const initFocusCurrentWindowButton = async () => {
-  const { lastWindowId } = await chrome.storage.session.get('lastWindowId');
+  const lastWindowId = await getSessionStorage('lastWindowId');
 
   UI.focusCurrentWindowButton.addEventListener('click', () => {
-    if (typeof lastWindowId !== 'number') {
+    if (lastWindowId === null) {
+      alert(chrome.i18n.getMessage('duplicates_window_not_found'));
       return;
     }
 

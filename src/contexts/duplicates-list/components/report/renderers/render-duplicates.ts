@@ -1,13 +1,10 @@
-import type { ValidTab } from '@/contexts/duplicates-list/components/report/types';
 import { UI } from '@/contexts/duplicates-list/constants';
+import { getSessionStorage } from '@/utils';
 
 import { buildUrlSection } from './build-url-section';
 
-const isDuplicateEntry = (entry: unknown): entry is [string, ValidTab[]] =>
-  Array.isArray(entry) && typeof entry[0] === 'string' && Array.isArray(entry[1]);
-
-export const renderDuplicates = (unsafeEntries: unknown) => {
-  const entries = Array.isArray(unsafeEntries) ? unsafeEntries.filter(isDuplicateEntry) : [];
+export const renderDuplicates = async () => {
+  const entries = await getSessionStorage('duplicatedEntries');
 
   const fragment = document.createDocumentFragment();
   const closedMessage = chrome.i18n.getMessage('duplicates_already_closed');

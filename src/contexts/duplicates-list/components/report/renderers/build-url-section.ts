@@ -1,4 +1,4 @@
-import type { ValidTab } from '@/contexts/duplicates-list/components/report/types';
+import type { ValidTab } from '@/utils';
 
 import { buildTabRow } from './build-tab-row';
 

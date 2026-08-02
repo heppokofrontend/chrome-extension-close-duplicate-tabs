@@ -8,10 +8,7 @@ void getLocalStorage('saveData').then((saveData) => {
 
 const init = async () => {
   await initFocusCurrentWindowButton();
-
-  const { duplicatedEntries } = await chrome.storage.session.get('duplicatedEntries');
-
-  renderDuplicates(duplicatedEntries);
+  await renderDuplicates();
 };
 
 void init();
