@@ -39,47 +39,11 @@
           </div>
 
           <div class="options">
-            <p>
-              <label>
-                <span class="img">
-                  <img src="./images/hash.svg" width="16" height="16" alt="" />
-                </span>
-                <input
-                  type="checkbox"
-                  data-option-type="ignoreHash"
-                  aria-describedby="desc-ignoreHash"
-                />
-                <span class="label" data-i18n="checkbox_hash">loading...</span>
-              </label>
-            </p>
-
-            <p class="hint" id="desc-ignoreHash">
-              <span role="img" aria-label="hint">💡</span>
-              https://example.com/abc/def?query=hoge&query2=piyo<em>#hash</em>
-            </p>
-
-            <p>
-              <label>
-                <span class="img">
-                  <img src="./images/query.svg" width="16" height="16" alt="" />
-                </span>
-                <input
-                  type="checkbox"
-                  data-option-type="ignoreQuery"
-                  aria-describedby="desc-ignoreQuery"
-                />
-                <span class="label" data-i18n="checkbox_query">loading...</span>
-              </label>
-            </p>
-
-            <p class="hint" id="desc-ignoreQuery">
-              <span role="img" aria-label="hint">💡</span>
-              https://example.com/abc/def<em>?query=hoge&query2=piyo</em>#hash
-            </p>
-
-            <div id="advanced-path-rules">
+            <section id="advanced-path-rules" aria-labelledby="advanced-path-rules-heading">
               <details class="advanced-path-rules" id="advancedPathRulesDetails">
-                <summary class="advanced-path-rules__summary">ADVANCED PATH RULES</summary>
+                <summary class="advanced-path-rules__summary">
+                  <h2 id="advanced-path-rules-heading">ADVANCED PATH RULES</h2>
+                </summary>
 
                 <div class="advanced-path-rules__content">
                   <h3 class="advanced-path-rules__default-heading">Default</h3>
@@ -157,14 +121,54 @@
                     </section>
                   </template>
 
-                  <p>
+                  <p class="advanced-path-rules__add-wrapper">
                     <button type="button" id="advanced-path-rules__add">
                       <span>Add</span>
                     </button>
                   </p>
                 </div>
               </details>
-            </div>
+            </section>
+
+            <h2 class="sr-only">OPTIONS</h2>
+
+            <p>
+              <label>
+                <span class="img">
+                  <img src="./images/hash.svg" width="16" height="16" alt="" />
+                </span>
+                <input
+                  type="checkbox"
+                  data-option-type="ignoreHash"
+                  aria-describedby="desc-ignoreHash"
+                />
+                <span class="label" data-i18n="checkbox_hash">loading...</span>
+              </label>
+            </p>
+
+            <p class="hint" id="desc-ignoreHash">
+              <span role="img" aria-label="hint">💡</span>
+              https://example.com/abc/def?query=hoge&query2=piyo<em>#hash</em>
+            </p>
+
+            <p>
+              <label>
+                <span class="img">
+                  <img src="./images/query.svg" width="16" height="16" alt="" />
+                </span>
+                <input
+                  type="checkbox"
+                  data-option-type="ignoreQuery"
+                  aria-describedby="desc-ignoreQuery"
+                />
+                <span class="label" data-i18n="checkbox_query">loading...</span>
+              </label>
+            </p>
+
+            <p class="hint" id="desc-ignoreQuery">
+              <span role="img" aria-label="hint">💡</span>
+              https://example.com/abc/def<em>?query=hoge&query2=piyo</em>#hash
+            </p>
 
             <p>
               <label>
@@ -189,7 +193,7 @@
         </div>
 
         <details class="danger" id="dangerZoneDetails">
-          <summary><span>Danger Zone</span></summary>
+          <summary><h2>Danger Zone</h2></summary>
 
           <div class="content">
             <div class="buttons">

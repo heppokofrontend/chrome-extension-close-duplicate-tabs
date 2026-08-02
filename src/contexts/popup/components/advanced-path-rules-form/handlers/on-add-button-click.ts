@@ -1,0 +1,23 @@
+import { buildRuleSection } from '@/contexts/popup/components/advanced-path-rules-form/renderers/build-rule-section';
+import { patchRule } from '@/contexts/popup/components/advanced-path-rules-form/utils';
+import { UI } from '@/contexts/popup/constants';
+import { STATE } from '@/contexts/popup/state';
+import { type PathRule } from '@/utils';
+
+export const onAddButtonClick = () => {
+  const key = String(performance.now());
+  const initialRule: PathRule = {
+    origin: '',
+    pathname: STATE.saveData.ignorePathname,
+    query: STATE.saveData.ignoreQuery,
+    hash: STATE.saveData.ignoreHash,
+  };
+
+  const fragment = buildRuleSection(key, initialRule);
+
+  if (fragment) {
+    UI.advancedPathRulesContainer.append(fragment);
+  }
+
+  patchRule(key, initialRule);
+};

@@ -1,21 +1,21 @@
-import { addListener } from '@/contexts/popup/listeners';
-import { renderAdvancedPathRules } from '@/contexts/popup/listeners/advanced-path-rules';
+import {
+  renderAdvancedPathRules,
+  addAdvancedPathRuleListeners,
+} from '@/contexts/popup/components/advanced-path-rules-form';
+import { initDetailsElements } from '@/contexts/popup/components/disclosures';
+import { initOptionCheckboxes } from '@/contexts/popup/components/option-checkbox';
+import { initOptionSelects } from '@/contexts/popup/components/option-select';
+import { initRunButtons } from '@/contexts/popup/components/run-buttons';
+import { STATE } from '@/contexts/popup/state';
 import { setSelectUpdateBadgeModeValue } from '@/contexts/popup/utils/set-select-value';
-import { STATE } from '@/contexts/popup/utils/state';
-import { getSaveData, isBooleanRecord } from '@/utils';
+import { getLocalStorage } from '@/utils';
 
 const loadSaveData = async () => {
   return Promise.all([
-    new Promise<void>((resolve) => {
-      chrome.storage.local.get('dialogOpenStatus', ({ dialogOpenStatus }) => {
-        if (isBooleanRecord(dialogOpenStatus)) {
-          Object.assign(STATE.dialogOpenStatus, dialogOpenStatus);
-        }
-
-        resolve();
-      });
+    getLocalStorage('dialogOpenStatus').then((dialogOpenStatus) => {
+      Object.assign(STATE.dialogOpenStatus, dialogOpenStatus);
     }),
-    getSaveData().then((saveData) => {
+    getLocalStorage('saveData').then((saveData) => {
       for (const [key, value] of Object.entries(saveData)) {
         const controls = document.querySelectorAll<HTMLElement>(`[data-option-type=${key}]`);
 
@@ -46,6 +46,14 @@ const loadCurrentTabOrigin = async () => {
   } catch {
     STATE.currentTabOrigin = null;
   }
+};
+
+const addListener = () => {
+  initRunButtons();
+  initOptionSelects();
+  initOptionCheckboxes();
+  addAdvancedPathRuleListeners();
+  initDetailsElements();
 };
 
 const init = async () => {

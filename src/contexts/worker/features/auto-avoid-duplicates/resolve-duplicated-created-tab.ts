@@ -1,6 +1,6 @@
 import type { CreatedTab } from '@/contexts/worker/features/auto-avoid-duplicates/types';
-import { getGroupedTabsByNormalizedUrl } from '@/contexts/worker/utils';
-import { normalizeUrl, type UrlNormalizeOptions } from '@/utils';
+import { getGroupedTabsByNormalizedUrl, normalizeUrl } from '@/contexts/worker/utils';
+import type { UrlNormalizeOptions } from '@/utils';
 
 interface CandidateTab {
   id: number;

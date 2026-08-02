@@ -4,9 +4,9 @@ import {
   AUTO_AVOID_DUPLICATES_TARGETABLE_PROTOCOLS,
 } from '@/contexts/worker/features/auto-avoid-duplicates/settings';
 import type { CreatedTab } from '@/contexts/worker/features/auto-avoid-duplicates/types';
-import type { ValidTab } from '@/contexts/worker/types';
 import { getAllTabs } from '@/contexts/worker/utils';
-import { getSaveData } from '@/utils';
+import type { TabWithId } from '@/types';
+import { getLocalStorage } from '@/utils';
 
 let extensionStartedAt: number | null = null;
 
@@ -22,7 +22,7 @@ const resolveCreatedTab = async (createdTab: CreatedTab) => {
     return;
   }
 
-  const saveData = await getSaveData();
+  const saveData = await getLocalStorage('saveData');
 
   if (!saveData.autoAvoidDuplicate) {
     return;
@@ -33,7 +33,7 @@ const resolveCreatedTab = async (createdTab: CreatedTab) => {
   try {
     // includeAllWindow が false のときはカレントウィンドウ以外を候補から外す
     const allTabs = await getAllTabs(saveData.includeAllWindow ? undefined : createdTab.windowId);
-    const existingTabs = allTabs.filter((tab): tab is ValidTab => {
+    const existingTabs = allTabs.filter((tab): tab is TabWithId => {
       return (
         typeof tab.id === 'number' && tab.id !== createdTab.id && !processingTabIds.has(tab.id)
       );

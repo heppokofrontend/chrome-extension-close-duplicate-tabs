@@ -161,8 +161,8 @@
   "duplicates_return": {
     "message": "元のウィンドウに戻る"
   },
-  "duplicates_already_closed": {
-    "message": "すでに閉じられています。"
+  "duplicates_window_not_found": {
+    "message": "ウィンドウが見つかりませんでした。"
   },
   "duplicates_empty_message": {
     "message": "このウィンドウに重複しているタブはありません。"
