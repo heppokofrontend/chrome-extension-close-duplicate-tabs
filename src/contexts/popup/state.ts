@@ -1,10 +1,4 @@
-import {
-  type SaveDataType,
-  applySaveDataPatch,
-  defaultSaveData,
-  getMessage,
-  setSaveData,
-} from '@/utils';
+import { type SaveDataType, defaultSaveData, getMessage, setSaveData } from '@/utils';
 
 export const DETAILS_OPEN_STATUS_KEYS = {
   dangerZoneDetails: 'dangerZone',
@@ -21,7 +15,29 @@ export const STATE = {
   saveData: defaultSaveData,
   /** Advanced Path Rule の origin 入力欄に placeholder として表示する、現在アクティブなタブの origin。取得不可時は null。 */
   currentTabOrigin: null as string | null,
+  /** 編集開始時に編集前の origin の値を保持しておくためのフィールド。 */
+  editingOriginBeforeValue: '',
 };
+
+/**
+ * 既存の保存データにパッチを重ねた新しい値を返す純粋関数。
+ * shown は表示済みキーを積み上げる記録なので、丸ごと置き換えず既存キーを残す。
+ */
+const applySaveDataPatch = (
+  base: Required<SaveDataType>,
+  patch: Partial<SaveDataType>,
+): Required<SaveDataType> => ({
+  ...base,
+  ...patch,
+  shown: {
+    ...base.shown,
+    ...patch.shown,
+  },
+  inputHistory: {
+    ...base.inputHistory,
+    ...patch.inputHistory,
+  },
+});
 
 export const save = (patch: Partial<SaveDataType>) => {
   const previous = STATE.saveData;

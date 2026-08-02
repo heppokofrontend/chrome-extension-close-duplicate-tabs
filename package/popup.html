@@ -81,6 +81,7 @@
                   </ul>
 
                   <div id="advanced-path-rules__custom-rules"></div>
+                  <datalist id="advanced-path-rules__datalist"></datalist>
 
                   <template id="advanced-path-rule-template">
                     <section class="advanced-path-rule">
@@ -89,9 +90,13 @@
                         <p>
                           <label>
                             <span class="advanced-path-rules__origin-label">Origin / Host</span>
-                            <input type="text" class="advanced-path-rules__origin" placeholder="" />
+                            <input
+                              type="text"
+                              class="advanced-path-rules__origin"
+                              placeholder=""
+                              list="advanced-path-rules__datalist"
+                            />
                           </label>
-                          <datalist></datalist>
                         </p>
                       </div>
 
