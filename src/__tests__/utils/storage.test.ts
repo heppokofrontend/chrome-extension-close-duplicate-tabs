@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
 
-import { applySaveDataPatch, defaultSaveData, getLocalStorage, setSaveData } from '@/utils';
+import { defaultSaveData, getLocalStorage, setSaveData } from '@/utils';
 
 const mockStoredSaveData = (value: unknown) => {
   const get = vi.fn().mockResolvedValue({ saveData: value });
@@ -70,46 +70,6 @@ describe('getLocalStorage', () => {
 
     mockStoredDialogOpenStatus('nope');
     expect(await getLocalStorage('dialogOpenStatus')).toStrictEqual({});
-  });
-});
-
-describe('applySaveDataPatch', () => {
-  it('overrides base fields with values from the patch', () => {
-    const base = { ...defaultSaveData, noConfirm: true };
-
-    expect(applySaveDataPatch(base, { noConfirm: false, ignorePathname: true })).toStrictEqual({
-      ...defaultSaveData,
-      noConfirm: false,
-      ignorePathname: true,
-    });
-  });
-
-  it('accumulates shown instead of replacing it wholesale', () => {
-    const base = { ...defaultSaveData, shown: { ignorePathname: '2026-01-01' } };
-
-    const result = applySaveDataPatch(base, { shown: { autoAvoidDuplicate: '2026-07-05' } });
-
-    expect(result.shown).toStrictEqual({
-      ignorePathname: '2026-01-01',
-      autoAvoidDuplicate: '2026-07-05',
-    });
-  });
-
-  it('lets a new shown key override an existing one with the same name', () => {
-    const base = { ...defaultSaveData, shown: { autoAvoidDuplicate: '2026-01-01' } };
-
-    const result = applySaveDataPatch(base, { shown: { autoAvoidDuplicate: '2026-07-05' } });
-
-    expect(result.shown).toStrictEqual({ autoAvoidDuplicate: '2026-07-05' });
-  });
-
-  it('does not mutate the base object', () => {
-    const base = { ...defaultSaveData, shown: { ignorePathname: '2026-01-01' } };
-    const snapshot = structuredClone(base);
-
-    applySaveDataPatch(base, { noConfirm: true, shown: { autoAvoidDuplicate: '2026-07-05' } });
-
-    expect(base).toStrictEqual(snapshot);
   });
 });
 

@@ -16,6 +16,10 @@ export type PathRule = {
   hash: boolean;
 };
 
+/** 入力履歴を管理する対象の入力欄を識別するキー。 */
+export const INPUT_HISTORY_KEYS = ['advancedPathRuleOrigin'] as const;
+export type InputHistoryKey = (typeof INPUT_HISTORY_KEYS)[number];
+
 export type SaveDataType = {
   ignorePathname?: boolean;
   ignoreQuery?: boolean;
@@ -31,6 +35,8 @@ export type SaveDataType = {
   advancedPathRules?: Record<string, PathRule>;
   /** お知らせダイアログの表示済みキーと、表示した日時（ISO 8601 文字列）の記録。 */
   shown?: Record<string, string>;
+  /** 各入力欄の入力履歴（キー = 入力欄の識別子、値は新しい順、最大 INPUT_HISTORY_MAX_ENTRIES 件）。 */
+  inputHistory?: Partial<Record<InputHistoryKey, string[]>>;
 };
 
 export type UrlNormalizeOptions = Pick<
@@ -65,6 +71,7 @@ export const defaultSaveData: Required<SaveDataType> = {
   useAdvancedPathRule: false,
   advancedPathRules: {},
   shown: {},
+  inputHistory: {},
 };
 
 export function getLocalStorage(key: 'saveData'): Promise<Required<SaveDataType>>;
@@ -122,22 +129,6 @@ export async function getSessionStorage(key: string) {
       return result[key];
   }
 }
-
-/**
- * 既存の保存データにパッチを重ねた新しい値を返す純粋関数。
- * shown は表示済みキーを積み上げる記録なので、丸ごと置き換えず既存キーを残す。
- */
-export const applySaveDataPatch = (
-  base: Required<SaveDataType>,
-  patch: Partial<SaveDataType>,
-): Required<SaveDataType> => ({
-  ...base,
-  ...patch,
-  shown: {
-    ...base.shown,
-    ...patch.shown,
-  },
-});
 
 /**
  * 直前の書き込みが完了してから次の set を走らせるための順序保証キュー。

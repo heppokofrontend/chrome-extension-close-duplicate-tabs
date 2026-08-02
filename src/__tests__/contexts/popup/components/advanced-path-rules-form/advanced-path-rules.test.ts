@@ -4,7 +4,7 @@ import { defaultSaveData, type PathRule, type SaveDataType } from '@/utils';
 
 const { STATE, save } = vi.hoisted(() => {
   return {
-    STATE: { saveData: {} },
+    STATE: { saveData: {}, editingOriginBeforeValue: '' },
     save: vi.fn(),
   };
 });
@@ -14,12 +14,17 @@ vi.mock('@/contexts/popup/state', () => ({ STATE, save }));
 type MutableSaveData = Required<SaveDataType>;
 
 const getState = () =>
-  STATE as unknown as { saveData: MutableSaveData; currentTabOrigin: string | null };
+  STATE as unknown as {
+    saveData: MutableSaveData;
+    currentTabOrigin: string | null;
+    editingOriginBeforeValue: string;
+  };
 const getSave = () =>
   save as unknown as ReturnType<typeof vi.fn<(patch: Partial<SaveDataType>) => void>>;
 
 const FIXTURE_HTML = `
   <div id="advanced-path-rules__custom-rules"></div>
+  <datalist id="advanced-path-rules__datalist"></datalist>
 
   <template id="advanced-path-rule-template">
     <section class="advanced-path-rule">
@@ -31,8 +36,8 @@ const FIXTURE_HTML = `
             class="advanced-path-rules__origin"
             aria-label="Origin"
             placeholder="http://localhost:3000"
+            list="advanced-path-rules__datalist"
           />
-          <datalist></datalist>
         </p>
       </div>
 
@@ -112,6 +117,13 @@ const setOriginValue = (root: ParentNode, value: string) => {
   originInput.dispatchEvent(new Event('input', { bubbles: true }));
 };
 
+const changeOriginValue = (root: ParentNode, value: string) => {
+  const originInput = requireInput(root, '.advanced-path-rules__origin');
+
+  originInput.value = value;
+  originInput.dispatchEvent(new Event('change', { bubbles: true }));
+};
+
 const getLastSavedAdvancedPathRules = (): Record<string, PathRule> => {
   const lastPatch = getSave().mock.lastCall?.[0];
 
@@ -140,6 +152,7 @@ beforeEach(() => {
   save.mockClear();
   getState().saveData = structuredClone(defaultSaveData);
   getState().currentTabOrigin = null;
+  getState().editingOriginBeforeValue = '';
   document.body.innerHTML = FIXTURE_HTML;
   vi.stubGlobal('chrome', { i18n: { getMessage: stubGetMessage } });
 });
@@ -319,55 +332,142 @@ describe('addAdvancedPathRuleListeners', () => {
     );
   });
 
-  it('links the origin input to its datalist via id/list and seeds an option matching the placeholder', async () => {
+  it('links the origin input to the shared datalist and seeds an option matching the current tab origin', async () => {
     getState().currentTabOrigin = 'https://www.google.com';
 
     const { addAdvancedPathRuleListeners } =
       await import('@/contexts/popup/components/advanced-path-rules-form/effects');
+    const { renderAdvancedPathRules } =
+      await import('@/contexts/popup/components/advanced-path-rules-form/renderers/render-advanced-path-rules');
+    renderAdvancedPathRules();
     addAdvancedPathRuleListeners();
     clickAddButton();
 
     const section = requireElement(document, '.advanced-path-rule');
     const originInput = requireInput(section, '.advanced-path-rules__origin');
-    const datalist = requireElement(section, 'datalist');
+    const datalist = requireElement(document, '#advanced-path-rules__datalist');
 
-    expect(originInput.getAttribute('list')).toBe(datalist.id);
-    expect(datalist.id).not.toBe('');
+    expect(originInput.getAttribute('list')).toBe('advanced-path-rules__datalist');
     expect(
       [...datalist.querySelectorAll<HTMLOptionElement>('option')].map((option) => option.value),
     ).toStrictEqual(['https://www.google.com']);
   });
 
-  it('links id/list per row without seeding an option when the current tab origin is unavailable', async () => {
+  it('does not seed a datalist option when the current tab origin is unavailable', async () => {
     getState().currentTabOrigin = null;
 
+    const { addAdvancedPathRuleListeners } =
+      await import('@/contexts/popup/components/advanced-path-rules-form/effects');
+    const { renderAdvancedPathRules } =
+      await import('@/contexts/popup/components/advanced-path-rules-form/renderers/render-advanced-path-rules');
+    renderAdvancedPathRules();
+    addAdvancedPathRuleListeners();
+    clickAddButton();
+
+    const section = requireElement(document, '.advanced-path-rule');
+    const originInput = requireInput(section, '.advanced-path-rules__origin');
+    const datalist = requireElement(document, '#advanced-path-rules__datalist');
+
+    expect(originInput.getAttribute('list')).toBe('advanced-path-rules__datalist');
+    expect(datalist.querySelectorAll('option')).toHaveLength(0);
+  });
+
+  it('shares a single datalist across multiple rows instead of one per row', async () => {
+    getState().currentTabOrigin = 'https://www.google.com';
+
+    const { addAdvancedPathRuleListeners } =
+      await import('@/contexts/popup/components/advanced-path-rules-form/effects');
+    const { renderAdvancedPathRules } =
+      await import('@/contexts/popup/components/advanced-path-rules-form/renderers/render-advanced-path-rules');
+    renderAdvancedPathRules();
+    addAdvancedPathRuleListeners();
+
+    clickAddButton();
+    clickAddButton();
+
+    const originInputs = [
+      ...document.querySelectorAll<HTMLInputElement>('.advanced-path-rules__origin'),
+    ];
+
+    expect(document.querySelectorAll('datalist')).toHaveLength(1);
+    expect(originInputs.map((input) => input.getAttribute('list'))).toStrictEqual([
+      'advanced-path-rules__datalist',
+      'advanced-path-rules__datalist',
+    ]);
+  });
+
+  it('seeds datalist options from currentTabOrigin followed by input history, deduped', async () => {
+    getState().currentTabOrigin = 'https://www.google.com';
+    getState().saveData.inputHistory = {
+      advancedPathRuleOrigin: ['https://a.example', 'https://www.google.com', 'https://b.example'],
+    };
+
+    const { addAdvancedPathRuleListeners } =
+      await import('@/contexts/popup/components/advanced-path-rules-form/effects');
+    const { renderAdvancedPathRules } =
+      await import('@/contexts/popup/components/advanced-path-rules-form/renderers/render-advanced-path-rules');
+    renderAdvancedPathRules();
+    addAdvancedPathRuleListeners();
+    clickAddButton();
+
+    const datalist = requireElement(document, '#advanced-path-rules__datalist');
+
+    expect(
+      [...datalist.querySelectorAll<HTMLOptionElement>('option')].map((option) => option.value),
+    ).toStrictEqual(['https://www.google.com', 'https://a.example', 'https://b.example']);
+  });
+
+  it('adds the pre-edit value back into the datalist on focusin, so an accidental overwrite is recoverable', async () => {
+    getState().saveData.advancedPathRules = {
+      k1: { origin: 'https://old.example', pathname: false, query: false, hash: false },
+    };
+
+    const { addAdvancedPathRuleListeners } =
+      await import('@/contexts/popup/components/advanced-path-rules-form/effects');
+    const { renderAdvancedPathRules } =
+      await import('@/contexts/popup/components/advanced-path-rules-form/renderers/render-advanced-path-rules');
+    renderAdvancedPathRules();
+    addAdvancedPathRuleListeners();
+
+    const section = requireElement(document, '.advanced-path-rule');
+    const originInput = requireInput(section, '.advanced-path-rules__origin');
+    originInput.dispatchEvent(new Event('focusin', { bubbles: true }));
+
+    const datalist = requireElement(document, '#advanced-path-rules__datalist');
+
+    expect(
+      [...datalist.querySelectorAll<HTMLOptionElement>('option')].map((option) => option.value),
+    ).toContain('https://old.example');
+  });
+
+  it('saves the origin to inputHistory on change but not on input alone', async () => {
     const { addAdvancedPathRuleListeners } =
       await import('@/contexts/popup/components/advanced-path-rules-form/effects');
     addAdvancedPathRuleListeners();
     clickAddButton();
 
     const section = requireElement(document, '.advanced-path-rule');
-    const originInput = requireInput(section, '.advanced-path-rules__origin');
-    const datalist = requireElement(section, 'datalist');
 
-    expect(originInput.getAttribute('list')).toBe(datalist.id);
-    expect(datalist.querySelectorAll('option')).toHaveLength(0);
+    setOriginValue(section, 'https://example.com');
+    expect(getSave().mock.calls.some(([patch]) => 'inputHistory' in patch)).toBe(false);
+
+    changeOriginValue(section, 'https://example.com');
+    expect(getSave()).toHaveBeenCalledWith({
+      inputHistory: { advancedPathRuleOrigin: ['https://example.com'] },
+    });
   });
 
-  it('gives each row a unique datalist id so multiple rules do not collide', async () => {
-    getState().currentTabOrigin = 'https://www.google.com';
-
+  it('does not save inputHistory when the origin is changed to an empty value', async () => {
     const { addAdvancedPathRuleListeners } =
       await import('@/contexts/popup/components/advanced-path-rules-form/effects');
     addAdvancedPathRuleListeners();
-
-    clickAddButton();
     clickAddButton();
 
-    const datalistIds = [...document.querySelectorAll('datalist')].map((datalist) => datalist.id);
+    const section = requireElement(document, '.advanced-path-rule');
 
-    expect(datalistIds).toHaveLength(2);
-    expect(new Set(datalistIds).size).toBe(2);
+    changeOriginValue(section, '');
+
+    expect(getSave().mock.calls.some(([patch]) => 'inputHistory' in patch)).toBe(false);
   });
 });
 
