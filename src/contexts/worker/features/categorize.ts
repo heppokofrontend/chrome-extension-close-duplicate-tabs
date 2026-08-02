@@ -1,10 +1,7 @@
 import type { ValidTab as BaseValidTab } from '@/contexts/worker/types';
 import { getCurrentTab, getTabs } from '@/contexts/worker/utils';
-import type { SaveDataType } from '@/utils';
+import type { SaveDataType, ValidTab } from '@/utils';
 
-type ValidTab = BaseValidTab & {
-  url: string;
-};
 type CurrentPinnedTab = BaseValidTab & {
   url: string;
   pinned: true;
