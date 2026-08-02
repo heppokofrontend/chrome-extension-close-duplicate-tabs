@@ -3,7 +3,12 @@ import { UI } from '@/contexts/duplicates-list/constants';
 
 import { buildUrlSection } from './build-url-section';
 
-export const renderDuplicates = (entries: [string, ValidTab[]][]) => {
+const isDuplicateEntry = (entry: unknown): entry is [string, ValidTab[]] =>
+  Array.isArray(entry) && typeof entry[0] === 'string' && Array.isArray(entry[1]);
+
+export const renderDuplicates = (unsafeEntries: unknown) => {
+  const entries = Array.isArray(unsafeEntries) ? unsafeEntries.filter(isDuplicateEntry) : [];
+
   const fragment = document.createDocumentFragment();
   const closedMessage = chrome.i18n.getMessage('duplicates_already_closed');
 
