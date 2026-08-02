@@ -65,10 +65,10 @@ export const defaultSaveData: Required<SaveDataType> = {
   shown: {},
 };
 
-export function getStorage(key: 'saveData'): Promise<Required<SaveDataType>>;
-export function getStorage(key: 'dialogOpenStatus'): Promise<Record<string, boolean>>;
-export function getStorage(key: string): Promise<unknown>;
-export async function getStorage(key: string) {
+export function getLocalStorage(key: 'saveData'): Promise<Required<SaveDataType>>;
+export function getLocalStorage(key: 'dialogOpenStatus'): Promise<Record<string, boolean>>;
+export function getLocalStorage(key: string): Promise<unknown>;
+export async function getLocalStorage(key: string) {
   const result = await chrome.storage.local.get(key);
 
   if (key === 'saveData') {

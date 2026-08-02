@@ -8,14 +8,14 @@ import { initOptionSelects } from '@/contexts/popup/components/option-select';
 import { initRunButtons } from '@/contexts/popup/components/run-buttons';
 import { STATE } from '@/contexts/popup/state';
 import { setSelectUpdateBadgeModeValue } from '@/contexts/popup/utils/set-select-value';
-import { getStorage } from '@/utils';
+import { getLocalStorage } from '@/utils';
 
 const loadSaveData = async () => {
   return Promise.all([
-    getStorage('dialogOpenStatus').then((dialogOpenStatus) => {
+    getLocalStorage('dialogOpenStatus').then((dialogOpenStatus) => {
       Object.assign(STATE.dialogOpenStatus, dialogOpenStatus);
     }),
-    getStorage('saveData').then((saveData) => {
+    getLocalStorage('saveData').then((saveData) => {
       for (const [key, value] of Object.entries(saveData)) {
         const controls = document.querySelectorAll<HTMLElement>(`[data-option-type=${key}]`);
 

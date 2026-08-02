@@ -1,5 +1,5 @@
 import { getCurrentTab, getDuplicatedTabIdsToClose, getTabs } from '@/contexts/worker/utils';
-import { getStorage, normalizeUrl, type SaveDataType } from '@/utils';
+import { getLocalStorage, normalizeUrl, type SaveDataType } from '@/utils';
 
 // package/styles/popup.css の `.img::before` background と同じ色に揃えること
 const BADGE_BACKGROUND_COLOR = '#c62828';
@@ -39,7 +39,7 @@ let updateVersion = 0;
 
 const updateBadge = async () => {
   const version = ++updateVersion;
-  const saveData = await getStorage('saveData');
+  const saveData = await getLocalStorage('saveData');
   let count = 0;
 
   try {

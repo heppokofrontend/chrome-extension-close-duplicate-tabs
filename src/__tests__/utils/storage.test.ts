@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
 
-import { applySaveDataPatch, defaultSaveData, getStorage, setSaveData } from '@/utils';
+import { applySaveDataPatch, defaultSaveData, getLocalStorage, setSaveData } from '@/utils';
 
 const mockStoredSaveData = (value: unknown) => {
   const get = vi.fn().mockResolvedValue({ saveData: value });
@@ -20,25 +20,25 @@ const mockStorageSet = (set = vi.fn().mockResolvedValue(undefined)) => {
   return set;
 };
 
-describe('getStorage', () => {
+describe('getLocalStorage', () => {
   afterEach(() => {
     vi.unstubAllGlobals();
   });
 
   it('falls back to defaults for undefined or non-object stored value', async () => {
     mockStoredSaveData(undefined);
-    expect(await getStorage('saveData')).toStrictEqual(defaultSaveData);
+    expect(await getLocalStorage('saveData')).toStrictEqual(defaultSaveData);
 
     mockStoredSaveData(null);
-    expect(await getStorage('saveData')).toStrictEqual(defaultSaveData);
+    expect(await getLocalStorage('saveData')).toStrictEqual(defaultSaveData);
 
     mockStoredSaveData('nope');
-    expect(await getStorage('saveData')).toStrictEqual(defaultSaveData);
+    expect(await getLocalStorage('saveData')).toStrictEqual(defaultSaveData);
   });
 
   it('merges saved fields with defaults, keeping unset fields at their default', async () => {
     mockStoredSaveData({ ignorePathname: true, noConfirm: true });
-    expect(await getStorage('saveData')).toStrictEqual({
+    expect(await getLocalStorage('saveData')).toStrictEqual({
       ...defaultSaveData,
       ignorePathname: true,
       noConfirm: true,
@@ -49,13 +49,13 @@ describe('getStorage', () => {
     const defaultsCopy = { ...defaultSaveData };
 
     mockStoredSaveData({ ignorePathname: true });
-    await getStorage('saveData');
+    await getLocalStorage('saveData');
     expect(defaultSaveData).toStrictEqual(defaultsCopy);
   });
 
   it('returns the stored value for dialogOpenStatus when it is a boolean record', async () => {
     mockStoredDialogOpenStatus({ dangerZone: true, advancedPathRules: false });
-    expect(await getStorage('dialogOpenStatus')).toStrictEqual({
+    expect(await getLocalStorage('dialogOpenStatus')).toStrictEqual({
       dangerZone: true,
       advancedPathRules: false,
     });
@@ -63,13 +63,13 @@ describe('getStorage', () => {
 
   it('falls back to an empty object for dialogOpenStatus when the stored value is not a boolean record', async () => {
     mockStoredDialogOpenStatus(undefined);
-    expect(await getStorage('dialogOpenStatus')).toStrictEqual({});
+    expect(await getLocalStorage('dialogOpenStatus')).toStrictEqual({});
 
     mockStoredDialogOpenStatus({ dangerZone: 'yes' });
-    expect(await getStorage('dialogOpenStatus')).toStrictEqual({});
+    expect(await getLocalStorage('dialogOpenStatus')).toStrictEqual({});
 
     mockStoredDialogOpenStatus('nope');
-    expect(await getStorage('dialogOpenStatus')).toStrictEqual({});
+    expect(await getLocalStorage('dialogOpenStatus')).toStrictEqual({});
   });
 });
 

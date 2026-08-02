@@ -6,7 +6,7 @@ import {
 import type { CreatedTab } from '@/contexts/worker/features/auto-avoid-duplicates/types';
 import type { ValidTab } from '@/contexts/worker/types';
 import { getAllTabs } from '@/contexts/worker/utils';
-import { getStorage } from '@/utils';
+import { getLocalStorage } from '@/utils';
 
 let extensionStartedAt: number | null = null;
 
@@ -22,7 +22,7 @@ const resolveCreatedTab = async (createdTab: CreatedTab) => {
     return;
   }
 
-  const saveData = await getStorage('saveData');
+  const saveData = await getLocalStorage('saveData');
 
   if (!saveData.autoAvoidDuplicate) {
     return;
