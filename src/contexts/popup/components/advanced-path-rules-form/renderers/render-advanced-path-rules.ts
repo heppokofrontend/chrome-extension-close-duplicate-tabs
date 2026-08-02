@@ -2,6 +2,7 @@ import { UI } from '@/contexts/popup/constants';
 import { STATE } from '@/contexts/popup/state';
 
 import { buildRuleSection } from './build-rule-section';
+import { renderDatalist } from './render-datalist';
 
 /** storage から読み込んだ advancedPathRules を元に、保存済みルールの UI を復元する。 */
 export const renderAdvancedPathRules = () => {
@@ -12,4 +13,6 @@ export const renderAdvancedPathRules = () => {
       UI.advancedPathRulesContainer.append(fragment);
     }
   }
+
+  renderDatalist();
 };

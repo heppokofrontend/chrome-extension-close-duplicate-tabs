@@ -337,6 +337,9 @@ describe('addAdvancedPathRuleListeners', () => {
 
     const { addAdvancedPathRuleListeners } =
       await import('@/contexts/popup/components/advanced-path-rules-form/effects');
+    const { renderAdvancedPathRules } =
+      await import('@/contexts/popup/components/advanced-path-rules-form/renderers/render-advanced-path-rules');
+    renderAdvancedPathRules();
     addAdvancedPathRuleListeners();
     clickAddButton();
 
@@ -355,6 +358,9 @@ describe('addAdvancedPathRuleListeners', () => {
 
     const { addAdvancedPathRuleListeners } =
       await import('@/contexts/popup/components/advanced-path-rules-form/effects');
+    const { renderAdvancedPathRules } =
+      await import('@/contexts/popup/components/advanced-path-rules-form/renderers/render-advanced-path-rules');
+    renderAdvancedPathRules();
     addAdvancedPathRuleListeners();
     clickAddButton();
 
@@ -371,6 +377,9 @@ describe('addAdvancedPathRuleListeners', () => {
 
     const { addAdvancedPathRuleListeners } =
       await import('@/contexts/popup/components/advanced-path-rules-form/effects');
+    const { renderAdvancedPathRules } =
+      await import('@/contexts/popup/components/advanced-path-rules-form/renderers/render-advanced-path-rules');
+    renderAdvancedPathRules();
     addAdvancedPathRuleListeners();
 
     clickAddButton();
@@ -395,6 +404,9 @@ describe('addAdvancedPathRuleListeners', () => {
 
     const { addAdvancedPathRuleListeners } =
       await import('@/contexts/popup/components/advanced-path-rules-form/effects');
+    const { renderAdvancedPathRules } =
+      await import('@/contexts/popup/components/advanced-path-rules-form/renderers/render-advanced-path-rules');
+    renderAdvancedPathRules();
     addAdvancedPathRuleListeners();
     clickAddButton();
 

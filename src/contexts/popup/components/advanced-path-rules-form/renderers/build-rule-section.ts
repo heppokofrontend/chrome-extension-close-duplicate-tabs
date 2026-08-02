@@ -14,8 +14,6 @@ import { UI } from '@/contexts/popup/constants';
 import { STATE } from '@/contexts/popup/state';
 import { getMessage, type PathRule } from '@/utils';
 
-import { renderDatalist } from './render-datalist';
-
 const attachRuleListeners = (elements: {
   originInput: HTMLInputElement;
   checkboxInputs: Partial<Record<RuleCheckboxField, HTMLInputElement>>;
@@ -84,8 +82,6 @@ export const buildRuleSection = (key: string, rule: PathRule) => {
   if (STATE.currentTabOrigin) {
     originInput.placeholder = STATE.currentTabOrigin;
   }
-
-  renderDatalist();
 
   const checkboxInputs: Partial<Record<RuleCheckboxField, HTMLInputElement>> = {};
 
