@@ -11,6 +11,10 @@ body {
 details {
   summary {
     cursor: default;
+
+    h2 {
+      all: unset;
+    }
   }
 
   &::details-content {
