@@ -1,7 +1,7 @@
 import { showNoticeModal } from '@/contexts/popup/components/dialogs';
 import { STATE, save } from '@/contexts/popup/state';
+import { isValidOptionType } from '@/contexts/popup/utils/type-guard';
 import { type SaveDataType } from '@/utils';
-import { isValidOptionType } from '@/utils/type-guard';
 
 export const onOptionCheckboxChange = (e: Event) => {
   if (!(e.currentTarget instanceof HTMLInputElement)) {

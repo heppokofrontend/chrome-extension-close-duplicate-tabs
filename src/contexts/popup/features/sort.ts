@@ -1,5 +1,5 @@
 import { showChoicesModal } from '@/contexts/popup/components/dialogs';
-import { isValidSortType } from '@/utils/type-guard';
+import { isValidSortType } from '@/contexts/popup/utils/type-guard';
 
 import { sendTaskRequest } from './utils/send-task-request';
 

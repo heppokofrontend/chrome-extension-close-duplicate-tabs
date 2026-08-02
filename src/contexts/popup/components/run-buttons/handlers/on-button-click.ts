@@ -1,5 +1,5 @@
 import { runTask } from '@/contexts/popup/features';
-import { isValidTaskName } from '@/utils/type-guard';
+import { isValidTaskName } from '@/contexts/popup/utils/type-guard';
 
 export const onRunButtonClick = (e: Event) => {
   if (!(e.currentTarget instanceof HTMLButtonElement)) {

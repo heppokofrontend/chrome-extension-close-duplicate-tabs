@@ -1,4 +1,5 @@
-import { normalizeUrl, type NormalizedUrl, type UrlNormalizeOptions } from '@/utils';
+import { normalizeUrl, type NormalizedUrl } from '@/contexts/worker/utils/url';
+import type { UrlNormalizeOptions } from '@/utils';
 
 interface Params<T> {
   tabs: readonly T[];

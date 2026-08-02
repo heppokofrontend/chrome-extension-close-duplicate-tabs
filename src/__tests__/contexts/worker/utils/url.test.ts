@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 
-import { normalizeOrigin, normalizeUrl } from '@/utils';
+import { normalizeOrigin, normalizeUrl } from '@/contexts/worker/utils';
 
 describe('normalizeUrl', () => {
   it('returns null for an empty or undefined url', () => {

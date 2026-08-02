@@ -1,5 +1,10 @@
-import { getCurrentTab, getDuplicatedTabIdsToClose, getTabs } from '@/contexts/worker/utils';
-import { getLocalStorage, normalizeUrl, type SaveDataType } from '@/utils';
+import {
+  getCurrentTab,
+  getDuplicatedTabIdsToClose,
+  getTabs,
+  normalizeUrl,
+} from '@/contexts/worker/utils';
+import { getLocalStorage, type SaveDataType } from '@/utils';
 
 // package/styles/popup.css の `.img::before` background と同じ色に揃えること
 const BADGE_BACKGROUND_COLOR = '#c62828';

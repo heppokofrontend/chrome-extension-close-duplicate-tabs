@@ -5,7 +5,7 @@ import {
   isValidOptionType,
   isValidSortType,
   isValidTaskName,
-} from '@/utils/type-guard';
+} from '@/contexts/popup/utils/type-guard';
 
 describe('isUpdateBadgeMode', () => {
   it.each(['none', 'all', 'current'])('accepts %s', (value) => {
