@@ -1,4 +1,4 @@
-import type { ValidTab } from '@/contexts/duplicates-list/types';
+import type { ValidTab } from '@/contexts/duplicates-list/components/report/types';
 
 const escapeHtml = (value: string) =>
   value.replace(

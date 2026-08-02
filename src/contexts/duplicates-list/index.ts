@@ -1,6 +1,5 @@
 import { initFocusCurrentWindowButton } from '@/contexts/duplicates-list/components/focus-current-window-button';
-import { renderDuplicates } from '@/contexts/duplicates-list/renderers';
-import type { ValidTab } from '@/contexts/duplicates-list/types';
+import { initReport } from '@/contexts/duplicates-list/components/report';
 import { getStorage } from '@/utils';
 
 void getStorage('saveData').then((saveData) => {
@@ -9,13 +8,7 @@ void getStorage('saveData').then((saveData) => {
 
 const init = async () => {
   await initFocusCurrentWindowButton();
-
-  const { duplicatedEntries } = await chrome.storage.session.get('duplicatedEntries');
-  const typedDuplicatedEntries: [string, ValidTab[]][] = Array.isArray(duplicatedEntries)
-    ? (duplicatedEntries as [string, ValidTab[]][])
-    : [];
-
-  renderDuplicates(typedDuplicatedEntries);
+  await initReport();
 };
 
 void init();

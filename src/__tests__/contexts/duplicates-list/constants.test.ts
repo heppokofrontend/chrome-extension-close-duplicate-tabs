@@ -10,6 +10,6 @@ describe('duplicates-list constants.ts UI', () => {
     const { UI } = await import('@/contexts/duplicates-list/constants');
 
     expect(UI.focusCurrentWindowButton).not.toBeNull();
-    expect(UI.container).not.toBeNull();
+    expect(UI.report).not.toBeNull();
   });
 });

@@ -1,5 +1,5 @@
+import type { ValidTab } from '@/contexts/duplicates-list/components/report/types';
 import { UI } from '@/contexts/duplicates-list/constants';
-import type { ValidTab } from '@/contexts/duplicates-list/types';
 
 import { buildUrlSection } from './build-url-section';
 
@@ -12,5 +12,5 @@ export const renderDuplicates = (entries: [string, ValidTab[]][]) => {
     fragment.appendChild(section);
   }
 
-  UI.container.appendChild(fragment);
+  UI.report.appendChild(fragment);
 };

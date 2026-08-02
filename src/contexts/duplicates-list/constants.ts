@@ -4,5 +4,5 @@ const $ = <T extends Element>(selector: string) => document.querySelector<T>(sel
 
 export const UI = {
   focusCurrentWindowButton: $<HTMLButtonElement>('#focus-current-window-button'),
-  container: $<HTMLElement>('#container'),
+  report: $<HTMLElement>('#report'),
 };
