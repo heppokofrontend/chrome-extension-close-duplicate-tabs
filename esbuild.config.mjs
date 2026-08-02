@@ -5,7 +5,7 @@ const entryPoints = [
   { in: 'src/contexts/content-scripts.ts', out: 'content-scripts' },
   { in: 'src/contexts/popup/index.ts', out: 'popup' },
   { in: 'src/contexts/worker/index.ts', out: 'worker' },
-  { in: 'src/contexts/duplicates-list.ts', out: 'duplicates-list' },
+  { in: 'src/contexts/duplicates-list/index.ts', out: 'duplicates-list' },
   { in: 'src/contexts/i18n.ts', out: 'i18n' },
 ];
 
