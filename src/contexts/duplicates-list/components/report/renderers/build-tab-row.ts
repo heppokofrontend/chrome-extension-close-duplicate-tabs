@@ -1,4 +1,4 @@
-import type { ValidTab } from '@/utils';
+import type { TabWithIdAndUrl } from '@/types';
 
 const escapeHtml = (value: string) =>
   value.replace(
@@ -15,7 +15,7 @@ const escapeHtml = (value: string) =>
 
 export const buildTabRow = (
   tbody: HTMLTableSectionElement,
-  tab: ValidTab,
+  tab: TabWithIdAndUrl,
   closedMessage: string,
 ) => {
   const openTabLabel = chrome.i18n.getMessage('duplicates_open_tab', String(tab.id));

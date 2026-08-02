@@ -1,8 +1,8 @@
-import type { ValidTab as BaseValidTab } from '@/contexts/worker/types';
 import { getCurrentTab, getTabs } from '@/contexts/worker/utils';
-import type { SaveDataType, ValidTab } from '@/utils';
+import type { TabWithId, TabWithIdAndUrl } from '@/types';
+import type { SaveDataType } from '@/utils';
 
-type CurrentPinnedTab = BaseValidTab & {
+type CurrentPinnedTab = TabWithId & {
   url: string;
   pinned: true;
 };
@@ -26,7 +26,7 @@ const categorizeTabs = async (
     checkCurrentTabIsPinnedAndItDoesNotIncludesPinned(currentTab);
 
   tabs
-    .filter((tab): tab is ValidTab => {
+    .filter((tab): tab is TabWithIdAndUrl => {
       if (!tab.url || typeof tab.id !== 'number') {
         return false;
       }

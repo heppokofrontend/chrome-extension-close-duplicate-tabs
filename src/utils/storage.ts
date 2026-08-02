@@ -1,3 +1,5 @@
+import type { TabWithIdAndUrl } from '@/types';
+
 /**
  * 拡張機能アイコンのバッジに表示する数の種類。
  * - none: 表示しない
@@ -35,11 +37,6 @@ export type UrlNormalizeOptions = Pick<
   SaveDataType,
   'ignorePathname' | 'ignoreQuery' | 'ignoreHash' | 'useAdvancedPathRule' | 'advancedPathRules'
 >;
-
-export type ValidTab = chrome.tabs.Tab & {
-  id: number;
-  url: string;
-};
 
 const mergeSaveData = <T extends object>(saved: unknown, defaults: T): T => {
   if (typeof saved !== 'object' || saved === null) {
@@ -87,7 +84,7 @@ export async function getLocalStorage(key: string) {
   return result[key];
 }
 
-const isValidTab = (tab: unknown): tab is ValidTab =>
+const isValidTab = (tab: unknown): tab is TabWithIdAndUrl =>
   typeof tab === 'object' &&
   tab !== null &&
   'id' in tab &&
@@ -95,13 +92,13 @@ const isValidTab = (tab: unknown): tab is ValidTab =>
   typeof tab.id === 'number' &&
   typeof tab.url === 'string';
 
-const isDuplicateEntry = (entry: unknown): entry is [string, ValidTab[]] =>
+const isDuplicateEntry = (entry: unknown): entry is [string, TabWithIdAndUrl[]] =>
   Array.isArray(entry) &&
   typeof entry[0] === 'string' &&
   Array.isArray(entry[1]) &&
   entry[1].every(isValidTab);
 
-export function getSessionStorage(key: 'duplicatedEntries'): Promise<[string, ValidTab[]][]>;
+export function getSessionStorage(key: 'duplicatedEntries'): Promise<[string, TabWithIdAndUrl[]][]>;
 export function getSessionStorage(key: 'lastWindowId'): Promise<number | null>;
 export async function getSessionStorage(key: string) {
   const result = await chrome.storage.session.get(key);

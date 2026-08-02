@@ -1,4 +1,4 @@
-import type { ValidTab } from '@/utils';
+import type { TabWithIdAndUrl } from '@/types';
 
 import { buildTabRow } from './build-tab-row';
 
@@ -11,7 +11,7 @@ const THEAD_SRC = `
   </thead>
 `;
 
-export const buildUrlSection = (url: string, tabs: ValidTab[], closedMessage: string) => {
+export const buildUrlSection = (url: string, tabs: TabWithIdAndUrl[], closedMessage: string) => {
   const section = document.createElement('div');
   const heading = document.createElement('h2');
   heading.textContent = url;
