@@ -2,13 +2,16 @@ import { addListener } from '@/contexts/popup/listeners';
 import { renderAdvancedPathRules } from '@/contexts/popup/listeners/advanced-path-rules';
 import { setSelectUpdateBadgeModeValue } from '@/contexts/popup/utils/set-select-value';
 import { STATE } from '@/contexts/popup/utils/state';
-import { getSaveData } from '@/utils';
+import { getSaveData, isBooleanRecord } from '@/utils';
 
 const loadSaveData = async () => {
   return Promise.all([
     new Promise<void>((resolve) => {
-      chrome.storage.local.get('dangerZoneIsOpen', ({ dangerZoneIsOpen }) => {
-        STATE.dangerZoneIsOpen = typeof dangerZoneIsOpen === 'boolean' ? dangerZoneIsOpen : false;
+      chrome.storage.local.get('dialogOpenStatus', ({ dialogOpenStatus }) => {
+        if (isBooleanRecord(dialogOpenStatus)) {
+          Object.assign(STATE.dialogOpenStatus, dialogOpenStatus);
+        }
+
         resolve();
       });
     }),

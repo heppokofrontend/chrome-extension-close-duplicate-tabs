@@ -7,6 +7,11 @@ import {
   type UpdateBadgeMode,
 } from '@/utils/save-data';
 
+export const isBooleanRecord = (value: unknown): value is Record<string, boolean> =>
+  typeof value === 'object' &&
+  value !== null &&
+  Object.values(value).every((v) => typeof v === 'boolean');
+
 export const isUpdateBadgeMode = (value: unknown): value is UpdateBadgeMode =>
   typeof value === 'string' && (UPDATE_BADGE_MODES as readonly string[]).includes(value);
 

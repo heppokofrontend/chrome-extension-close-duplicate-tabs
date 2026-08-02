@@ -7,7 +7,10 @@ import {
 } from '@/utils';
 
 export const STATE = {
-  dangerZoneIsOpen: false,
+  dialogOpenStatus: {
+    dangerZone: false,
+    advancedPathRules: false,
+  },
   saveData: defaultSaveData,
   /** Advanced Path Rule の origin 入力欄に placeholder として表示する、現在アクティブなタブの origin。取得不可時は null。 */
   currentTabOrigin: null as string | null,

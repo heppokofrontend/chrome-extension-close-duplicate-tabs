@@ -1,8 +1,8 @@
 import { addAdvancedPathRuleListeners } from '@/contexts/popup/listeners/advanced-path-rules';
 import { onCheckboxChange } from '@/contexts/popup/listeners/checkbox';
+import { initDetailsElements } from '@/contexts/popup/listeners/details';
 import { onSelectChange } from '@/contexts/popup/listeners/select';
 import { runTask } from '@/contexts/popup/run-task';
-import { STATE } from '@/contexts/popup/utils/state';
 import { isValidTaskName } from '@/utils/type-guard';
 
 export const addListener = () => {
@@ -37,15 +37,5 @@ export const addListener = () => {
   }
 
   addAdvancedPathRuleListeners();
-
-  const dangerDetails = document.querySelector<HTMLDetailsElement>('#dangerDetails');
-  const dangerDetailsSummary = dangerDetails?.querySelector('summary');
-
-  dangerDetailsSummary?.addEventListener('click', () => {
-    void chrome.storage.local.set({ dangerZoneIsOpen: !dangerDetails?.open });
-  });
-
-  if (dangerDetails) {
-    dangerDetails.open = STATE.dangerZoneIsOpen;
-  }
+  initDetailsElements();
 };

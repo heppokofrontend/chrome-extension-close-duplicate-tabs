@@ -1,15 +1,40 @@
 html {
   /* 33 * 23.75rem = 783.75px （ポップアップの最大幅800px）*/
   font-size: min(33px, 100%);
+  scroll-padding-top: 1rem;
 }
 
 body {
   width: 23.75rem;
 }
 
+details {
+  summary {
+    cursor: default;
+  }
+
+  &::details-content {
+    height: 0;
+    overflow-y: clip;
+    box-sizing: border-box;
+  }
+
+  &[open]::details-content {
+    height: auto;
+  }
+
+  [data-transition='ready'] &::details-content {
+    transition-property: content-visibility, height;
+    transition-duration: 0.3s;
+    transition-timing-function: ease-out;
+    transition-behavior: allow-discrete;
+    interpolate-size: allow-keywords;
+  }
+}
+
 .main {
   --control-margin-block: 0.5rem;
-  --label-gap-inline: 0.375rem;
+  --label-gap-inline: 0.5rem;
 }
 
 /* -----------------------------------------------------------------------------
@@ -226,14 +251,11 @@ body {
   }
 
   .advanced-path-rules {
-    padding: 0 0.5rem 1rem;
     color: var(--color-label-text);
     background: var(--color-label-bg);
     border: 1px solid var(--color-label-border);
     border-radius: 6px;
-    max-height: 70vh;
-    overflow-y: auto;
-    scrollbar-gutter: stable;
+    overflow: hidden;
 
     input[type='checkbox'] {
       margin: 0.5em auto;
@@ -248,27 +270,40 @@ body {
       padding: 0.5em;
     }
 
-    > p:last-child {
-      margin-top: 24px;
-
-      button {
-        width: 100%;
-      }
-    }
-
     section {
       margin: 0.75rem 0 0;
+      padding: 0.0625rem 0 0;
       border-top: 1px solid var(--color-label-border);
     }
 
-    .advanced-path-rules__h2 {
+    .advanced-path-rules__summary {
+      background: var(--color-label-bg);
+      position: sticky;
+      top: 0;
       text-align: center;
-      font-size: 0.625rem;
-      padding: 0.5em 0 0;
+      font-size: 0.75rem;
+      padding: 0.875rem 0.5rem;
     }
 
     .advanced-path-rules__header {
       position: relative;
+    }
+
+    .advanced-path-rules__content {
+      padding: 0.25rem 0.5rem 0 0;
+      margin: 0 0 0 0.5rem;
+      border-top: 1px solid var(--color-label-border);
+      max-height: calc(70vh - 2.5rem);
+      overflow-y: auto;
+      scrollbar-gutter: stable;
+
+      > p:last-child {
+        margin-top: 2rem;
+
+        button {
+          width: 100%;
+        }
+      }
     }
 
     .advanced-path-rules__default-heading,
@@ -357,7 +392,7 @@ body {
 
 p:has(#advanced-path-rules__add) {
   position: sticky;
-  bottom: 0;
+  bottom: 0.5rem;
 }
 
 #advanced-path-rules__add {
@@ -411,7 +446,6 @@ details.danger {
     padding: 15px 10px;
     font-weight: var(--color-danger-title-font-weight);
     color: var(--color-danger-title-text);
-    cursor: default;
     background-color: var(--color-danger-title-bg);
   }
 
