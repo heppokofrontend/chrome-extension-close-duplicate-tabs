@@ -3,6 +3,6 @@
 const $ = <T extends Element>(selector: string) => document.querySelector<T>(selector)!;
 
 export const UI = {
-  returnButton: $<HTMLButtonElement>('#return button'),
+  focusCurrentWindowButton: $<HTMLButtonElement>('#focus-current-window-button'),
   container: $<HTMLElement>('#container'),
 };

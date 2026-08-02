@@ -1,10 +1,10 @@
-#return {
+.focus-current-window-button-wrapper {
   width: fit-content;
   padding: 16px;
   margin-left: auto;
 }
 
-#return button {
+#focus-current-window-button {
   padding: 8px 16px;
 }
 
@@ -96,7 +96,7 @@ th:first-child {
   display: none;
 }
 
-[data-include-all-window='true'] #return {
+[data-include-all-window='true'] .focus-current-window-button-wrapper {
   display: none;
 }
 
