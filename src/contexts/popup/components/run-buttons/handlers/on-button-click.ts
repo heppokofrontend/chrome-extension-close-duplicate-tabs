@@ -1,4 +1,4 @@
-import { runTask } from '@/contexts/popup/run-task';
+import { runTask } from '@/contexts/popup/features';
 import { isValidTaskName } from '@/utils/type-guard';
 
 export const onRunButtonClick = (e: Event) => {
