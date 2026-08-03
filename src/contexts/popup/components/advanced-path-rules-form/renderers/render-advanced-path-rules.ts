@@ -8,10 +8,7 @@ import { renderDatalist } from './render-datalist';
 export const renderAdvancedPathRules = () => {
   for (const [key, rule] of Object.entries(STATE.saveData.advancedPathRules)) {
     const fragment = buildRuleSection(key, rule);
-
-    if (fragment) {
-      UI.advancedPathRulesContainer.append(fragment);
-    }
+    UI.advancedPathRulesContainer.append(fragment);
   }
 
   renderDatalist();

@@ -308,7 +308,7 @@ describe('addAdvancedPathRuleListeners', () => {
     expect(Object.keys(getLastSavedAdvancedPathRules())).toStrictEqual(['k2']);
   });
 
-  it('does nothing when the template is missing a required element (delete button)', async () => {
+  it('throws when the template is missing a required element (delete button)', async () => {
     const template = document.querySelector('#advanced-path-rule-template');
 
     if (!(template instanceof HTMLTemplateElement)) {
@@ -317,12 +317,18 @@ describe('addAdvancedPathRuleListeners', () => {
 
     requireElement(template.content, '.advanced-path-rules__delete-button').remove();
 
-    const { addAdvancedPathRuleListeners } =
-      await import('@/contexts/popup/components/advanced-path-rules-form/effects');
-    addAdvancedPathRuleListeners();
-    clickAddButton();
+    const { buildRuleSection } =
+      await import('@/contexts/popup/components/advanced-path-rules-form/renderers/build-rule-section');
 
-    expect(document.querySelectorAll('.advanced-path-rule')).toHaveLength(0);
+    expect(() =>
+      buildRuleSection('k1', {
+        origin: '',
+        pathname: false,
+        query: false,
+        hash: false,
+        allowedQueryParams: '',
+      }),
+    ).toThrow(TypeError);
   });
 
   it('uses the current tab origin as the origin input placeholder when available', async () => {
