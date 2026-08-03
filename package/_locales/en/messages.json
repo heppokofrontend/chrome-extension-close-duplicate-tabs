@@ -208,6 +208,9 @@
   "btn_advancedPathRuleAdd": {
     "message": "Add"
   },
+  "label_advancedPathRuleAllowedQueryParams": {
+    "message": "Query params to keep"
+  },
   "heading_advancedPathRuleDefault": {
     "message": "Ignored by Default"
   },

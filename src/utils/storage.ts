@@ -14,6 +14,8 @@ export type PathRule = {
   pathname: boolean;
   query: boolean;
   hash: boolean;
+  /** query 無視時にも比較対象として残す（無視しない）パラメータ名のカンマ区切り文字列。未入力なら query 全体を無視する。 */
+  allowedQueryParams?: string;
 };
 
 /** 入力履歴を管理する対象の入力欄を識別するキー。 */
