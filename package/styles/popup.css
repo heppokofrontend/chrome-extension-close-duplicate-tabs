@@ -286,7 +286,7 @@ details {
       z-index: 1;
       text-align: center;
       font-size: 0.75rem;
-      padding: 0.875rem 0.5rem;
+      padding: 0.875rem 0.75rem 0.875rem 0.5rem;
       border-radius: 6px;
     }
 
