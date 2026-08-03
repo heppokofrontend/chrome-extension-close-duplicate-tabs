@@ -1,7 +1,10 @@
 import { describe, it, expect } from 'vitest';
 
-import { getDuplicatedTabIdsToClose, pickTabIdsToClose } from '@/contexts/worker/utils';
-import type { NormalizedUrl } from '@/utils';
+import {
+  getDuplicatedTabIdsToClose,
+  pickTabIdsToClose,
+  type NormalizedUrl,
+} from '@/contexts/worker/utils';
 
 const normalize = (url: string) => url as NormalizedUrl;
 

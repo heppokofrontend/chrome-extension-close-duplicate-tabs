@@ -168,8 +168,8 @@
   "duplicates_return": {
     "message": "Back to Original Window"
   },
-  "duplicates_already_closed": {
-    "message": "The window has already been closed."
+  "duplicates_window_not_found": {
+    "message": "The window could not be found."
   },
   "duplicates_empty_message": {
     "message": "There are no duplicate tabs in this window."

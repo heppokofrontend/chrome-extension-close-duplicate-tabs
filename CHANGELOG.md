@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## v1.5.5
+
+- Advanced Path Rule: the Origin field now remembers recently entered origins and offers them as recoverable datalist suggestions, so an accidental overwrite of a previously entered value can be restored.
+- Fixed the duplicates list's sticky table header being hidden behind row content while scrolling.
+
 ## v1.5.4
 
 - The Danger Zone and Advanced Path Rules sections now animate open/close with a smooth transition instead of snapping instantly.

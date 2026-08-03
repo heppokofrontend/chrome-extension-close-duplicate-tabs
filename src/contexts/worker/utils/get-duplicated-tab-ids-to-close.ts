@@ -1,10 +1,6 @@
 import { getGroupedTabsByNormalizedUrl } from '@/contexts/worker/utils/get-grouped-tabs-by-normalized-url';
-import {
-  normalizeUrl,
-  type NormalizedUrl,
-  type SaveDataType,
-  type UrlNormalizeOptions,
-} from '@/utils';
+import { normalizeUrl, type NormalizedUrl } from '@/contexts/worker/utils/url';
+import type { SaveDataType, UrlNormalizeOptions } from '@/utils';
 
 interface DuplicateCandidateTab {
   id: number;

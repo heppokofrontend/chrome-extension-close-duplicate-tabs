@@ -39,6 +39,104 @@
           </div>
 
           <div class="options">
+            <section id="advanced-path-rules" aria-labelledby="advanced-path-rules-heading">
+              <details class="advanced-path-rules" id="advancedPathRulesDetails">
+                <summary class="advanced-path-rules__summary">
+                  <h2 id="advanced-path-rules-heading">ADVANCED PATH RULES</h2>
+                </summary>
+
+                <div class="advanced-path-rules__content">
+                  <h3 class="advanced-path-rules__default-heading">Default</h3>
+                  <ul class="advanced-path-rules__actions">
+                    <li>
+                      <label for="default-ignore-pathname">pathname</label>
+                      <span
+                        ><input
+                          type="checkbox"
+                          data-option-type="ignorePathname"
+                          id="default-ignore-pathname"
+                        />
+                      </span>
+                    </li>
+                    <li>
+                      <label for="default-ignore-query">query</label>
+                      <span
+                        ><input
+                          type="checkbox"
+                          data-option-type="ignoreQuery"
+                          id="default-ignore-query"
+                        />
+                      </span>
+                    </li>
+                    <li>
+                      <label for="default-ignore-hash">hash</label>
+                      <span
+                        ><input
+                          type="checkbox"
+                          data-option-type="ignoreHash"
+                          id="default-ignore-hash"
+                        />
+                      </span>
+                    </li>
+                  </ul>
+
+                  <div id="advanced-path-rules__custom-rules"></div>
+                  <datalist id="advanced-path-rules__datalist"></datalist>
+
+                  <template id="advanced-path-rule-template">
+                    <section class="advanced-path-rule">
+                      <div class="advanced-path-rules__header">
+                        <h3 class="advanced-path-rules__heading"></h3>
+                        <p>
+                          <label>
+                            <span class="advanced-path-rules__origin-label">Origin / Host</span>
+                            <input
+                              type="text"
+                              class="advanced-path-rules__origin"
+                              placeholder=""
+                              list="advanced-path-rules__datalist"
+                            />
+                          </label>
+                        </p>
+                      </div>
+
+                      <ul class="advanced-path-rules__actions">
+                        <li>
+                          <label for="">pathname</label>
+                          <span>
+                            <input id="" type="checkbox" class="advanced-path-rules__pathname" />
+                          </span>
+                        </li>
+                        <li>
+                          <label for="">query</label>
+                          <span>
+                            <input id="" type="checkbox" class="advanced-path-rules__query" />
+                          </span>
+                        </li>
+                        <li>
+                          <label for="">hash</label>
+                          <span>
+                            <input id="" type="checkbox" class="advanced-path-rules__hash" />
+                          </span>
+                        </li>
+                        <li>
+                          <button type="button" class="advanced-path-rules__delete">Delete</button>
+                        </li>
+                      </ul>
+                    </section>
+                  </template>
+
+                  <p class="advanced-path-rules__add-wrapper">
+                    <button type="button" id="advanced-path-rules__add">
+                      <span>Add</span>
+                    </button>
+                  </p>
+                </div>
+              </details>
+            </section>
+
+            <h2 class="sr-only">OPTIONS</h2>
+
             <p>
               <label>
                 <span class="img">
@@ -77,95 +175,6 @@
               https://example.com/abc/def<em>?query=hoge&query2=piyo</em>#hash
             </p>
 
-            <div id="advanced-path-rules">
-              <details class="advanced-path-rules" id="advancedPathRulesDetails">
-                <summary class="advanced-path-rules__summary">ADVANCED PATH RULES</summary>
-
-                <div class="advanced-path-rules__content">
-                  <h3 class="advanced-path-rules__default-heading">Default</h3>
-                  <ul class="advanced-path-rules__actions">
-                    <li>
-                      <label for="default-ignore-pathname">pathname</label>
-                      <span
-                        ><input
-                          type="checkbox"
-                          data-option-type="ignorePathname"
-                          id="default-ignore-pathname"
-                        />
-                      </span>
-                    </li>
-                    <li>
-                      <label for="default-ignore-query">query</label>
-                      <span
-                        ><input
-                          type="checkbox"
-                          data-option-type="ignoreQuery"
-                          id="default-ignore-query"
-                        />
-                      </span>
-                    </li>
-                    <li>
-                      <label for="default-ignore-hash">hash</label>
-                      <span
-                        ><input
-                          type="checkbox"
-                          data-option-type="ignoreHash"
-                          id="default-ignore-hash"
-                        />
-                      </span>
-                    </li>
-                  </ul>
-
-                  <div id="advanced-path-rules__custom-rules"></div>
-
-                  <template id="advanced-path-rule-template">
-                    <section class="advanced-path-rule">
-                      <div class="advanced-path-rules__header">
-                        <h3 class="advanced-path-rules__heading"></h3>
-                        <p>
-                          <label>
-                            <span class="advanced-path-rules__origin-label">Origin / Host</span>
-                            <input type="text" class="advanced-path-rules__origin" placeholder="" />
-                          </label>
-                          <datalist></datalist>
-                        </p>
-                      </div>
-
-                      <ul class="advanced-path-rules__actions">
-                        <li>
-                          <label for="">pathname</label>
-                          <span>
-                            <input id="" type="checkbox" class="advanced-path-rules__pathname" />
-                          </span>
-                        </li>
-                        <li>
-                          <label for="">query</label>
-                          <span>
-                            <input id="" type="checkbox" class="advanced-path-rules__query" />
-                          </span>
-                        </li>
-                        <li>
-                          <label for="">hash</label>
-                          <span>
-                            <input id="" type="checkbox" class="advanced-path-rules__hash" />
-                          </span>
-                        </li>
-                        <li>
-                          <button type="button" class="advanced-path-rules__delete">Delete</button>
-                        </li>
-                      </ul>
-                    </section>
-                  </template>
-
-                  <p>
-                    <button type="button" id="advanced-path-rules__add">
-                      <span>Add</span>
-                    </button>
-                  </p>
-                </div>
-              </details>
-            </div>
-
             <p>
               <label>
                 <!-- 擬似要素を隠すためのaria-hidden -->
@@ -189,7 +198,7 @@
         </div>
 
         <details class="danger" id="dangerZoneDetails">
-          <summary><span>Danger Zone</span></summary>
+          <summary><h2>Danger Zone</h2></summary>
 
           <div class="content">
             <div class="buttons">

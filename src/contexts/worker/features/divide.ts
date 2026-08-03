@@ -1,11 +1,11 @@
-import type { ValidTab } from '@/contexts/worker/types';
 import { getCurrentTab, getTabs } from '@/contexts/worker/utils';
+import type { TabWithId } from '@/types';
 import type { SaveDataType } from '@/utils';
 
 const divideTabs = async (tabs: chrome.tabs.Tab[]) => {
   const currentTab = await getCurrentTab();
   const targetTabIdList = tabs
-    .filter((tab): tab is ValidTab => typeof tab.id === 'number')
+    .filter((tab): tab is TabWithId => typeof tab.id === 'number')
     .filter(({ id }) => id !== currentTab.id);
   const promises: Promise<chrome.windows.Window | chrome.tabs.Tab | undefined>[] = [];
 

@@ -1,10 +1,10 @@
-import type { ValidTab } from '@/contexts/worker/types';
 import { getCurrentTab, getTabs } from '@/contexts/worker/utils';
+import type { TabWithId } from '@/types';
 import type { SaveDataType } from '@/utils';
 
 const combineTabs = async (tabs: chrome.tabs.Tab[]) => {
   const { id: currentTabId, windowId } = await getCurrentTab();
-  const targetTabIdList = tabs.filter((tab): tab is ValidTab => typeof tab.id === 'number');
+  const targetTabIdList = tabs.filter((tab): tab is TabWithId => typeof tab.id === 'number');
   const promises: Promise<chrome.tabs.Tab>[] = [];
 
   for (const { id } of targetTabIdList) {
