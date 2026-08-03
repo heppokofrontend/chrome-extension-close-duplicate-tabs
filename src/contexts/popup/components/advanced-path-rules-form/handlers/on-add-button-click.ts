@@ -17,6 +17,12 @@ export const onAddButtonClick = () => {
 
   if (fragment) {
     UI.advancedPathRulesContainer.append(fragment);
+
+    const addedSection = UI.advancedPathRulesContainer.lastElementChild;
+
+    if (typeof addedSection?.scrollIntoView === 'function') {
+      addedSection.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    }
   }
 
   patchRule(key, initialRule);
