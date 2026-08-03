@@ -5,9 +5,9 @@ export const onAllowedQueryParamsInput = (e: Event) => {
     return;
   }
 
-  const { key } = e.currentTarget.dataset;
+  const key = e.currentTarget.dataset['key'] ?? '';
 
-  if (key === undefined || key === '') {
+  if (key === '') {
     return;
   }
 

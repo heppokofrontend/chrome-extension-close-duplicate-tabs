@@ -8,9 +8,10 @@ export const onRuleCheckboxChange = (e: Event) => {
     return;
   }
 
-  const { key, field } = e.currentTarget.dataset;
+  const key = e.currentTarget.dataset['key'] ?? '';
+  const field = e.currentTarget.dataset['field'];
 
-  if (key === undefined || key === '' || !isRuleCheckboxField(field)) {
+  if (key === '' || !isRuleCheckboxField(field)) {
     return;
   }
 
