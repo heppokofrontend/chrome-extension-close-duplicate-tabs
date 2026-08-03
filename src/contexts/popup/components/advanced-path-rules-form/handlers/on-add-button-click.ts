@@ -11,6 +11,7 @@ export const onAddButtonClick = () => {
     pathname: STATE.saveData.ignorePathname,
     query: STATE.saveData.ignoreQuery,
     hash: STATE.saveData.ignoreHash,
+    allowedQueryParams: '',
   };
 
   const fragment = buildRuleSection(key, initialRule);

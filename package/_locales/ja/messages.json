@@ -201,6 +201,9 @@
   "btn_advancedPathRuleAdd": {
     "message": "ルールを追加"
   },
+  "label_advancedPathRuleAllowedQueryParams": {
+    "message": "無視しないクエリキー"
+  },
   "heading_advancedPathRuleDefault": {
     "message": "デフォルトで無視する項目"
   },

@@ -3,6 +3,7 @@ import {
   type RuleCheckboxField,
 } from '@/contexts/popup/components/advanced-path-rules-form/constants';
 import {
+  onAllowedQueryParamsInput,
   onDeleteButtonClick,
   onOriginChange,
   onOriginFocusIn,
@@ -17,6 +18,7 @@ import { getMessage, type PathRule } from '@/utils';
 const attachRuleListeners = (elements: {
   originInput: HTMLInputElement;
   checkboxInputs: Partial<Record<RuleCheckboxField, HTMLInputElement>>;
+  allowedQueryParamsInput: HTMLInputElement | null;
   deleteButton: HTMLButtonElement;
 }) => {
   elements.originInput.addEventListener('focusin', onOriginFocusIn);
@@ -27,6 +29,7 @@ const attachRuleListeners = (elements: {
     elements.checkboxInputs[field]?.addEventListener('change', onRuleCheckboxChange);
   }
 
+  elements.allowedQueryParamsInput?.addEventListener('input', onAllowedQueryParamsInput);
   elements.deleteButton.addEventListener('click', onDeleteButtonClick);
 };
 
@@ -113,7 +116,32 @@ export const buildRuleSection = (key: string, rule: PathRule) => {
     checkboxInputs[field] = checkbox;
   }
 
-  attachRuleListeners({ originInput, checkboxInputs, deleteButton });
+  const allowedQueryParamsItem = fragment.querySelector(
+    '.advanced-path-rules__allowed-query-params-item',
+  );
+  const allowedQueryParamsInput = fragment.querySelector(
+    '.advanced-path-rules__allowed-query-params',
+  );
+
+  if (
+    !(allowedQueryParamsItem instanceof HTMLElement) ||
+    !(allowedQueryParamsInput instanceof HTMLInputElement)
+  ) {
+    throw new TypeError('Failed to find allowedQueryParams elements in the template.');
+  }
+
+  allowedQueryParamsInput.id = `advanced-path-rule-allowedQueryParams-${key}`;
+  allowedQueryParamsInput.dataset['key'] = key;
+  allowedQueryParamsInput.value = rule.allowedQueryParams ?? '';
+
+  const label = allowedQueryParamsItem.querySelector('label');
+
+  if (label instanceof HTMLLabelElement) {
+    label.htmlFor = allowedQueryParamsInput.id;
+    label.textContent = getMessage('label_advancedPathRuleAllowedQueryParams');
+  }
+
+  attachRuleListeners({ originInput, checkboxInputs, allowedQueryParamsInput, deleteButton });
 
   return fragment;
 };

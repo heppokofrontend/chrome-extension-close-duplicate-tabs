@@ -55,15 +55,24 @@ const FIXTURE_HTML = `
               <input id="" type="checkbox" class="advanced-path-rules__query" />
             </span>
           </div>
+
+          <div class="advanced-path-rules__allowed-query-params-item">
+            <label for="">loading...</label>
+            <span>
+              <input
+                id=""
+                type="text"
+                class="advanced-path-rules__allowed-query-params"
+                placeholder="a, b"
+              />
+            </span>
+          </div>
         </li>
         <li>
           <label for="">hash</label>
           <span>
             <input id="" type="checkbox" class="advanced-path-rules__hash" />
           </span>
-        </li>
-        <li>
-          <button type="button" class="advanced-path-rules__delete">Delete</button>
         </li>
       </ul>
 
@@ -141,6 +150,7 @@ const MESSAGES: Record<string, string> = {
   aria_advancedPathRuleField: "$1's $2",
   text_advancedPathRuleUnsetOrigin: 'not set',
   btn_advancedPathRuleDelete: 'Delete',
+  label_advancedPathRuleAllowedQueryParams: 'Query params to keep',
 };
 
 const stubGetMessage = (key: string, substitutions?: string | string[]) => {
@@ -178,7 +188,13 @@ describe('addAdvancedPathRuleListeners', () => {
     const section = requireElement(document, '.advanced-path-rule');
     const [key, rule] = first(Object.entries(getLastSavedAdvancedPathRules()));
 
-    expect(rule).toStrictEqual({ origin: '', pathname: true, query: false, hash: true });
+    expect(rule).toStrictEqual({
+      origin: '',
+      pathname: true,
+      query: false,
+      hash: true,
+      allowedQueryParams: '',
+    });
     expect(requireInput(section, '.advanced-path-rules__pathname').checked).toBe(true);
     expect(requireInput(section, '.advanced-path-rules__hash').checked).toBe(true);
     expect(section.dataset['key']).toBe(key);
@@ -263,6 +279,7 @@ describe('addAdvancedPathRuleListeners', () => {
       pathname: true,
       query: false,
       hash: false,
+      allowedQueryParams: '',
     });
   });
 
@@ -475,6 +492,38 @@ describe('addAdvancedPathRuleListeners', () => {
 
     expect(getSave().mock.calls.some(([patch]) => 'inputHistory' in patch)).toBe(false);
   });
+
+  it('sets the allowed-query-params label text from i18n instead of leaving the template placeholder', async () => {
+    const { addAdvancedPathRuleListeners } =
+      await import('@/contexts/popup/components/advanced-path-rules-form/effects');
+    addAdvancedPathRuleListeners();
+    clickAddButton();
+
+    const section = requireElement(document, '.advanced-path-rule');
+    const label = requireElement(section, '.advanced-path-rules__allowed-query-params-item label');
+
+    expect(label.textContent).toBe('Query params to keep');
+  });
+
+  it('saves the allowed query params value on input, merging into advancedPathRules', async () => {
+    const { addAdvancedPathRuleListeners } =
+      await import('@/contexts/popup/components/advanced-path-rules-form/effects');
+    addAdvancedPathRuleListeners();
+    clickAddButton();
+
+    const section = requireElement(document, '.advanced-path-rule');
+    const allowedQueryParamsInput = requireInput(
+      section,
+      '.advanced-path-rules__allowed-query-params',
+    );
+
+    allowedQueryParamsInput.value = 'a, b';
+    allowedQueryParamsInput.dispatchEvent(new Event('input', { bubbles: true }));
+
+    expect(getLastSavedAdvancedPathRules()[String(section.dataset['key'])]).toMatchObject({
+      allowedQueryParams: 'a, b',
+    });
+  });
 });
 
 describe('renderAdvancedPathRules', () => {
@@ -494,5 +543,25 @@ describe('renderAdvancedPathRules', () => {
     expect(requireInput(section, '.advanced-path-rules__pathname').checked).toBe(true);
     expect(requireInput(section, '.advanced-path-rules__query').checked).toBe(false);
     expect(requireInput(section, '.advanced-path-rules__hash').checked).toBe(true);
+  });
+
+  it('restores the allowed query params value from an already-stored advancedPathRules', async () => {
+    getState().saveData.advancedPathRules = {
+      k1: {
+        origin: 'https://foo.example',
+        pathname: false,
+        query: true,
+        hash: false,
+        allowedQueryParams: 'a, b',
+      },
+    };
+
+    const { renderAdvancedPathRules } =
+      await import('@/contexts/popup/components/advanced-path-rules-form/renderers/render-advanced-path-rules');
+    renderAdvancedPathRules();
+
+    const section = requireElement(document, '.advanced-path-rule');
+
+    expect(requireInput(section, '.advanced-path-rules__allowed-query-params').value).toBe('a, b');
   });
 });
