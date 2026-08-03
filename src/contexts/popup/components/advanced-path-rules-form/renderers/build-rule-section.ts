@@ -37,7 +37,7 @@ const getTemplate = () => {
     const section = fragment.querySelector('.advanced-path-rule');
     const heading = fragment.querySelector('h3');
     const originInput = fragment.querySelector('.advanced-path-rules__origin');
-    const deleteButton = fragment.querySelector('.advanced-path-rules__delete');
+    const deleteButton = fragment.querySelector('.advanced-path-rules__delete-button');
 
     if (
       section instanceof HTMLElement &&

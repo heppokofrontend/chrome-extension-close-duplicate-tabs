@@ -41,7 +41,7 @@ const FIXTURE_HTML = `
         </p>
       </div>
 
-      <ul>
+      <ul class="advanced-path-rules__actions">
         <li>
           <label for="">pathname</label>
           <span>
@@ -49,10 +49,12 @@ const FIXTURE_HTML = `
           </span>
         </li>
         <li>
-          <label for="">query</label>
-          <span>
-            <input id="" type="checkbox" class="advanced-path-rules__query" />
-          </span>
+          <div class="advanced-path-rules__query-control">
+            <label for="">query</label>
+            <span>
+              <input id="" type="checkbox" class="advanced-path-rules__query" />
+            </span>
+          </div>
         </li>
         <li>
           <label for="">hash</label>
@@ -64,6 +66,10 @@ const FIXTURE_HTML = `
           <button type="button" class="advanced-path-rules__delete">Delete</button>
         </li>
       </ul>
+
+      <p class="advanced-path-rules__delete">
+        <button type="button" class="advanced-path-rules__delete-button">Delete</button>
+      </p>
     </section>
   </template>
   <p><button type="button" id="advanced-path-rules__add">Add</button></p>
@@ -276,7 +282,7 @@ describe('addAdvancedPathRuleListeners', () => {
     expect(document.querySelectorAll('.advanced-path-rule')).toHaveLength(2);
 
     const target = requireElement(document, '[data-key="k1"]');
-    requireElement(target, '.advanced-path-rules__delete').dispatchEvent(
+    requireElement(target, '.advanced-path-rules__delete-button').dispatchEvent(
       new Event('click', { bubbles: true }),
     );
 
@@ -292,7 +298,7 @@ describe('addAdvancedPathRuleListeners', () => {
       throw new TypeError('template not found');
     }
 
-    requireElement(template.content, '.advanced-path-rules__delete').remove();
+    requireElement(template.content, '.advanced-path-rules__delete-button').remove();
 
     const { addAdvancedPathRuleListeners } =
       await import('@/contexts/popup/components/advanced-path-rules-form/effects');
