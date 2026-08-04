@@ -28,9 +28,9 @@ const createChromeMock = (
   const mocks = {
     query: vi.fn().mockResolvedValue(existingTabs),
     tabsGet: vi.fn(),
-    move: vi.fn().mockResolvedValue(undefined),
-    update: vi.fn().mockResolvedValue(undefined),
-    remove: vi.fn().mockResolvedValue(undefined),
+    move: vi.fn().mockName('tabs.move').mockResolvedValue(undefined),
+    update: vi.fn().mockName('tabs.update').mockResolvedValue(undefined),
+    remove: vi.fn().mockName('tabs.remove').mockResolvedValue(undefined),
     windowsGet: vi.fn().mockResolvedValue({ focused: windowFocused }),
     windowsUpdate: vi.fn().mockResolvedValue(undefined),
     get: vi.fn().mockResolvedValue({ saveData }),
@@ -62,6 +62,16 @@ const flushPromises = async () => {
   for (let i = 0; i < 10; i += 1) {
     await Promise.resolve();
   }
+};
+
+/** Asserts `first` was invoked before `second`, not just that both were called. */
+const expectCalledBefore = (first: ReturnType<typeof vi.fn>, second: ReturnType<typeof vi.fn>) => {
+  const firstOrder = first.mock.invocationCallOrder[0];
+  const secondOrder = second.mock.invocationCallOrder[0];
+
+  expect(firstOrder, `${first.getMockName()} was not called`).toBeDefined();
+  expect(secondOrder, `${second.getMockName()} was not called`).toBeDefined();
+  expect(firstOrder).toBeLessThan(secondOrder as number);
 };
 
 /**
@@ -138,6 +148,31 @@ describe('registerAutoAvoidListeners', () => {
       expect(mocks.update).toHaveBeenCalledWith(1, { active: true });
       expect(mocks.windowsUpdate).toHaveBeenCalledWith(1, { focused: true });
       expect(mocks.remove).toHaveBeenCalledWith(2);
+      // The switch to the kept tab must fully complete before the new tab is closed.
+      expectCalledBefore(mocks.move, mocks.remove);
+      expectCalledBefore(mocks.update, mocks.remove);
+    });
+
+    it('does not close the new tab when switching to the kept tab fails partway through', async () => {
+      const existingTabs: MockTab[] = [
+        { id: 1, url: 'https://a.com/', windowId: 1, index: 0, active: false },
+        { id: 2, url: 'https://a.com/', windowId: 1, index: 3, active: true },
+      ];
+      const { listeners, mocks } = await setup({ autoAvoidDuplicate: true }, existingTabs);
+
+      // The kept tab was closed by the user right as we tried to move it next to the new tab.
+      mocks.move.mockRejectedValueOnce(new Error('No tab with id: 1.'));
+
+      await openTab(listeners, mocks, {
+        id: 2,
+        url: 'https://a.com/',
+        windowId: 1,
+        index: 3,
+        active: true,
+      });
+
+      expect(mocks.update).not.toHaveBeenCalled();
+      expect(mocks.remove).not.toHaveBeenCalled();
     });
 
     it('does not steal focus when the target window is not focused', async () => {
@@ -183,6 +218,27 @@ describe('registerAutoAvoidListeners', () => {
       // Opened in the background, so focus is not stolen.
       expect(mocks.update).not.toHaveBeenCalled();
       expect(mocks.windowsUpdate).not.toHaveBeenCalled();
+      expectCalledBefore(mocks.move, mocks.remove);
+    });
+
+    it('does not close the new tab when repositioning the kept tab fails', async () => {
+      const existingTabs: MockTab[] = [
+        { id: 1, url: 'https://a.com/', windowId: 1, index: 0, active: false }, // kept
+        { id: 9, url: 'https://other.com/', windowId: 1, index: 2, active: true }, // current tab
+      ];
+      const { listeners, mocks } = await setup({ autoAvoidDuplicate: true }, existingTabs);
+
+      mocks.move.mockRejectedValueOnce(new Error('No tab with id: 1.'));
+
+      await openTab(listeners, mocks, {
+        id: 2,
+        url: 'https://a.com/',
+        windowId: 1,
+        index: 3,
+        active: false,
+      });
+
+      expect(mocks.remove).not.toHaveBeenCalled();
     });
 
     it('just closes the new tab without moving anything, when the duplicate is the current tab itself', async () => {
@@ -222,6 +278,8 @@ describe('registerAutoAvoidListeners', () => {
       expect(mocks.move).toHaveBeenCalledWith(1, { windowId: 1, index: 4 });
       expect(mocks.update).toHaveBeenCalledWith(1, { active: true });
       expect(mocks.remove).toHaveBeenCalledWith(2);
+      expectCalledBefore(mocks.move, mocks.remove);
+      expectCalledBefore(mocks.update, mocks.remove);
     });
 
     it('does nothing when the new tab is closed by the user before resolution finishes', async () => {

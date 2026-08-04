@@ -102,7 +102,8 @@ const resolveCreatedTab = async (createdTab: CreatedTab) => {
 
     // カレントタブと重複している場合は新規タブを閉じるだけ
     await chrome.tabs.remove(result.closeTabId);
-    return;
+  } catch {
+    // move/update/remove等の途中でタブやウィンドウが消えていた場合、新規タブを閉じずに中断する。
   } finally {
     processingTabIds.delete(createdTab.id);
   }
