@@ -59,18 +59,28 @@ const resolveCreatedTab = async (createdTab: CreatedTab) => {
       return;
     }
 
-    if (createdTab.active) {
+    // createdTab.active はイベント発火時点のスナップショットであり、ここまでの await
+    // （getLocalStorage・getAllTabs）の間に、中クリック等でバックグラウンドで開かれた新規タブへ
+    // ユーザーが自分で切り替えている可能性がある。閉じる直前に現在の状態を取り直して判定する。
+    const freshCreatedTab = await chrome.tabs.get(createdTab.id).catch(() => null);
+
+    if (!freshCreatedTab) {
+      // 解決中に新規タブ自体が閉じられていた
+      return;
+    }
+
+    if (freshCreatedTab.active) {
       // target="_blank"などで開かれた場合、既存の重複タブを近くに動かしてアクティブにしてから新規タブを閉じる。
       await chrome.tabs.move(result.keepTabId, {
-        windowId: createdTab.windowId,
-        index: createdTab.index + 1,
+        windowId: freshCreatedTab.windowId,
+        index: freshCreatedTab.index + 1,
       });
       await chrome.tabs.update(result.keepTabId, { active: true });
 
-      const targetWindow = await chrome.windows.get(createdTab.windowId);
+      const targetWindow = await chrome.windows.get(freshCreatedTab.windowId);
 
       if (targetWindow.focused) {
-        await chrome.windows.update(createdTab.windowId, { focused: true });
+        await chrome.windows.update(freshCreatedTab.windowId, { focused: true });
       }
 
       await chrome.tabs.remove(result.closeTabId);
@@ -79,13 +89,13 @@ const resolveCreatedTab = async (createdTab: CreatedTab) => {
 
     // 新しいタブが開いたウィンドウのカレントタブ
     const activeTabInTargetWindow = existingTabs.find(
-      (tab) => tab.windowId === createdTab.windowId && tab.active,
+      (tab) => tab.windowId === freshCreatedTab.windowId && tab.active,
     );
 
     // カレントタブ以外と重複している場合は重複しているタブを動かしてから新規タブを閉じる
     if (activeTabInTargetWindow?.id !== result.keepTabId) {
       await chrome.tabs.move(result.keepTabId, {
-        windowId: createdTab.windowId,
+        windowId: freshCreatedTab.windowId,
         index: activeTabInTargetWindow ? activeTabInTargetWindow.index + 1 : -1,
       });
     }
