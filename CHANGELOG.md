@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## v1.5.6
+
+- Advanced Path Rule: added an allowlist of query parameters (`allowedQueryParams`) that survive the "ignore query" setting, so params like video/page IDs can be kept even while tracking params are dropped.
+- Fixed the advanced path rule section heading and Add button labels not being localized.
+- Fixed a case where the auto-avoid-duplicates feature could close a newly opened background tab (e.g. middle-click/Ctrl+click) without switching back to the existing tab, if the user activated the new tab while it was still being processed.
+
 ## v1.5.5
 
 - Advanced Path Rule: the Origin field now remembers recently entered origins and offers them as recoverable datalist suggestions, so an accidental overwrite of a previously entered value can be restored.

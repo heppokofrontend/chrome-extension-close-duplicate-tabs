@@ -1,4 +1,5 @@
 export * from './on-add-button-click';
+export * from './on-allowed-query-params-input';
 export * from './on-delete-button-click';
 export * from './on-origin-change';
 export * from './on-origin-focusin';

@@ -3,6 +3,7 @@ import {
   type RuleCheckboxField,
 } from '@/contexts/popup/components/advanced-path-rules-form/constants';
 import {
+  onAllowedQueryParamsInput,
   onDeleteButtonClick,
   onOriginChange,
   onOriginFocusIn,
@@ -17,6 +18,7 @@ import { getMessage, type PathRule } from '@/utils';
 const attachRuleListeners = (elements: {
   originInput: HTMLInputElement;
   checkboxInputs: Partial<Record<RuleCheckboxField, HTMLInputElement>>;
+  allowedQueryParamsInput: HTMLInputElement | null;
   deleteButton: HTMLButtonElement;
 }) => {
   elements.originInput.addEventListener('focusin', onOriginFocusIn);
@@ -27,17 +29,26 @@ const attachRuleListeners = (elements: {
     elements.checkboxInputs[field]?.addEventListener('change', onRuleCheckboxChange);
   }
 
+  elements.allowedQueryParamsInput?.addEventListener('input', onAllowedQueryParamsInput);
   elements.deleteButton.addEventListener('click', onDeleteButtonClick);
 };
 
-const getTemplate = () => {
+type RuleTemplate = {
+  fragment: DocumentFragment;
+  section: HTMLElement;
+  heading: HTMLElement;
+  originInput: HTMLInputElement;
+  deleteButton: HTMLButtonElement;
+};
+
+const getTemplate = (): RuleTemplate => {
   const fragment = UI.advancedPathRuleTemplate.content.cloneNode(true);
 
   if (fragment instanceof DocumentFragment) {
     const section = fragment.querySelector('.advanced-path-rule');
     const heading = fragment.querySelector('h3');
     const originInput = fragment.querySelector('.advanced-path-rules__origin');
-    const deleteButton = fragment.querySelector('.advanced-path-rules__delete');
+    const deleteButton = fragment.querySelector('.advanced-path-rules__delete-button');
 
     if (
       section instanceof HTMLElement &&
@@ -55,26 +66,28 @@ const getTemplate = () => {
     }
   }
 
-  return null;
+  throw new TypeError('Failed to find required elements in the advanced path rule template.');
 };
 
-export const buildRuleSection = (key: string, rule: PathRule) => {
-  const template = getTemplate();
+type RuleSetupArgs = {
+  key: string;
+  rule: PathRule;
+  template: RuleTemplate;
+};
 
-  if (template === null) {
-    return null;
-  }
-
-  const { fragment, section, heading, originInput, deleteButton } = template;
-
-  deleteButton.textContent = getMessage('btn_advancedPathRuleDelete');
-  deleteButton.dataset['key'] = key;
+const setupSectionMeta = ({ key, rule, template }: RuleSetupArgs) => {
+  const { section, heading } = template;
 
   section.id = `advanced-path-rule-${key}`;
   section.dataset['key'] = key;
   heading.id = `added-${key}`;
   heading.textContent = headingTextFor(rule.origin);
   section.setAttribute('aria-labelledby', heading.id);
+};
+
+const setupOriginInput = ({ key, rule, template }: RuleSetupArgs) => {
+  const { originInput } = template;
+
   originInput.setAttribute('aria-label', getMessage('aria_advancedPathRuleOrigin'));
   originInput.value = rule.origin;
   originInput.dataset['key'] = key;
@@ -82,7 +95,17 @@ export const buildRuleSection = (key: string, rule: PathRule) => {
   if (STATE.currentTabOrigin) {
     originInput.placeholder = STATE.currentTabOrigin;
   }
+};
 
+const setupDeleteButton = ({ key, template }: Omit<RuleSetupArgs, 'rule'>) => {
+  const { deleteButton } = template;
+
+  deleteButton.textContent = getMessage('btn_advancedPathRuleDelete');
+  deleteButton.dataset['key'] = key;
+};
+
+const setupCheckboxes = ({ key, rule, template }: RuleSetupArgs) => {
+  const { fragment } = template;
   const checkboxInputs: Partial<Record<RuleCheckboxField, HTMLInputElement>> = {};
 
   for (const field of RULE_CHECKBOX_FIELDS) {
@@ -113,7 +136,55 @@ export const buildRuleSection = (key: string, rule: PathRule) => {
     checkboxInputs[field] = checkbox;
   }
 
-  attachRuleListeners({ originInput, checkboxInputs, deleteButton });
+  return checkboxInputs;
+};
 
-  return fragment;
+const setupAllowedQueryParams = ({ key, rule, template }: RuleSetupArgs) => {
+  const { fragment } = template;
+  const allowedQueryParamsItem = fragment.querySelector(
+    '.advanced-path-rules__allowed-query-params-item',
+  );
+  const allowedQueryParamsInput = fragment.querySelector(
+    '.advanced-path-rules__allowed-query-params',
+  );
+
+  if (
+    !(allowedQueryParamsItem instanceof HTMLElement) ||
+    !(allowedQueryParamsInput instanceof HTMLInputElement)
+  ) {
+    throw new TypeError('Failed to find allowedQueryParams elements in the template.');
+  }
+
+  allowedQueryParamsInput.id = `advanced-path-rule-allowedQueryParams-${key}`;
+  allowedQueryParamsInput.dataset['key'] = key;
+  allowedQueryParamsInput.value = rule.allowedQueryParams ?? '';
+
+  const label = allowedQueryParamsItem.querySelector('label');
+
+  if (label instanceof HTMLLabelElement) {
+    label.htmlFor = allowedQueryParamsInput.id;
+    label.textContent = getMessage('label_advancedPathRuleAllowedQueryParams');
+  }
+
+  return allowedQueryParamsInput;
+};
+
+export const buildRuleSection = (key: string, rule: PathRule) => {
+  const template = getTemplate();
+
+  setupSectionMeta({ key, rule, template });
+  setupOriginInput({ key, rule, template });
+  setupDeleteButton({ key, template });
+
+  const checkboxInputs = setupCheckboxes({ key, rule, template });
+  const allowedQueryParamsInput = setupAllowedQueryParams({ key, rule, template });
+
+  attachRuleListeners({
+    originInput: template.originInput,
+    checkboxInputs,
+    allowedQueryParamsInput,
+    deleteButton: template.deleteButton,
+  });
+
+  return template.fragment;
 };

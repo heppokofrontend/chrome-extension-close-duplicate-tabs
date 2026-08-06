@@ -205,6 +205,18 @@
   "btn_advancedPathRuleDelete": {
     "message": "Delete"
   },
+  "btn_advancedPathRuleAdd": {
+    "message": "Add"
+  },
+  "label_advancedPathRuleAllowedQueryParams": {
+    "message": "Query params to keep"
+  },
+  "heading_advancedPathRuleDefault": {
+    "message": "Ignored by Default"
+  },
+  "heading_advancedPathRules": {
+    "message": "Advanced Path Rules"
+  },
   "error_saveFailed": {
     "message": "Failed to save settings. Please try again."
   }

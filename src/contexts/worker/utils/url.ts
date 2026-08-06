@@ -16,6 +16,32 @@ const findAdvancedPathRule = (origin: string, options?: UrlNormalizeOptions) => 
   );
 };
 
+/** query 無視時でも allowedQueryParams に列挙されたキーだけは比較対象として残す。 */
+const filterAllowedQueryParams = (search: string, allowedQueryParams: string) => {
+  const allowedKeys = new Set(
+    allowedQueryParams
+      .split(',')
+      .map((key) => key.trim())
+      .filter(Boolean),
+  );
+
+  if (allowedKeys.size === 0) {
+    return '';
+  }
+
+  const params = new URLSearchParams(search);
+
+  for (const key of new Set(params.keys())) {
+    if (!allowedKeys.has(key)) {
+      params.delete(key);
+    }
+  }
+
+  const filtered = params.toString();
+
+  return filtered ? `?${filtered}` : '';
+};
+
 const parseUrl = (url: URL, options?: UrlNormalizeOptions) => {
   const { origin, hash, search } = url;
   const pathname = url.pathname.replace(/\/index\.(x?html?|php|cgi|aspx)$/, '/');
@@ -26,10 +52,19 @@ const parseUrl = (url: URL, options?: UrlNormalizeOptions) => {
   const ignoreQuery = rule?.query ?? options?.ignoreQuery;
   const ignoreHash = rule?.hash ?? options?.ignoreHash;
 
+  let normalizedSearch = search;
+
+  if (ignoreQuery) {
+    const allowedQueryParams = rule?.allowedQueryParams ?? '';
+
+    normalizedSearch =
+      allowedQueryParams === '' ? '' : filterAllowedQueryParams(search, allowedQueryParams);
+  }
+
   return {
     origin,
     hash: ignoreHash ? '' : hash,
-    search: ignoreQuery ? '' : search,
+    search: normalizedSearch,
     pathname: ignorePathname ? '' : pathname,
   };
 };

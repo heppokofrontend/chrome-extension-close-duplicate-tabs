@@ -105,5 +105,73 @@ describe('normalizeUrl', () => {
         }),
       ).toBe('https://example.com/path#hash');
     });
+
+    it('keeps only the allowedQueryParams keys when query is ignored', () => {
+      expect(
+        normalizeUrl('https://example.com/path?keep=1&drop=2#hash', {
+          useAdvancedPathRule: true,
+          advancedPathRules: {
+            k1: {
+              origin: 'https://example.com',
+              pathname: false,
+              query: true,
+              hash: false,
+              allowedQueryParams: 'keep',
+            },
+          },
+        }),
+      ).toBe('https://example.com/path?keep=1#hash');
+    });
+
+    it('drops the entire query when allowedQueryParams is empty even though query is ignored', () => {
+      expect(
+        normalizeUrl('https://example.com/path?keep=1&drop=2#hash', {
+          useAdvancedPathRule: true,
+          advancedPathRules: {
+            k1: {
+              origin: 'https://example.com',
+              pathname: false,
+              query: true,
+              hash: false,
+              allowedQueryParams: '',
+            },
+          },
+        }),
+      ).toBe('https://example.com/path#hash');
+    });
+
+    it('trims whitespace around comma-separated allowedQueryParams keys', () => {
+      expect(
+        normalizeUrl('https://example.com/path?a=1&b=2&c=3#hash', {
+          useAdvancedPathRule: true,
+          advancedPathRules: {
+            k1: {
+              origin: 'https://example.com',
+              pathname: false,
+              query: true,
+              hash: false,
+              allowedQueryParams: ' a , c ',
+            },
+          },
+        }),
+      ).toBe('https://example.com/path?a=1&c=3#hash');
+    });
+
+    it('keeps the query untouched when query is not ignored, regardless of allowedQueryParams', () => {
+      expect(
+        normalizeUrl('https://example.com/path?a=1&b=2#hash', {
+          useAdvancedPathRule: true,
+          advancedPathRules: {
+            k1: {
+              origin: 'https://example.com',
+              pathname: false,
+              query: false,
+              hash: false,
+              allowedQueryParams: 'a',
+            },
+          },
+        }),
+      ).toBe('https://example.com/path?a=1&b=2#hash');
+    });
   });
 });
