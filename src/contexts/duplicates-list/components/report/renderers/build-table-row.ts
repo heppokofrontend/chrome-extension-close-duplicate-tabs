@@ -28,7 +28,7 @@ export const buildTableRow = (tbody: HTMLTableSectionElement, tab: TabWithIdAndU
       </button></th>
       <td class="title">
         <div>${escapeHtml(tab.title ?? '')}</div>
-        <div role="alert"><span class="status">${closedMessage}</span></div>
+        <div role="alert"><span class="status"></span></div>
       </td>
     </tr>
   `,
@@ -36,6 +36,7 @@ export const buildTableRow = (tbody: HTMLTableSectionElement, tab: TabWithIdAndU
 
   const button = tbody.querySelector('button');
   const tr = tbody.querySelector('tr');
+  const status = tr?.querySelector<HTMLElement>('.status');
   button?.addEventListener('click', () => {
     const tabId = tab.id;
 
@@ -43,6 +44,9 @@ export const buildTableRow = (tbody: HTMLTableSectionElement, tab: TabWithIdAndU
       if (chrome.runtime.lastError && tr) {
         tr.dataset['closed'] = 'true';
         button.setAttribute('aria-disabled', 'true');
+        if (status) {
+          status.textContent = closedMessage;
+        }
         return;
       }
 
