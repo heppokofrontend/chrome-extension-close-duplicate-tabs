@@ -9,6 +9,11 @@ void getLocalStorage('saveData').then((saveData) => {
 const init = async () => {
   await initFocusCurrentWindowButton();
   await renderDuplicates();
+
+  // CSS Transitionの有効化
+  setTimeout(() => {
+    document.body.dataset['transition'] = 'ready';
+  }, 300);
 };
 
 void init();
