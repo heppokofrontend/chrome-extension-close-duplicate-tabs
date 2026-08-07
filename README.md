@@ -141,7 +141,7 @@ https://www.example.com/?a=10&b=20#baz
 
 ### Advanced Path Rule
 
-<img src="./images/advanced-path-rules-en.png" width="288.5" height="320" />
+<img src="./images/advanced-path-rules-en.png" width="289" height="320" />
 
 The **Ignore pathname / query / hash** flags above apply globally to every site. **Use advanced path rule settings** lets you override those three flags per origin (scheme + host + port) instead, so different sites can use different matching rules.
 
