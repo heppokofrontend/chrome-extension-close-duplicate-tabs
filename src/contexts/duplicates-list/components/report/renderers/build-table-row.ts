@@ -1,4 +1,5 @@
 import type { TabWithIdAndUrl } from '@/types';
+import { getMessage } from '@/utils';
 
 const escapeHtml = (value: string) =>
   value.replace(
@@ -13,12 +14,9 @@ const escapeHtml = (value: string) =>
       })[char] as string,
   );
 
-export const buildTableRow = (
-  tbody: HTMLTableSectionElement,
-  tab: TabWithIdAndUrl,
-  closedMessage: string,
-) => {
-  const openTabLabel = chrome.i18n.getMessage('duplicates_open_tab', String(tab.id));
+export const buildTableRow = (tbody: HTMLTableSectionElement, tab: TabWithIdAndUrl) => {
+  const openTabLabel = getMessage('duplicates_open_tab', String(tab.id));
+  const closedMessage = getMessage('duplicates_already_closed');
 
   tbody.insertAdjacentHTML(
     'afterbegin',

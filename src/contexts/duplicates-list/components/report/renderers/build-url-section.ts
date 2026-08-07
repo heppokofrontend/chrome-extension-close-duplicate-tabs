@@ -11,7 +11,7 @@ const THEAD_SRC = `
   </thead>
 `;
 
-export const buildUrlSection = (url: string, tabs: TabWithIdAndUrl[], closedMessage: string) => {
+export const buildUrlSection = (url: string, tabs: TabWithIdAndUrl[]) => {
   const section = document.createElement('div');
   const heading = document.createElement('h2');
   heading.textContent = url;
@@ -20,7 +20,7 @@ export const buildUrlSection = (url: string, tabs: TabWithIdAndUrl[], closedMess
   const tbody = document.createElement('tbody');
 
   for (const tab of tabs) {
-    buildTableRow(tbody, tab, closedMessage);
+    buildTableRow(tbody, tab);
   }
 
   table.insertAdjacentHTML('beforeend', THEAD_SRC);

@@ -7,10 +7,9 @@ export const renderDuplicates = async () => {
   const entries = await getSessionStorage('duplicatedEntries');
 
   const fragment = document.createDocumentFragment();
-  const closedMessage = chrome.i18n.getMessage('duplicates_already_closed');
 
   for (const [url, tabs] of entries) {
-    const section = buildUrlSection(url, tabs, closedMessage);
+    const section = buildUrlSection(url, tabs);
     fragment.appendChild(section);
   }
 

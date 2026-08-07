@@ -185,6 +185,9 @@
       }
     }
   },
+  "duplicates_already_closed": {
+    "message": "The window has already been closed."
+  },
   "aria_advancedPathRuleOrigin": {
     "message": "Origin"
   },
