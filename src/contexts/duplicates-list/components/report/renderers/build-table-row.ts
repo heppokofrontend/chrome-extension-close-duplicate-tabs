@@ -13,7 +13,7 @@ const escapeHtml = (value: string) =>
       })[char] as string,
   );
 
-export const buildTabRow = (
+export const buildTableRow = (
   tbody: HTMLTableSectionElement,
   tab: TabWithIdAndUrl,
   closedMessage: string,

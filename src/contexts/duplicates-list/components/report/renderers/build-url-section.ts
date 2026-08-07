@@ -1,6 +1,6 @@
 import type { TabWithIdAndUrl } from '@/types';
 
-import { buildTabRow } from './build-tab-row';
+import { buildTableRow } from './build-table-row';
 
 const THEAD_SRC = `
   <thead>
@@ -20,7 +20,7 @@ export const buildUrlSection = (url: string, tabs: TabWithIdAndUrl[], closedMess
   const tbody = document.createElement('tbody');
 
   for (const tab of tabs) {
-    buildTabRow(tbody, tab, closedMessage);
+    buildTableRow(tbody, tab, closedMessage);
   }
 
   table.insertAdjacentHTML('beforeend', THEAD_SRC);
