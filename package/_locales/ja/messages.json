@@ -178,6 +178,9 @@
       }
     }
   },
+  "duplicates_already_closed": {
+    "message": "すでに閉じられています。"
+  },
   "aria_advancedPathRuleOrigin": {
     "message": "オリジン名"
   },
