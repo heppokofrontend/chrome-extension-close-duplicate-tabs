@@ -1,510 +1,329 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
 
-import type { SaveDataType } from '@/utils';
+const makeTab = (overrides: Partial<chrome.tabs.Tab> = {}): chrome.tabs.Tab => ({
+  index: 0,
+  pinned: false,
+  highlighted: false,
+  windowId: 1,
+  active: false,
+  frozen: false,
+  incognito: false,
+  selected: false,
+  discarded: false,
+  autoDiscardable: true,
+  groupId: -1,
+  ...overrides,
+});
 
-type Listener = (...args: unknown[]) => void;
-
-interface MockTab {
-  id: number;
-  url: string;
-  windowId: number;
-  index: number;
-  active: boolean;
-  pinned?: boolean;
-}
-
-const createChromeMock = (
-  saveData: Partial<SaveDataType>,
-  existingTabs: MockTab[],
-  windowFocused = true,
-) => {
-  const listeners = {
-    onStartup: [] as Listener[],
-    onCreated: [] as Listener[],
-    onRemoved: [] as Listener[],
-    onUpdated: [] as Listener[],
-  };
-
-  const mocks = {
-    query: vi.fn().mockResolvedValue(existingTabs),
-    tabsGet: vi.fn(),
-    move: vi.fn().mockName('tabs.move').mockResolvedValue(undefined),
-    update: vi.fn().mockName('tabs.update').mockResolvedValue(undefined),
-    remove: vi.fn().mockName('tabs.remove').mockResolvedValue(undefined),
-    windowsGet: vi.fn().mockResolvedValue({ focused: windowFocused }),
-    windowsUpdate: vi.fn().mockResolvedValue(undefined),
-    get: vi.fn().mockResolvedValue({ saveData }),
-  };
-
-  const chrome = {
-    runtime: {
-      onStartup: { addListener: (l: Listener) => listeners.onStartup.push(l) },
-    },
-    tabs: {
-      onCreated: { addListener: (l: Listener) => listeners.onCreated.push(l) },
-      onRemoved: { addListener: (l: Listener) => listeners.onRemoved.push(l) },
-      onUpdated: { addListener: (l: Listener) => listeners.onUpdated.push(l) },
-      query: mocks.query,
-      get: mocks.tabsGet,
-      move: mocks.move,
-      update: mocks.update,
-      remove: mocks.remove,
-    },
-    storage: { local: { get: mocks.get } },
-    windows: { get: mocks.windowsGet, update: mocks.windowsUpdate },
-  };
-
-  return { chrome, listeners, mocks };
-};
-
-/** Flushes pending microtasks so async side effects have time to complete. */
+/** 保留中の microtask を掃き出す。 */
 const flushPromises = async () => {
   for (let i = 0; i < 10; i += 1) {
     await Promise.resolve();
   }
 };
 
-/** Asserts `first` was invoked before `second`, not just that both were called. */
-const expectCalledBefore = (first: ReturnType<typeof vi.fn>, second: ReturnType<typeof vi.fn>) => {
-  const firstOrder = first.mock.invocationCallOrder[0];
-  const secondOrder = second.mock.invocationCallOrder[0];
+const stubChrome = ({
+  saveData,
+  existingTabs,
+  freshCreatedTab,
+  targetWindowFocused = false,
+}: {
+  saveData: { autoAvoidDuplicate: boolean; [key: string]: unknown };
+  existingTabs: chrome.tabs.Tab[];
+  freshCreatedTab: chrome.tabs.Tab | null;
+  targetWindowFocused?: boolean;
+}) => {
+  const onStartup = { addListener: vi.fn() };
+  const onCreated = { addListener: vi.fn() };
+  const onRemoved = { addListener: vi.fn() };
+  const onUpdated = { addListener: vi.fn() };
 
-  expect(firstOrder, `${first.getMockName()} was not called`).toBeDefined();
-  expect(secondOrder, `${second.getMockName()} was not called`).toBeDefined();
-  expect(firstOrder).toBeLessThan(secondOrder as number);
+  const storageGet = vi.fn().mockResolvedValue({ saveData });
+  const query = vi.fn().mockResolvedValue(existingTabs);
+  const get = freshCreatedTab
+    ? vi.fn().mockResolvedValue(freshCreatedTab)
+    : vi.fn().mockRejectedValue(new Error('no such tab'));
+  const move = vi.fn().mockResolvedValue(undefined);
+  const update = vi.fn().mockResolvedValue(undefined);
+  const remove = vi.fn().mockResolvedValue(undefined);
+  const windowsGet = vi.fn().mockResolvedValue({ focused: targetWindowFocused });
+  const windowsUpdate = vi.fn().mockResolvedValue(undefined);
+
+  vi.stubGlobal('chrome', {
+    runtime: { onStartup },
+    storage: { local: { get: storageGet } },
+    tabs: { onCreated, onRemoved, onUpdated, query, get, move, update, remove },
+    windows: { get: windowsGet, update: windowsUpdate },
+  });
+
+  return {
+    listeners: { onStartup, onCreated, onRemoved, onUpdated },
+    mocks: { storageGet, query, get, move, update, remove, windowsGet, windowsUpdate },
+  };
 };
 
-/**
- * auto-avoid registers chrome.runtime.onStartup at module evaluation time, so
- * stub chrome and re-import the module fresh every time.
- */
-const setup = async (
-  saveData: Partial<SaveDataType>,
-  existingTabs: MockTab[],
-  windowFocused = true,
-) => {
-  const { chrome, listeners, mocks } = createChromeMock(saveData, existingTabs, windowFocused);
+type Listener<Args extends unknown[]> = (...args: Args) => void;
 
-  vi.stubGlobal('chrome', chrome);
+const getListener = <Args extends unknown[]>(addListener: {
+  mock: { calls: Listener<Args>[][] };
+}) => addListener.mock.calls[0]?.[0] as Listener<Args>;
+
+/**
+ * auto-avoid はモジュールレベルで unresolvedTabIds / processingTabIds / extensionStartedAt を
+ * 保持し、import 時点で chrome.runtime.onStartup.addListener を呼ぶ。そのため chrome のスタブを
+ * 済ませてから毎回モジュールを読み直す。
+ */
+const loadRegisterAutoAvoidListeners = async () => {
   vi.resetModules();
 
   const { registerAutoAvoidListeners } =
-    await import('@/contexts/worker/features/auto-avoid-duplicates');
+    await import('@/contexts/worker/features/auto-avoid-duplicates/auto-avoid');
 
-  registerAutoAvoidListeners();
-
-  return { listeners, mocks };
+  return registerAutoAvoidListeners;
 };
-
-/**
- * Fires onCreated then onUpdated, in order, to run the check as a URL-resolved tab.
- *
- * `freshTab` stands in for what `chrome.tabs.get` returns right before closing — it defaults to
- * `tab` (no drift), but tests can pass a different snapshot to simulate the tab's state changing
- * while resolveCreatedTab is still awaiting earlier steps.
- */
-const openTab = async (
-  listeners: ReturnType<typeof createChromeMock>['listeners'],
-  mocks: ReturnType<typeof createChromeMock>['mocks'],
-  tab: MockTab,
-  freshTab: MockTab = tab,
-) => {
-  mocks.tabsGet.mockResolvedValueOnce(freshTab);
-
-  for (const l of listeners.onCreated) {
-    l({ id: tab.id });
-  }
-
-  for (const l of listeners.onUpdated) {
-    l(tab.id, { url: tab.url }, tab);
-  }
-
-  await flushPromises();
-};
-
-afterEach(() => {
-  vi.unstubAllGlobals();
-  vi.restoreAllMocks();
-});
 
 describe('registerAutoAvoidListeners', () => {
-  describe('active new duplicate tab', () => {
-    it('moves the existing tab next to the new tab and activates it before closing the new tab', async () => {
-      const existingTabs: MockTab[] = [
-        { id: 1, url: 'https://a.com/', windowId: 1, index: 0, active: false },
-        { id: 2, url: 'https://a.com/', windowId: 1, index: 3, active: true },
-      ];
-      const { listeners, mocks } = await setup({ autoAvoidDuplicate: true }, existingTabs);
-
-      await openTab(listeners, mocks, {
-        id: 2,
-        url: 'https://a.com/',
-        windowId: 1,
-        index: 3,
-        active: true,
-      });
-
-      expect(mocks.move).toHaveBeenCalledWith(1, { windowId: 1, index: 4 });
-      expect(mocks.update).toHaveBeenCalledWith(1, { active: true });
-      expect(mocks.windowsUpdate).toHaveBeenCalledWith(1, { focused: true });
-      expect(mocks.remove).toHaveBeenCalledWith(2);
-      // The switch to the kept tab must fully complete before the new tab is closed.
-      expectCalledBefore(mocks.move, mocks.remove);
-      expectCalledBefore(mocks.update, mocks.remove);
-    });
-
-    it('does not close the new tab when switching to the kept tab fails partway through', async () => {
-      const existingTabs: MockTab[] = [
-        { id: 1, url: 'https://a.com/', windowId: 1, index: 0, active: false },
-        { id: 2, url: 'https://a.com/', windowId: 1, index: 3, active: true },
-      ];
-      const { listeners, mocks } = await setup({ autoAvoidDuplicate: true }, existingTabs);
-
-      // The kept tab was closed by the user right as we tried to move it next to the new tab.
-      mocks.move.mockRejectedValueOnce(new Error('No tab with id: 1.'));
-
-      await openTab(listeners, mocks, {
-        id: 2,
-        url: 'https://a.com/',
-        windowId: 1,
-        index: 3,
-        active: true,
-      });
-
-      expect(mocks.update).not.toHaveBeenCalled();
-      expect(mocks.remove).not.toHaveBeenCalled();
-    });
-
-    it('does not steal focus when the target window is not focused', async () => {
-      const existingTabs: MockTab[] = [
-        { id: 1, url: 'https://a.com/', windowId: 1, index: 0, active: false },
-        { id: 2, url: 'https://a.com/', windowId: 1, index: 3, active: true },
-      ];
-      const { listeners, mocks } = await setup({ autoAvoidDuplicate: true }, existingTabs, false);
-
-      await openTab(listeners, mocks, {
-        id: 2,
-        url: 'https://a.com/',
-        windowId: 1,
-        index: 3,
-        active: true,
-      });
-
-      expect(mocks.move).toHaveBeenCalledWith(1, { windowId: 1, index: 4 });
-      expect(mocks.update).toHaveBeenCalledWith(1, { active: true });
-      expect(mocks.windowsUpdate).not.toHaveBeenCalled();
-      expect(mocks.remove).toHaveBeenCalledWith(2);
-    });
+  afterEach(() => {
+    vi.unstubAllGlobals();
   });
 
-  describe('non-active new duplicate tab (opened in the background)', () => {
-    it('moves the existing tab next to the current tab and closes the new tab, when the duplicate is not the current tab', async () => {
-      const existingTabs: MockTab[] = [
-        { id: 1, url: 'https://a.com/', windowId: 1, index: 0, active: false }, // kept
-        { id: 9, url: 'https://other.com/', windowId: 1, index: 2, active: true }, // current tab
-      ];
-      const { listeners, mocks } = await setup({ autoAvoidDuplicate: true }, existingTabs);
-
-      await openTab(listeners, mocks, {
-        id: 2,
-        url: 'https://a.com/',
-        windowId: 1,
-        index: 3,
-        active: false,
-      });
-
-      expect(mocks.move).toHaveBeenCalledWith(1, { windowId: 1, index: 3 });
-      expect(mocks.remove).toHaveBeenCalledWith(2);
-      // Opened in the background, so focus is not stolen.
-      expect(mocks.update).not.toHaveBeenCalled();
-      expect(mocks.windowsUpdate).not.toHaveBeenCalled();
-      expectCalledBefore(mocks.move, mocks.remove);
+  it('closes the new tab when it duplicates the already-active tab in its window', async () => {
+    const { listeners, mocks } = stubChrome({
+      saveData: { autoAvoidDuplicate: true },
+      existingTabs: [makeTab({ id: 1, url: 'https://dup.com/', windowId: 1, active: true })],
+      freshCreatedTab: makeTab({ id: 2, url: 'https://dup.com/', windowId: 1, active: false }),
     });
+    const registerAutoAvoidListeners = await loadRegisterAutoAvoidListeners();
 
-    it('does not close the new tab when repositioning the kept tab fails', async () => {
-      const existingTabs: MockTab[] = [
-        { id: 1, url: 'https://a.com/', windowId: 1, index: 0, active: false }, // kept
-        { id: 9, url: 'https://other.com/', windowId: 1, index: 2, active: true }, // current tab
-      ];
-      const { listeners, mocks } = await setup({ autoAvoidDuplicate: true }, existingTabs);
+    registerAutoAvoidListeners();
 
-      mocks.move.mockRejectedValueOnce(new Error('No tab with id: 1.'));
+    const onCreated = getListener<[{ id: number }]>(listeners.onCreated.addListener);
+    const onUpdated = getListener<[number, chrome.tabs.OnUpdatedInfo, chrome.tabs.Tab]>(
+      listeners.onUpdated.addListener,
+    );
 
-      await openTab(listeners, mocks, {
-        id: 2,
-        url: 'https://a.com/',
-        windowId: 1,
-        index: 3,
-        active: false,
-      });
+    onCreated({ id: 2 });
+    onUpdated(2, { url: 'https://dup.com/' }, makeTab({ id: 2, url: 'https://dup.com/' }));
+    await flushPromises();
 
-      expect(mocks.remove).not.toHaveBeenCalled();
-    });
-
-    it('just closes the new tab without moving anything, when the duplicate is the current tab itself', async () => {
-      const existingTabs: MockTab[] = [
-        { id: 1, url: 'https://a.com/', windowId: 1, index: 0, active: true }, // current tab, also kept
-      ];
-      const { listeners, mocks } = await setup({ autoAvoidDuplicate: true }, existingTabs);
-
-      await openTab(listeners, mocks, {
-        id: 2,
-        url: 'https://a.com/',
-        windowId: 1,
-        index: 3,
-        active: false,
-      });
-
-      expect(mocks.move).not.toHaveBeenCalled();
-      expect(mocks.remove).toHaveBeenCalledWith(2);
-    });
-
-    it('switches to the kept tab before closing when the user activates the new tab while resolution is still in flight', async () => {
-      const existingTabs: MockTab[] = [
-        { id: 1, url: 'https://a.com/', windowId: 1, index: 0, active: false }, // kept
-        { id: 9, url: 'https://other.com/', windowId: 1, index: 2, active: true }, // was the current tab
-      ];
-      const { listeners, mocks } = await setup({ autoAvoidDuplicate: true }, existingTabs);
-
-      // Middle-clicked, so it opened inactive — but by the time resolveCreatedTab gets around to
-      // checking chrome.tabs.get, the user has already switched to it themselves.
-      await openTab(
-        listeners,
-        mocks,
-        { id: 2, url: 'https://a.com/', windowId: 1, index: 3, active: false },
-        { id: 2, url: 'https://a.com/', windowId: 1, index: 3, active: true },
-      );
-
-      expect(mocks.move).toHaveBeenCalledWith(1, { windowId: 1, index: 4 });
-      expect(mocks.update).toHaveBeenCalledWith(1, { active: true });
-      expect(mocks.remove).toHaveBeenCalledWith(2);
-      expectCalledBefore(mocks.move, mocks.remove);
-      expectCalledBefore(mocks.update, mocks.remove);
-    });
-
-    it('does nothing when the new tab is closed by the user before resolution finishes', async () => {
-      const existingTabs: MockTab[] = [
-        { id: 1, url: 'https://a.com/', windowId: 1, index: 0, active: false },
-      ];
-      const { listeners, mocks } = await setup({ autoAvoidDuplicate: true }, existingTabs);
-
-      mocks.tabsGet.mockRejectedValueOnce(new Error('No tab with id: 2.'));
-
-      for (const l of listeners.onCreated) {
-        l({ id: 2 });
-      }
-      for (const l of listeners.onUpdated) {
-        l(
-          2,
-          { url: 'https://a.com/' },
-          { id: 2, url: 'https://a.com/', windowId: 1, index: 3, active: false },
-        );
-      }
-      await flushPromises();
-
-      expect(mocks.move).not.toHaveBeenCalled();
-      expect(mocks.remove).not.toHaveBeenCalled();
-    });
+    expect(mocks.move).not.toHaveBeenCalled();
+    expect(mocks.remove).toHaveBeenCalledWith(2);
   });
 
-  describe('cases with no side effects', () => {
-    it('does nothing when autoAvoidDuplicate is disabled', async () => {
-      const existingTabs: MockTab[] = [
-        { id: 1, url: 'https://a.com/', windowId: 1, index: 0, active: true },
-      ];
-      const { listeners, mocks } = await setup({ autoAvoidDuplicate: false }, existingTabs);
+  it('moves the duplicate next to the current tab before closing the new one when they differ', async () => {
+    const { listeners, mocks } = stubChrome({
+      saveData: { autoAvoidDuplicate: true },
+      existingTabs: [
+        makeTab({ id: 1, url: 'https://dup.com/', windowId: 1, active: false }),
+        makeTab({ id: 3, url: 'https://other.com/', windowId: 1, active: true, index: 4 }),
+      ],
+      freshCreatedTab: makeTab({ id: 2, url: 'https://dup.com/', windowId: 1, active: false }),
+    });
+    const registerAutoAvoidListeners = await loadRegisterAutoAvoidListeners();
 
-      await openTab(listeners, mocks, {
+    registerAutoAvoidListeners();
+
+    const onCreated = getListener<[{ id: number }]>(listeners.onCreated.addListener);
+    const onUpdated = getListener<[number, chrome.tabs.OnUpdatedInfo, chrome.tabs.Tab]>(
+      listeners.onUpdated.addListener,
+    );
+
+    onCreated({ id: 2 });
+    onUpdated(2, { url: 'https://dup.com/' }, makeTab({ id: 2, url: 'https://dup.com/' }));
+    await flushPromises();
+
+    expect(mocks.move).toHaveBeenCalledWith(1, { windowId: 1, index: 5 });
+    expect(mocks.remove).toHaveBeenCalledWith(2);
+  });
+
+  it('activates the existing duplicate and closes the new tab when the new tab was itself activated', async () => {
+    const { listeners, mocks } = stubChrome({
+      saveData: { autoAvoidDuplicate: true },
+      existingTabs: [makeTab({ id: 1, url: 'https://dup.com/', windowId: 1, active: false })],
+      freshCreatedTab: makeTab({
         id: 2,
-        url: 'https://a.com/',
+        url: 'https://dup.com/',
         windowId: 1,
-        index: 3,
         active: true,
-      });
-
-      expect(mocks.query).not.toHaveBeenCalled();
-      expect(mocks.remove).not.toHaveBeenCalled();
+        index: 2,
+      }),
+      targetWindowFocused: true,
     });
+    const registerAutoAvoidListeners = await loadRegisterAutoAvoidListeners();
 
-    it('does nothing when there is no duplicate', async () => {
-      const existingTabs: MockTab[] = [
-        { id: 1, url: 'https://b.com/', windowId: 1, index: 0, active: true },
-      ];
-      const { listeners, mocks } = await setup({ autoAvoidDuplicate: true }, existingTabs);
+    registerAutoAvoidListeners();
 
-      await openTab(listeners, mocks, {
-        id: 2,
-        url: 'https://a.com/',
-        windowId: 1,
-        index: 3,
-        active: true,
-      });
+    const onCreated = getListener<[{ id: number }]>(listeners.onCreated.addListener);
+    const onUpdated = getListener<[number, chrome.tabs.OnUpdatedInfo, chrome.tabs.Tab]>(
+      listeners.onUpdated.addListener,
+    );
 
-      expect(mocks.remove).not.toHaveBeenCalled();
+    onCreated({ id: 2 });
+    onUpdated(2, { url: 'https://dup.com/' }, makeTab({ id: 2, url: 'https://dup.com/' }));
+    await flushPromises();
+
+    expect(mocks.move).toHaveBeenCalledWith(1, { windowId: 1, index: 3 });
+    expect(mocks.update).toHaveBeenCalledWith(1, { active: true });
+    expect(mocks.windowsUpdate).toHaveBeenCalledWith(1, { focused: true });
+    expect(mocks.remove).toHaveBeenCalledWith(2);
+  });
+
+  it('does nothing when autoAvoidDuplicate is off', async () => {
+    const { listeners, mocks } = stubChrome({
+      saveData: { autoAvoidDuplicate: false },
+      existingTabs: [makeTab({ id: 1, url: 'https://dup.com/', windowId: 1, active: true })],
+      freshCreatedTab: makeTab({ id: 2, url: 'https://dup.com/', windowId: 1 }),
     });
+    const registerAutoAvoidListeners = await loadRegisterAutoAvoidListeners();
 
-    it('does not check tabs with a non-targetable protocol (chrome:)', async () => {
-      const existingTabs: MockTab[] = [
-        { id: 1, url: 'chrome://newtab/', windowId: 1, index: 0, active: true },
-      ];
-      const { listeners, mocks } = await setup({ autoAvoidDuplicate: true }, existingTabs);
+    registerAutoAvoidListeners();
 
-      await openTab(listeners, mocks, {
-        id: 2,
-        url: 'chrome://newtab/',
-        windowId: 1,
-        index: 3,
-        active: true,
-      });
+    const onCreated = getListener<[{ id: number }]>(listeners.onCreated.addListener);
+    const onUpdated = getListener<[number, chrome.tabs.OnUpdatedInfo, chrome.tabs.Tab]>(
+      listeners.onUpdated.addListener,
+    );
 
-      expect(mocks.query).not.toHaveBeenCalled();
-      expect(mocks.remove).not.toHaveBeenCalled();
+    onCreated({ id: 2 });
+    onUpdated(2, { url: 'https://dup.com/' }, makeTab({ id: 2, url: 'https://dup.com/' }));
+    await flushPromises();
+
+    expect(mocks.remove).not.toHaveBeenCalled();
+  });
+
+  it('does nothing when there is no duplicate', async () => {
+    const { listeners, mocks } = stubChrome({
+      saveData: { autoAvoidDuplicate: true },
+      existingTabs: [makeTab({ id: 1, url: 'https://unique.com/', windowId: 1, active: true })],
+      freshCreatedTab: makeTab({ id: 2, url: 'https://dup.com/', windowId: 1 }),
     });
+    const registerAutoAvoidListeners = await loadRegisterAutoAvoidListeners();
 
-    it('does not check a tab that never went through onCreated (e.g. navigating via the URL bar)', async () => {
-      const existingTabs: MockTab[] = [
-        { id: 1, url: 'https://a.com/', windowId: 1, index: 0, active: true },
-      ];
-      const { listeners, mocks } = await setup({ autoAvoidDuplicate: true }, existingTabs);
+    registerAutoAvoidListeners();
 
-      // Fire only onUpdated, without firing onCreated first.
-      for (const l of listeners.onUpdated) {
-        l(
-          2,
-          { url: 'https://a.com/' },
-          { id: 2, url: 'https://a.com/', windowId: 1, index: 3, active: true },
-        );
-      }
-      await flushPromises();
+    const onCreated = getListener<[{ id: number }]>(listeners.onCreated.addListener);
+    const onUpdated = getListener<[number, chrome.tabs.OnUpdatedInfo, chrome.tabs.Tab]>(
+      listeners.onUpdated.addListener,
+    );
 
-      expect(mocks.query).not.toHaveBeenCalled();
-      expect(mocks.remove).not.toHaveBeenCalled();
+    onCreated({ id: 2 });
+    onUpdated(2, { url: 'https://dup.com/' }, makeTab({ id: 2, url: 'https://dup.com/' }));
+    await flushPromises();
+
+    expect(mocks.remove).not.toHaveBeenCalled();
+  });
+
+  it('skips resolution when the new tab already closed before the check', async () => {
+    const { listeners, mocks } = stubChrome({
+      saveData: { autoAvoidDuplicate: true },
+      existingTabs: [makeTab({ id: 1, url: 'https://dup.com/', windowId: 1, active: true })],
+      freshCreatedTab: null,
     });
+    const registerAutoAvoidListeners = await loadRegisterAutoAvoidListeners();
 
-    it('does not track a tab created during the startup grace period', async () => {
-      const existingTabs: MockTab[] = [
-        { id: 1, url: 'https://a.com/', windowId: 1, index: 0, active: true },
-      ];
-      const { listeners, mocks } = await setup({ autoAvoidDuplicate: true }, existingTabs);
+    registerAutoAvoidListeners();
 
-      // Set the startup time to "now", putting us inside the grace period.
-      for (const l of listeners.onStartup) {
-        l();
-      }
+    const onCreated = getListener<[{ id: number }]>(listeners.onCreated.addListener);
+    const onUpdated = getListener<[number, chrome.tabs.OnUpdatedInfo, chrome.tabs.Tab]>(
+      listeners.onUpdated.addListener,
+    );
 
-      await openTab(listeners, mocks, {
-        id: 2,
-        url: 'https://a.com/',
-        windowId: 1,
-        index: 3,
-        active: true,
-      });
+    onCreated({ id: 2 });
+    onUpdated(2, { url: 'https://dup.com/' }, makeTab({ id: 2, url: 'https://dup.com/' }));
+    await flushPromises();
 
-      expect(mocks.query).not.toHaveBeenCalled();
-      expect(mocks.remove).not.toHaveBeenCalled();
+    expect(mocks.move).not.toHaveBeenCalled();
+    expect(mocks.remove).not.toHaveBeenCalled();
+  });
+
+  it('ignores updates without a url change', async () => {
+    const { listeners, mocks } = stubChrome({
+      saveData: { autoAvoidDuplicate: true },
+      existingTabs: [makeTab({ id: 1, url: 'https://dup.com/', windowId: 1, active: true })],
+      freshCreatedTab: makeTab({ id: 2, url: 'https://dup.com/', windowId: 1 }),
     });
+    const registerAutoAvoidListeners = await loadRegisterAutoAvoidListeners();
 
-    it('ignores tab creation events without a numeric id', async () => {
-      const { listeners, mocks } = await setup({ autoAvoidDuplicate: true }, []);
+    registerAutoAvoidListeners();
 
-      for (const l of listeners.onCreated) {
-        l({ id: undefined });
-      }
-      await flushPromises();
+    const onCreated = getListener<[{ id: number }]>(listeners.onCreated.addListener);
+    const onUpdated = getListener<[number, chrome.tabs.OnUpdatedInfo, chrome.tabs.Tab]>(
+      listeners.onUpdated.addListener,
+    );
 
-      expect(mocks.query).not.toHaveBeenCalled();
+    onCreated({ id: 2 });
+    onUpdated(2, { status: 'loading' }, makeTab({ id: 2 }));
+    await flushPromises();
+
+    expect(mocks.storageGet).not.toHaveBeenCalled();
+  });
+
+  it('ignores tabs whose protocol is not targetable', async () => {
+    const { listeners, mocks } = stubChrome({
+      saveData: { autoAvoidDuplicate: true },
+      existingTabs: [],
+      freshCreatedTab: makeTab({ id: 2, url: 'chrome://newtab/', windowId: 1 }),
     });
+    const registerAutoAvoidListeners = await loadRegisterAutoAvoidListeners();
 
-    it('cleans up tracked state when a tab is removed before its create/update flow completes', async () => {
-      const { listeners, mocks } = await setup({ autoAvoidDuplicate: true }, []);
+    registerAutoAvoidListeners();
 
-      for (const l of listeners.onCreated) {
-        l({ id: 5 });
-      }
-      for (const l of listeners.onRemoved) {
-        l(5);
-      }
-      // The removed tab id was dropped from tracking, so a late onUpdated for it is a no-op.
-      for (const l of listeners.onUpdated) {
-        l(
-          5,
-          { url: 'https://a.com/' },
-          { id: 5, url: 'https://a.com/', windowId: 1, index: 0, active: true },
-        );
-      }
-      await flushPromises();
+    const onCreated = getListener<[{ id: number }]>(listeners.onCreated.addListener);
+    const onUpdated = getListener<[number, chrome.tabs.OnUpdatedInfo, chrome.tabs.Tab]>(
+      listeners.onUpdated.addListener,
+    );
 
-      expect(mocks.query).not.toHaveBeenCalled();
+    onCreated({ id: 2 });
+    onUpdated(2, { url: 'chrome://newtab/' }, makeTab({ id: 2 }));
+    await flushPromises();
+
+    expect(mocks.storageGet).not.toHaveBeenCalled();
+  });
+
+  it('forgets a tab once it is removed, so a later update for it is ignored', async () => {
+    const { listeners, mocks } = stubChrome({
+      saveData: { autoAvoidDuplicate: true },
+      existingTabs: [makeTab({ id: 1, url: 'https://dup.com/', windowId: 1, active: true })],
+      freshCreatedTab: makeTab({ id: 2, url: 'https://dup.com/', windowId: 1 }),
     });
+    const registerAutoAvoidListeners = await loadRegisterAutoAvoidListeners();
 
-    it('skips re-entrant processing when the same tab id is already being resolved', async () => {
-      const existingTabs: MockTab[] = [
-        { id: 1, url: 'https://a.com/', windowId: 1, index: 0, active: false },
-      ];
-      const { listeners, mocks } = await setup({ autoAvoidDuplicate: true }, existingTabs);
+    registerAutoAvoidListeners();
 
-      mocks.tabsGet.mockResolvedValue({
-        id: 2,
-        url: 'https://a.com/',
-        windowId: 1,
-        index: 3,
-        active: false,
-      });
+    const onCreated = getListener<[{ id: number }]>(listeners.onCreated.addListener);
+    const onRemoved = getListener<[number]>(listeners.onRemoved.addListener);
+    const onUpdated = getListener<[number, chrome.tabs.OnUpdatedInfo, chrome.tabs.Tab]>(
+      listeners.onUpdated.addListener,
+    );
 
-      for (const l of listeners.onCreated) {
-        l({ id: 2 });
-      }
-      for (const l of listeners.onUpdated) {
-        l(
-          2,
-          { url: 'https://a.com/' },
-          { id: 2, url: 'https://a.com/', windowId: 1, index: 3, active: false },
-        );
-      }
+    onCreated({ id: 2 });
+    onRemoved(2);
+    onUpdated(2, { url: 'https://dup.com/' }, makeTab({ id: 2 }));
+    await flushPromises();
 
-      // Let the first resolveCreatedTab(2) chain progress past the getSaveData await, so it
-      // has added id 2 to processingTabIds but has not reached its finally block yet.
-      await Promise.resolve();
-      await Promise.resolve();
+    expect(mocks.storageGet).not.toHaveBeenCalled();
+  });
 
-      // Simulate the tab id being reused (a new create/update burst for the same id) while
-      // the first resolution is still in-flight.
-      for (const l of listeners.onCreated) {
-        l({ id: 2 });
-      }
-      for (const l of listeners.onUpdated) {
-        l(
-          2,
-          { url: 'https://a.com/' },
-          { id: 2, url: 'https://a.com/', windowId: 1, index: 3, active: false },
-        );
-      }
-
-      await flushPromises();
-
-      // The re-entrant call bailed out immediately, so only one resolution went through.
-      expect(mocks.remove).toHaveBeenCalledTimes(1);
-      expect(mocks.remove).toHaveBeenCalledWith(2);
+  it('suppresses newly created tabs during the post-startup grace period', async () => {
+    const { listeners, mocks } = stubChrome({
+      saveData: { autoAvoidDuplicate: true },
+      existingTabs: [makeTab({ id: 1, url: 'https://dup.com/', windowId: 1, active: true })],
+      freshCreatedTab: makeTab({ id: 2, url: 'https://dup.com/', windowId: 1 }),
     });
+    const registerAutoAvoidListeners = await loadRegisterAutoAvoidListeners();
 
-    it('queries every window (not just the current one) when includeAllWindow is enabled', async () => {
-      const existingTabs: MockTab[] = [
-        { id: 1, url: 'https://a.com/', windowId: 1, index: 0, active: true },
-      ];
-      const { listeners, mocks } = await setup(
-        { autoAvoidDuplicate: true, includeAllWindow: true },
-        existingTabs,
-      );
+    registerAutoAvoidListeners();
 
-      await openTab(listeners, mocks, {
-        id: 2,
-        url: 'https://a.com/',
-        windowId: 1,
-        index: 3,
-        active: false,
-      });
+    const onStartup = getListener<[]>(listeners.onStartup.addListener);
+    const onCreated = getListener<[{ id: number }]>(listeners.onCreated.addListener);
+    const onUpdated = getListener<[number, chrome.tabs.OnUpdatedInfo, chrome.tabs.Tab]>(
+      listeners.onUpdated.addListener,
+    );
 
-      expect(mocks.query).toHaveBeenCalledWith({ windowType: 'normal' });
-    });
+    onStartup();
+    onCreated({ id: 2 });
+    onUpdated(2, { url: 'https://dup.com/' }, makeTab({ id: 2 }));
+    await flushPromises();
+
+    expect(mocks.storageGet).not.toHaveBeenCalled();
   });
 });
