@@ -178,6 +178,17 @@
       }
     }
   },
+  "duplicates_already_closed": {
+    "message": "すでに閉じられています。"
+  },
+  "duplicates_close_tab": {
+    "message": "$TAB_TITLE$を閉じる",
+    "placeholders": {
+      "TAB_TITLE": {
+        "content": "$1"
+      }
+    }
+  },
   "aria_advancedPathRuleOrigin": {
     "message": "オリジン名"
   },

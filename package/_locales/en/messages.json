@@ -185,6 +185,17 @@
       }
     }
   },
+  "duplicates_already_closed": {
+    "message": "The window has already been closed."
+  },
+  "duplicates_close_tab": {
+    "message": "Close tab $TAB_TITLE$",
+    "placeholders": {
+      "TAB_TITLE": {
+        "content": "$1"
+      }
+    }
+  },
   "aria_advancedPathRuleOrigin": {
     "message": "Origin"
   },

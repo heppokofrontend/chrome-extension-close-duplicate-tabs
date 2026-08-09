@@ -1,18 +1,22 @@
+body {
+  margin-inline: auto;
+  --button-padding-block: 0.625rem;
+}
+
+button {
+  line-height: inherit;
+}
+
 .focus-current-window-button-wrapper {
   width: fit-content;
-  padding: 16px;
+  padding: 1.75rem 1.75rem 0;
   margin-left: auto;
 }
 
-#focus-current-window-button {
-  padding: 8px 16px;
-}
-
 #report:not(:empty) {
-  width: fit-content;
-  max-width: 960px;
+  max-width: 60rem; /* 960px */
   padding: 0 28px;
-  margin-block: 2em;
+  margin-block: 2rem;
   margin-inline: auto;
   color: var(--color-label-text);
 }
@@ -20,11 +24,11 @@
 h2 {
   position: sticky;
   top: 0;
-  padding: 12px 10px;
+  padding: 0.75rem 10px;
   margin-block: 0 12px;
   font-size: 1.5em;
   line-height: 1.2;
-  word-break: break-all;
+  overflow-wrap: anywhere;
   background-color: var(--color-label-bg);
   border-radius: 4px;
 }
@@ -33,17 +37,10 @@ h2:nth-of-type(1) {
   margin-top: 0;
 }
 
-button {
-  display: grid;
-  grid-template-columns: auto auto;
-  gap: 8px;
-  align-items: center;
-  padding: 10px;
-}
-
 button img {
   width: 1lh;
   height: 1lh;
+  display: block;
 }
 
 button[aria-disabled='true'] {
@@ -51,33 +48,75 @@ button[aria-disabled='true'] {
 }
 
 table {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
   margin-bottom: 6.75rem;
-  word-break: break-all;
-  border-collapse: separate;
+  overflow-wrap: anywhere;
+  padding: 0 2px;
+}
+
+thead,
+tbody {
+  display: grid;
+  grid-column: 1 / -1;
+  grid-template-columns: subgrid;
+}
+
+thead {
+  padding: 0 0 0.75rem;
+  margin: 0 0 0.25rem;
+  border-bottom: 1px solid var(--color-label-border);
+}
+
+tr {
+  display: grid;
+  grid-column: 1 / -1;
+  grid-template-columns: subgrid;
+  line-height: 1rem;
 }
 
 tbody :where(th, td) {
-  padding: 12px 0 0;
-  vertical-align: top;
+  padding: 0.75rem 0 0;
+
+  &:nth-child(2) {
+    padding-top: calc(0.75rem + var(--button-padding-block));
+  }
 }
 
 th:first-child {
   word-break: keep-all;
 }
 
+td:last-child {
+  button {
+    padding: var(--button-padding-block);
+    font-size: 0.875rem;
+  }
+}
+
 :where(th, td):not(:first-child) {
   padding-left: 16px;
+}
+
+.btn-focus {
+  display: grid;
+  grid-template-columns: auto auto;
+  gap: 8px;
+  align-items: center;
+  padding: var(--button-padding-block) 10px;
 }
 
 .status {
   font-weight: bold;
   word-break: break-word;
-  visibility: hidden;
 }
 
-[data-closed='true'] .status {
+[data-status='already-closed'] .status {
   color: var(--color-danger-title-text);
-  visibility: visible;
+}
+
+[data-status='closed'] {
+  display: none;
 }
 
 #empty-message {

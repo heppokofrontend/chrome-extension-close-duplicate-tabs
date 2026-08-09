@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## v1.5.7
+
+- Duplicates list: added a button to close a tab directly from the list, without needing to switch to it first.
+- Duplicates list: fixed the "already closed" status message not being shown due to a missing translation key.
+
 ## v1.5.6
 
 - Advanced Path Rule: added an allowlist of query parameters (`allowedQueryParams`) that survive the "ignore query" setting, so params like video/page IDs can be kept even while tracking params are dropped.

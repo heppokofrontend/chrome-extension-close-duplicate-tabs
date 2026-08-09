@@ -141,7 +141,7 @@ https://www.example.com/?a=10&b=20#baz
 
 ### 高度なパスルール設定
 
-<img src="./images/advanced-path-rules-ja.png" width="292.5" height="320" />
+<img src="./images/advanced-path-rules-ja.png" width="293" height="320" />
 
 上記の「パス名を無視する／クエリを無視する／ハッシュを無視する」は全サイト共通の設定です。「高度なパスルール設定を利用する」を有効にすると、オリジン（スキーム＋ホスト＋ポート）ごとにこの3つの設定を個別に上書きできます。
 
