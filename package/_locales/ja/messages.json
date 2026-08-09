@@ -189,6 +189,44 @@
       }
     }
   },
+  "duplicates_last_accessed_seconds": {
+    "message": "$SECONDS$秒前",
+    "placeholders": {
+      "SECONDS": {
+        "content": "$1"
+      }
+    }
+  },
+  "duplicates_last_accessed_minutes": {
+    "message": "$MINUTES$分前",
+    "placeholders": {
+      "MINUTES": {
+        "content": "$1"
+      }
+    }
+  },
+  "duplicates_last_accessed_hours": {
+    "message": "$HOURS$時間$MINUTES$分前",
+    "placeholders": {
+      "HOURS": {
+        "content": "$1"
+      },
+      "MINUTES": {
+        "content": "$2"
+      }
+    }
+  },
+  "duplicates_last_accessed_days": {
+    "message": "$DAYS$日$HOURS$時間前",
+    "placeholders": {
+      "DAYS": {
+        "content": "$1"
+      },
+      "HOURS": {
+        "content": "$2"
+      }
+    }
+  },
   "aria_advancedPathRuleOrigin": {
     "message": "オリジン名"
   },

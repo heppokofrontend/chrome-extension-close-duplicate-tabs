@@ -49,7 +49,7 @@ button[aria-disabled='true'] {
 
 table {
   display: grid;
-  grid-template-columns: auto 1fr auto;
+  grid-template-columns: auto 1fr auto auto;
   margin-bottom: 6.75rem;
   overflow-wrap: anywhere;
   padding: 0 2px;
@@ -62,12 +62,6 @@ tbody {
   grid-template-columns: subgrid;
 }
 
-thead {
-  padding: 0 0 0.75rem;
-  margin: 0 0 0.25rem;
-  border-bottom: 1px solid var(--color-label-border);
-}
-
 tr {
   display: grid;
   grid-column: 1 / -1;
@@ -75,22 +69,33 @@ tr {
   line-height: 1rem;
 }
 
-tbody :where(th, td) {
-  padding: 0.75rem 0 0;
-
-  &:nth-child(2) {
-    padding-top: calc(0.75rem + var(--button-padding-block));
-  }
-}
-
 th:first-child {
   word-break: keep-all;
 }
 
-td:last-child {
-  button {
-    padding: var(--button-padding-block);
-    font-size: 0.875rem;
+tbody {
+  tr {
+    padding: 0.75rem 0 0;
+    margin: 0.75rem 0 0;
+    border-top: 1px solid var(--color-label-border);
+  }
+
+  td {
+    &:last-child {
+      button {
+        padding: var(--button-padding-block);
+        font-size: 0.875rem;
+      }
+    }
+
+    &.title,
+    &.last-accessed {
+      padding-top: var(--button-padding-block);
+    }
+
+    &.last-accessed {
+      text-align: right;
+    }
   }
 }
 
