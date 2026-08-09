@@ -25,6 +25,7 @@ const makeTab = (overrides: Partial<SortableTab> = {}): SortableTab => ({
   title: 'A',
   pinned: false,
   windowId: 1,
+  lastAccessed: 0,
   ...overrides,
 });
 
@@ -63,6 +64,26 @@ describe('getSorter', () => {
     ];
 
     expect(tabs.toSorted(sorter).map((tab) => tab.id)).toStrictEqual([3, 2, 1]);
+  });
+
+  it('sorts by lastAccessed ascending (oldest first) when sortType is sortByLastAccessed', () => {
+    const sorter = getSorter('sortByLastAccessed');
+    const tabs = [
+      makeTab({ id: 1, lastAccessed: 300 }),
+      makeTab({ id: 2, lastAccessed: 100 }),
+      makeTab({ id: 3, lastAccessed: 200 }),
+    ];
+
+    expect(tabs.toSorted(sorter).map((tab) => tab.id)).toStrictEqual([2, 3, 1]);
+  });
+
+  it('sortByLastAccessed: returns 1 when a comes after b, and 0 when both tie', () => {
+    const sorter = getSorter('sortByLastAccessed');
+    const a = makeTab({ id: 1, lastAccessed: 200 });
+    const b = makeTab({ id: 2, lastAccessed: 100 });
+
+    expect(sorter(a, b)).toBe(1);
+    expect(sorter(a, a)).toBe(0);
   });
 
   it('falls back to sorting by hostname then title for undefined sortType', () => {
@@ -132,6 +153,25 @@ describe('sortTabs', () => {
       [10, { windowId: 1, index: 5 }],
       [21, { windowId: 2, index: 6 }],
       [20, { windowId: 2, index: 7 }],
+    ]);
+  });
+
+  it('sorts by lastAccessed, treating missing values as 0 (oldest)', async () => {
+    const move = vi.fn();
+    vi.stubGlobal('chrome', { tabs: { move } });
+
+    const tabs = [
+      makeChromeTab({ id: 1, url: 'https://a.com/', title: 'A', lastAccessed: 200 }),
+      makeChromeTab({ id: 2, url: 'https://b.com/', title: 'B' }),
+      makeChromeTab({ id: 3, url: 'https://c.com/', title: 'C', lastAccessed: 100 }),
+    ];
+
+    await sortTabs(tabs, 'sortByLastAccessed');
+
+    expect(move.mock.calls).toStrictEqual([
+      [2, { windowId: 1, index: 3 }],
+      [3, { windowId: 1, index: 4 }],
+      [1, { windowId: 1, index: 5 }],
     ]);
   });
 

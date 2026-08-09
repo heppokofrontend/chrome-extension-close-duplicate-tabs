@@ -8,7 +8,7 @@ export const requestSort = async () => {
   const taskName = 'sort';
   const sortType = await showChoicesModal({
     taskName,
-    commands: ['sortByUrl', 'sortByTitle', 'sortByHostAndTitle', 'cancel'],
+    commands: ['sortByUrl', 'sortByTitle', 'sortByHostAndTitle', 'sortByLastAccessed', 'cancel'],
   });
 
   if (isValidSortType(sortType)) {
