@@ -14,10 +14,41 @@ const escapeHtml = (value: string) =>
       })[char] as string,
   );
 
+const SECOND_MS = 1_000;
+const MINUTE_MS = 60_000;
+const HOUR_MS = 3_600_000;
+const DAY_MS = 86_400_000;
+
+const formatLastAccessed = (lastAccessed: number, now = Date.now()) => {
+  const diffMs = Math.max(0, now - lastAccessed);
+
+  if (diffMs < MINUTE_MS) {
+    return getMessage('duplicates_last_accessed_seconds', String(Math.floor(diffMs / SECOND_MS)));
+  }
+
+  if (diffMs < HOUR_MS) {
+    return getMessage('duplicates_last_accessed_minutes', String(Math.floor(diffMs / MINUTE_MS)));
+  }
+
+  if (diffMs < DAY_MS) {
+    const hours = Math.floor(diffMs / HOUR_MS);
+    const minutes = Math.floor((diffMs % HOUR_MS) / MINUTE_MS);
+
+    return getMessage('duplicates_last_accessed_hours', [String(hours), String(minutes)]);
+  }
+
+  const days = Math.floor(diffMs / DAY_MS);
+  const hours = Math.floor((diffMs % DAY_MS) / HOUR_MS);
+
+  return getMessage('duplicates_last_accessed_days', [String(days), String(hours)]);
+};
+
 export const buildTableRow = (tbody: HTMLTableSectionElement, tab: TabWithIdAndUrl) => {
   const openTabLabel = getMessage('duplicates_open_tab', String(tab.id));
   const closeTabLabel = getMessage('duplicates_close_tab', tab.title ?? String(tab.id));
   const closedMessage = getMessage('duplicates_already_closed');
+  const lastAccessedLabel =
+    tab.lastAccessed === undefined ? '' : formatLastAccessed(tab.lastAccessed);
 
   tbody.insertAdjacentHTML(
     'afterbegin',
@@ -31,6 +62,7 @@ export const buildTableRow = (tbody: HTMLTableSectionElement, tab: TabWithIdAndU
         <div>${escapeHtml(tab.title ?? '')}</div>
         <div role="alert"><span class="status"></span></div>
       </td>
+      <td class="last-accessed">${escapeHtml(lastAccessedLabel)}</td>
       <td class="close">
         <button type="button" aria-label="${tab.id}: ${escapeHtml(closeTabLabel)}">
           <img src="./images/close.svg" alt="" />
