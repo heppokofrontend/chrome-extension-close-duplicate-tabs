@@ -126,6 +126,9 @@
   "dialog_command_sortByHostAndTitle": {
     "message": "By hostname + \npage title"
   },
+  "dialog_command_sortByLastAccessed": {
+    "message": "By last viewed"
+  },
   "dialog_remove": {
     "message": "Will close duplicate tabs. \nAre you sure you want to run this?"
   },

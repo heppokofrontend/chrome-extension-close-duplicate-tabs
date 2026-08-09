@@ -44,9 +44,12 @@ describe('isValidOptionType', () => {
 });
 
 describe('isValidSortType', () => {
-  it.each(['sortByUrl', 'sortByTitle', 'sortByHostAndTitle'])('accepts %s', (value) => {
-    expect(isValidSortType(value)).toBe(true);
-  });
+  it.each(['sortByUrl', 'sortByTitle', 'sortByHostAndTitle', 'sortByLastAccessed'])(
+    'accepts %s',
+    (value) => {
+      expect(isValidSortType(value)).toBe(true);
+    },
+  );
 
   it.each(['', 'sortByUrl ', undefined, null, 1, {}, []])('rejects %j', (value) => {
     expect(isValidSortType(value)).toBe(false);
