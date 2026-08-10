@@ -61,13 +61,28 @@ describe('renderDatalist', () => {
     ]);
   });
 
-  it('puts editingOriginBeforeValue first, so an accidental overwrite is recoverable', async () => {
+  it('keeps editingOriginBeforeValue recoverable when there is no currentTabOrigin', async () => {
     STATE.editingOriginBeforeValue = 'https://old.example';
 
     const renderDatalist = await importRenderDatalist();
     renderDatalist();
 
     expect(getOptionValues()).toStrictEqual(['https://old.example']);
+  });
+
+  it('puts currentTabOrigin first even when editingOriginBeforeValue is set', async () => {
+    STATE.editingOriginBeforeValue = 'https://old.example';
+    STATE.currentTabOrigin = 'https://www.google.com';
+    STATE.saveData.inputHistory['advancedPathRuleOrigin'] = ['https://b.example'];
+
+    const renderDatalist = await importRenderDatalist();
+    renderDatalist();
+
+    expect(getOptionValues()).toStrictEqual([
+      'https://www.google.com',
+      'https://old.example',
+      'https://b.example',
+    ]);
   });
 
   it('dedupes editingOriginBeforeValue against currentTabOrigin and history', async () => {
@@ -82,8 +97,8 @@ describe('renderDatalist', () => {
     renderDatalist();
 
     expect(getOptionValues()).toStrictEqual([
-      'https://a.example',
       'https://www.google.com',
+      'https://a.example',
       'https://b.example',
     ]);
   });

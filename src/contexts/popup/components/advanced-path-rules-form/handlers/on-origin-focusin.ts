@@ -8,6 +8,7 @@ export const onOriginFocusIn = (e: Event) => {
 
   if (e.currentTarget.value) {
     STATE.editingOriginBeforeValue = e.currentTarget.value;
-    renderDatalist();
   }
+
+  renderDatalist();
 };

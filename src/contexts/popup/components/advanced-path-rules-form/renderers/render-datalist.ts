@@ -4,8 +4,9 @@ import { STATE } from '@/contexts/popup/state';
 export const renderDatalist = () => {
   const history = STATE.saveData.inputHistory.advancedPathRuleOrigin ?? [];
   const candidates = [
+    ...(STATE.currentTabOrigin ? [STATE.currentTabOrigin] : []),
     STATE.editingOriginBeforeValue,
-    ...(STATE.currentTabOrigin ? [STATE.currentTabOrigin, ...history] : history),
+    ...history,
   ];
 
   UI.advancedPathRuleDatalist.textContent = '';
