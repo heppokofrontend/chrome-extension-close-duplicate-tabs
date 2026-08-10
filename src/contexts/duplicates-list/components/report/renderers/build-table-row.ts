@@ -1,19 +1,7 @@
 import { formatLastAccessed } from '@/contexts/duplicates-list/components/report/formatter';
+import { escapeHtml } from '@/contexts/duplicates-list/utils';
 import type { TabWithIdAndUrl } from '@/types';
 import { getMessage } from '@/utils';
-
-const escapeHtml = (value: string) =>
-  value.replace(
-    /[&<>"']/g,
-    (char) =>
-      ({
-        '&': '&amp;',
-        '<': '&lt;',
-        '>': '&gt;',
-        '"': '&quot;',
-        "'": '&#39;',
-      })[char] as string,
-  );
 
 export const buildTableRow = (tbody: HTMLTableSectionElement, tab: TabWithIdAndUrl) => {
   const openTabLabel = getMessage('duplicates_open_tab', String(tab.id));
