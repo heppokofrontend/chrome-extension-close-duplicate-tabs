@@ -111,13 +111,16 @@
     "message": " 枚以下のタブは1つにまとめる"
   },
   "dialog_command_sortByUrl": {
-    "message": "URL優先"
+    "message": "URL順"
   },
   "dialog_command_sortByTitle": {
-    "message": "ページ名優先"
+    "message": "ページ名順"
   },
   "dialog_command_sortByHostAndTitle": {
     "message": "ホスト名＋ページ名"
+  },
+  "dialog_command_sortByLastAccessed": {
+    "message": "閲覧した順"
   },
   "dialog_remove": {
     "message": "重複したタブを閉じます。\nよろしいですか？"
