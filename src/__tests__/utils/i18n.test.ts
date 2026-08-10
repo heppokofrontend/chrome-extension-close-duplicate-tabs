@@ -30,4 +30,10 @@ describe('getMessage', () => {
 
     expect(() => getMessage('missing_key')).toThrow('i18n message not found: missing_key');
   });
+
+  it('does not throw on an empty string when options.allowEmpty is true', () => {
+    mockGetMessage(() => '');
+
+    expect(getMessage('optional_key', undefined, { allowEmpty: true })).toBe('');
+  });
 });
