@@ -1,5 +1,14 @@
 # CHANGELOG
 
+## v1.5.8
+
+- Duplicates list: added a "Last Accessed" column showing each tab's last-viewed time as a relative duration (seconds/minutes/hours/days).
+- Added a "By last viewed" sort option to order duplicate tabs by last-accessed time, oldest first.
+- Clarified the Japanese sort labels ("URL順"/"ページ名順") to avoid implying priority ordering.
+- Advanced Path Rule: the Origin field now prioritizes the current tab's origin at the top of the suggestion list.
+- Bumped `minimum_chrome_version` to 121, the minimum version exposing `lastAccessed`.
+- Fixed the "categorize by hostname" dialog crashing on open in Japanese, caused by an intentionally empty ja translation being misread as a missing one.
+
 ## v1.5.7
 
 - Duplicates list: added a button to close a tab directly from the list, without needing to switch to it first.
