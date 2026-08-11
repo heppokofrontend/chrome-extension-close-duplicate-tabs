@@ -670,21 +670,23 @@ dialog button {
   flex-wrap: wrap;
   gap: 10px;
   justify-content: center;
-}
 
-#dialog-buttons button {
-  flex-basis: calc(50% - 5px);
-  white-space: pre-wrap;
-}
+  li {
+    all: unset;
+    display: grid;
+    flex-basis: calc(50% - 5px);
+    white-space: pre-wrap;
+  }
 
-/* for 3 columns buttons */
-#dialog-buttons:has(button:first-child):has(button:last-child:nth-child(3)) {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-}
+  button {
+    padding: 0.4375rem 10px;
+    min-height: 2.5rem;
+    width: 100%;
 
-#dialog-buttons button:not(:first-child):last-child {
-  background: #b3ccca;
+    &[data-command='cancel'] {
+      background: #b3ccca;
+    }
+  }
 }
 
 .textfield-label-in-dialog {

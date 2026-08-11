@@ -23,7 +23,7 @@ const loadModule = async () => {
   document.body.innerHTML = `
     <dialog id="confirm">
       <p id="confirm-text"></p>
-      <p id="dialog-buttons"></p>
+      <ul id="dialog-buttons"></ul>
     </dialog>
   `;
 
@@ -94,18 +94,21 @@ describe('showChoicesModal', () => {
   it('renders one button per command and resolves with the clicked one', async () => {
     const { showChoicesModal } = await loadModule();
 
-    const promise = showChoicesModal({ taskName: 'combine', commands: ['a', 'b', 'c'] });
+    const promise = showChoicesModal({
+      taskName: 'combine',
+      commands: ['sortByUrl', 'sortByTitle', 'sortByHostAndTitle'],
+    });
     const buttons = buttonsIn('#dialog-buttons');
 
     expect(buttons.map((b) => b.textContent)).toStrictEqual([
-      'dialog_command_a',
-      'dialog_command_b',
-      'dialog_command_c',
+      'dialog_command_sortByUrl',
+      'dialog_command_sortByTitle',
+      'dialog_command_sortByHostAndTitle',
     ]);
 
     buttons[1]?.click();
 
-    await expect(promise).resolves.toBe('b');
+    await expect(promise).resolves.toBe('sortByTitle');
   });
 });
 
