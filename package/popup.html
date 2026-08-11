@@ -385,15 +385,16 @@
       </div>
     </main>
 
-    <dialog id="notice" role="dialog" aria-modal="true" closedby="none">
+    <dialog id="notice" role="dialog" aria-modal="true" closedby="any">
       <p id="notice-text"></p>
       <p>
         <button type="button" id="notice-close">OK</button>
       </p>
     </dialog>
 
-    <dialog id="confirm" role="alertdialog" closedby="none">
+    <dialog id="confirm" role="alertdialog" closedby="any">
       <p id="confirm-text"></p>
+      <div id="confirm-controls"></div>
       <ul id="dialog-buttons"></ul>
     </dialog>
   </body>

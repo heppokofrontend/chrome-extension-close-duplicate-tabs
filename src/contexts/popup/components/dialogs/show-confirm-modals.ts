@@ -3,23 +3,74 @@ import { getMessage } from '@/utils';
 
 const confirmModal = document.getElementById('confirm') as HTMLDialogElement;
 const confirmModalText = document.getElementById('confirm-text') as HTMLParagraphElement;
+const formContainer = document.getElementById('confirm-controls') as HTMLDivElement;
 const buttonContainer = document.getElementById('dialog-buttons') as HTMLElement;
 
 confirmModal.ariaLabel = getMessage('dialog_confirm');
 
-const openModal = (taskName: string) => {
-  const textContent = getMessage(`dialog_${taskName}`);
+const useAbortController = (resolver: () => void) => {
+  const controller = new AbortController();
+  const { signal } = controller;
 
-  confirmModalText.textContent = '';
-  confirmModalText.insertAdjacentHTML('afterbegin', textContent.replaceAll('\n', '<br>'));
+  const cleanUp = () => {
+    signal.removeEventListener('abort', resolver);
+    confirmModal.removeEventListener('close', onClose);
+  };
+  const onClose = () => {
+    controller.abort();
+    cleanUp();
+  };
 
-  confirmModal.showModal();
-  confirmModal.focus();
+  confirmModal.addEventListener('close', onClose);
+  signal.addEventListener('abort', resolver);
+
+  return {
+    cleanUp,
+  };
 };
 
-const closeModalWhenDone = <V>(promise: Promise<V>) =>
-  promise.finally(() => {
-    buttonContainer.textContent = '';
+const renderButtonsAndWaitUserAnswer = <T extends Command>(commands: readonly T[]) => {
+  return new Promise<T>((resolve) => {
+    const { cleanUp } = useAbortController(() => {
+      resolve('cancel' as T);
+    });
+
+    commands.forEach((command) => {
+      buttonContainer.appendChild(
+        makeButton(command, () => {
+          cleanUp();
+          resolve(command);
+        }),
+      );
+    });
+  });
+};
+
+const handleClose = () => {
+  confirmModalText.textContent = '';
+  formContainer.textContent = '';
+  buttonContainer.textContent = '';
+};
+
+function openModal(taskName: string): void;
+function openModal(taskName: string, commands?: Command[]): Promise<Command>;
+function openModal(taskName: string, commands?: Command[]) {
+  const textContent = getMessage(`dialog_${taskName}`);
+
+  confirmModal.removeEventListener('close', handleClose);
+  confirmModal.addEventListener('close', handleClose);
+  confirmModalText.insertAdjacentHTML('afterbegin', textContent.replaceAll('\n', '<br>'));
+  confirmModal.showModal();
+
+  if (commands === undefined) {
+    return;
+  }
+
+  return closeModalWhenGetAnswer(renderButtonsAndWaitUserAnswer(commands));
+}
+
+const closeModalWhenGetAnswer = <V>(renderUIPromise: Promise<V>) =>
+  renderUIPromise.finally(() => {
     confirmModal.close();
   });
 
@@ -46,24 +97,12 @@ const makeButton = (command: Command, onClick: () => void) => {
   return listItem;
 };
 
-const renderButtons = <T extends Command>(commands: readonly T[]) =>
-  new Promise<T>((resolve) => {
-    commands.forEach((command) => {
-      buttonContainer.appendChild(
-        makeButton(command, () => {
-          resolve(command);
-        }),
-      );
-    });
-  });
-
 export const showConfirmModal = ({ taskName }: { taskName: string }) => {
   if (STATE.saveData.noConfirm) {
-    return Promise.resolve<'confirm' | 'cancel'>('confirm');
+    return Promise.resolve('confirm');
   }
 
-  openModal(taskName);
-  return closeModalWhenDone(renderButtons(['confirm', 'cancel']));
+  return openModal(taskName, ['confirm', 'cancel']);
 };
 
 export const showChoicesModal = ({
@@ -72,10 +111,7 @@ export const showChoicesModal = ({
 }: {
   taskName: string;
   commands: Command[];
-}) => {
-  openModal(taskName);
-  return closeModalWhenDone(renderButtons(commands));
-};
+}) => openModal(taskName, commands);
 
 export const showRangeModal = ({
   taskName,
@@ -88,7 +124,7 @@ export const showRangeModal = ({
 }) => {
   openModal(taskName);
 
-  return closeModalWhenDone(
+  return closeModalWhenGetAnswer(
     new Promise<number>((resolve) => {
       const field = document.createElement('label');
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
@@ -119,16 +155,22 @@ export const showRangeModal = ({
           });
         }
       });
-      buttonContainer.appendChild(field);
+      formContainer.appendChild(field);
+
+      const { cleanUp } = useAbortController(() => {
+        resolve(Number.NaN);
+      });
 
       buttonContainer.appendChild(
         makeButton('apply', () => {
+          cleanUp();
           resolve(value);
         }),
       );
 
       buttonContainer.appendChild(
         makeButton('cancel', () => {
+          cleanUp();
           resolve(Number.NaN);
         }),
       );

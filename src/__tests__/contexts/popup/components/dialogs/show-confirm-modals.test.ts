@@ -23,13 +23,16 @@ const loadModule = async () => {
   document.body.innerHTML = `
     <dialog id="confirm">
       <p id="confirm-text"></p>
+      <div id="confirm-controls"></div>
       <ul id="dialog-buttons"></ul>
     </dialog>
   `;
 
   const dialog = document.getElementById('confirm') as HTMLDialogElement;
   const showModal = vi.fn();
-  const close = vi.fn();
+  const close = vi.fn(() => {
+    dialog.dispatchEvent(new Event('close'));
+  });
 
   dialog.showModal = showModal;
   dialog.close = close;
@@ -118,7 +121,7 @@ describe('showRangeModal', () => {
   });
 
   const changeInput = (valueAsNumber: number) => {
-    const input = requireElement('#dialog-buttons input') as HTMLInputElement;
+    const input = requireElement('#confirm-controls input') as HTMLInputElement;
 
     input.valueAsNumber = valueAsNumber;
     input.dispatchEvent(new Event('change'));
