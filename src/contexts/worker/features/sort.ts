@@ -1,7 +1,12 @@
 import { getTabs } from '@/contexts/worker/utils';
 import type { SaveDataType } from '@/utils';
 
-export const sortTypes = ['sortByUrl', 'sortByTitle', 'sortByHostAndTitle'] as const;
+export const sortTypes = [
+  'sortByUrl',
+  'sortByTitle',
+  'sortByHostAndTitle',
+  'sortByLastAccessed',
+] as const;
 export type SortType = (typeof sortTypes)[number];
 
 export type SortableTab = {
@@ -11,6 +16,7 @@ export type SortableTab = {
   title: string;
   pinned: boolean;
   windowId: number;
+  lastAccessed: number;
 };
 
 const compareByUrl = (a: SortableTab, b: SortableTab) => {
@@ -57,6 +63,18 @@ const compareByHostAndTitle = (a: SortableTab, b: SortableTab) => {
   return 0;
 };
 
+const compareByLastAccessed = (a: SortableTab, b: SortableTab) => {
+  if (a.lastAccessed < b.lastAccessed) {
+    return -1;
+  }
+
+  if (a.lastAccessed > b.lastAccessed) {
+    return 1;
+  }
+
+  return 0;
+};
+
 export const getSorter = (sortType: SortType | undefined) => {
   if (sortType === 'sortByUrl') {
     return compareByUrl;
@@ -64,6 +82,10 @@ export const getSorter = (sortType: SortType | undefined) => {
 
   if (sortType === 'sortByTitle') {
     return compareByTitle;
+  }
+
+  if (sortType === 'sortByLastAccessed') {
+    return compareByLastAccessed;
   }
 
   return compareByHostAndTitle;
@@ -74,7 +96,7 @@ export const sortTabs = async (tabs: chrome.tabs.Tab[], sortType?: SortType) => 
   const sorter = getSorter(sortType);
 
   tabs
-    .map(({ id, pinned, url, title, windowId }) => {
+    .map(({ id, pinned, url, title, windowId, lastAccessed }) => {
       const hostname = url && new URL(url).hostname;
       return {
         id,
@@ -83,6 +105,7 @@ export const sortTabs = async (tabs: chrome.tabs.Tab[], sortType?: SortType) => 
         title,
         pinned,
         windowId,
+        lastAccessed: lastAccessed ?? 0,
       };
     })
     .filter((tab): tab is SortableTab => {

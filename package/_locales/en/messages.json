@@ -126,6 +126,9 @@
   "dialog_command_sortByHostAndTitle": {
     "message": "By hostname + \npage title"
   },
+  "dialog_command_sortByLastAccessed": {
+    "message": "By last viewed"
+  },
   "dialog_remove": {
     "message": "Will close duplicate tabs. \nAre you sure you want to run this?"
   },
@@ -193,6 +196,44 @@
     "placeholders": {
       "TAB_TITLE": {
         "content": "$1"
+      }
+    }
+  },
+  "duplicates_last_accessed_seconds": {
+    "message": "$SECONDS$ seconds ago",
+    "placeholders": {
+      "SECONDS": {
+        "content": "$1"
+      }
+    }
+  },
+  "duplicates_last_accessed_minutes": {
+    "message": "$MINUTES$ minutes ago",
+    "placeholders": {
+      "MINUTES": {
+        "content": "$1"
+      }
+    }
+  },
+  "duplicates_last_accessed_hours": {
+    "message": "$HOURS$ hours $MINUTES$ minutes ago",
+    "placeholders": {
+      "HOURS": {
+        "content": "$1"
+      },
+      "MINUTES": {
+        "content": "$2"
+      }
+    }
+  },
+  "duplicates_last_accessed_days": {
+    "message": "$DAYS$ days $HOURS$ hours ago",
+    "placeholders": {
+      "DAYS": {
+        "content": "$1"
+      },
+      "HOURS": {
+        "content": "$2"
       }
     }
   },

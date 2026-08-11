@@ -1,23 +1,14 @@
+import { formatLastAccessed } from '@/contexts/duplicates-list/components/report/formatter';
+import { escapeHtml } from '@/contexts/duplicates-list/utils';
 import type { TabWithIdAndUrl } from '@/types';
 import { getMessage } from '@/utils';
-
-const escapeHtml = (value: string) =>
-  value.replace(
-    /[&<>"']/g,
-    (char) =>
-      ({
-        '&': '&amp;',
-        '<': '&lt;',
-        '>': '&gt;',
-        '"': '&quot;',
-        "'": '&#39;',
-      })[char] as string,
-  );
 
 export const buildTableRow = (tbody: HTMLTableSectionElement, tab: TabWithIdAndUrl) => {
   const openTabLabel = getMessage('duplicates_open_tab', String(tab.id));
   const closeTabLabel = getMessage('duplicates_close_tab', tab.title ?? String(tab.id));
   const closedMessage = getMessage('duplicates_already_closed');
+  const lastAccessedLabel =
+    tab.lastAccessed === undefined ? '' : formatLastAccessed(tab.lastAccessed);
 
   tbody.insertAdjacentHTML(
     'afterbegin',
@@ -31,6 +22,7 @@ export const buildTableRow = (tbody: HTMLTableSectionElement, tab: TabWithIdAndU
         <div>${escapeHtml(tab.title ?? '')}</div>
         <div role="alert"><span class="status"></span></div>
       </td>
+      <td class="last-accessed">${escapeHtml(lastAccessedLabel)}</td>
       <td class="close">
         <button type="button" aria-label="${tab.id}: ${escapeHtml(closeTabLabel)}">
           <img src="./images/close.svg" alt="" />

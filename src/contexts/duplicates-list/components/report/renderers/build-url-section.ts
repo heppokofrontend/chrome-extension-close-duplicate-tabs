@@ -7,6 +7,7 @@ const THEAD_SRC = `
     <tr>
       <th scope="col">Tab ID</th>
       <th scope="col">Title</th>
+      <th scope="col">Last Accessed</th>
       <th scope="col">Close</th>
     </tr>
   </thead>

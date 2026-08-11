@@ -37,14 +37,29 @@ const stubChrome = () => {
       cb();
     },
   );
-  const getMessage = vi.fn(
-    (key: string, substitutions?: string | string[]) =>
-      ({
-        duplicates_open_tab: 'open tab',
-        duplicates_close_tab: 'close tab',
-        duplicates_already_closed: 'already closed',
-      })[key] ?? `${key}:${String(substitutions)}`,
-  );
+  const getMessage = vi.fn((key: string, substitutions?: string | string[]) => {
+    const subs = substitutions === undefined ? [] : ([] as string[]).concat(substitutions);
+    const [first = '', second = ''] = subs;
+
+    switch (key) {
+      case 'duplicates_open_tab':
+        return 'open tab';
+      case 'duplicates_close_tab':
+        return 'close tab';
+      case 'duplicates_already_closed':
+        return 'already closed';
+      case 'duplicates_last_accessed_seconds':
+        return `${first} seconds ago`;
+      case 'duplicates_last_accessed_minutes':
+        return `${first} minutes ago`;
+      case 'duplicates_last_accessed_hours':
+        return `${first} hours ${second} minutes ago`;
+      case 'duplicates_last_accessed_days':
+        return `${first} days ${second} hours ago`;
+      default:
+        return `${key}:${String(substitutions)}`;
+    }
+  });
 
   vi.stubGlobal('chrome', {
     runtime,
@@ -65,12 +80,14 @@ const render = (tab: TabWithIdAndUrl) => {
     openButton: tbody.querySelector<HTMLButtonElement>('th button'),
     closeButton: tbody.querySelector<HTMLButtonElement>('td.close button'),
     status: tbody.querySelector<HTMLElement>('.status'),
+    lastAccessed: tbody.querySelector<HTMLElement>('.last-accessed'),
   };
 };
 
 describe('buildTableRow', () => {
   afterEach(() => {
     vi.unstubAllGlobals();
+    vi.useRealTimers();
   });
 
   it('renders the tab id, title, and both buttons', () => {
@@ -121,5 +138,49 @@ describe('buildTableRow', () => {
     expect(closeButton?.getAttribute('aria-disabled')).toBe('true');
     expect(status?.textContent).toBe('already closed');
     expect(mocks.tabsRemove).toHaveBeenCalledWith(7, expect.any(Function));
+  });
+
+  it('renders the last-accessed time in minutes when under an hour', () => {
+    stubChrome();
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2026-08-09T12:05:00Z'));
+
+    const { lastAccessed } = render(
+      makeTab({ lastAccessed: new Date('2026-08-09T12:00:00Z').getTime() }),
+    );
+
+    expect(lastAccessed?.textContent).toBe('5 minutes ago');
+  });
+
+  it('renders the last-accessed time combining hours and minutes when under a day', () => {
+    stubChrome();
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2026-08-09T14:15:00Z'));
+
+    const { lastAccessed } = render(
+      makeTab({ lastAccessed: new Date('2026-08-09T12:00:00Z').getTime() }),
+    );
+
+    expect(lastAccessed?.textContent).toBe('2 hours 15 minutes ago');
+  });
+
+  it('renders the last-accessed time combining days and hours when a day or more has passed', () => {
+    stubChrome();
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2026-08-12T15:00:00Z'));
+
+    const { lastAccessed } = render(
+      makeTab({ lastAccessed: new Date('2026-08-09T12:00:00Z').getTime() }),
+    );
+
+    expect(lastAccessed?.textContent).toBe('3 days 3 hours ago');
+  });
+
+  it('renders an empty last-accessed cell when the tab has no lastAccessed value', () => {
+    stubChrome();
+
+    const { lastAccessed } = render(makeTab());
+
+    expect(lastAccessed?.textContent).toBe('');
   });
 });
