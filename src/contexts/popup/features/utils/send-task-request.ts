@@ -6,33 +6,47 @@ export type SendTaskRequestParams =
   | {
       taskName: 'remove';
       shouldShowDuplicatePage?: boolean;
-      sortType?: never;
     }
   | {
       taskName: 'sort';
-      shouldShowDuplicatePage?: never;
       sortType?: SortType;
     }
   | {
       taskName: 'reload' | 'combine' | 'divide' | 'categorize';
-      shouldShowDuplicatePage?: never;
-      sortType?: never;
     };
 
-export const sendTaskRequest = ({
-  taskName,
-  shouldShowDuplicatePage = false,
-  sortType,
-}: SendTaskRequestParams) => {
+export const sendTaskRequest = (params: SendTaskRequestParams) => {
   const port = chrome.runtime.connect();
-  const message: TaskRequest = {
-    taskName,
-    options: {
-      saveData: STATE.saveData,
-      shouldShowDuplicatePage,
-      sort: sortType,
-    },
-  };
+
+  const message: TaskRequest = (() => {
+    switch (params.taskName) {
+      case 'remove':
+        return {
+          taskName: params.taskName,
+          options: {
+            saveData: STATE.saveData,
+            shouldShowDuplicatePage: params.shouldShowDuplicatePage ?? false,
+          },
+        };
+
+      case 'sort':
+        return {
+          taskName: params.taskName,
+          options: {
+            saveData: STATE.saveData,
+            sort: params.sortType,
+          },
+        };
+
+      default:
+        return {
+          taskName: params.taskName,
+          options: {
+            saveData: STATE.saveData,
+          },
+        };
+    }
+  })();
 
   port.postMessage(message);
 };

@@ -15,42 +15,31 @@ registerUpdateBadgeListeners();
 
 chrome.runtime.onConnect.addListener((port) => {
   const onmessageListener = (request: TaskRequest) => {
-    const callTaskFunctions = async ({ taskName, options }: TaskRequest) => {
-      const saveData = options?.saveData ?? {};
+    switch (request.taskName) {
+      case 'remove':
+        void runRemove(request.options);
+        return;
 
-      switch (taskName) {
-        case 'remove':
-          await runRemove({
-            saveData,
-            shouldShowDuplicatePage: options?.shouldShowDuplicatePage,
-          });
-          return;
+      case 'reload':
+        void runReload(request.options);
+        return;
 
-        case 'reload':
-          await runReload({ saveData });
-          return;
+      case 'categorize':
+        void runCategorize(request.options);
+        return;
 
-        case 'categorize':
-          await runCategorize({ saveData });
-          return;
+      case 'divide':
+        void runDivide(request.options);
+        return;
 
-        case 'divide':
-          await runDivide({ saveData });
-          return;
+      case 'combine':
+        void runCombine(request.options);
+        return;
 
-        case 'combine':
-          await runCombine({ saveData });
-          return;
-
-        case 'sort':
-          await runSort({ saveData, sort: options?.sort });
-          return;
-      }
-    };
-
-    void callTaskFunctions(request);
-
-    return true;
+      case 'sort':
+        void runSort(request.options);
+        return;
+    }
   };
 
   port.onMessage.addListener(onmessageListener);
