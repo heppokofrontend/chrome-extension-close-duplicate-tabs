@@ -14,13 +14,24 @@ export type TabWithIdAndUrl = chrome.tabs.Tab & {
 };
 
 /** popup から service worker へ postMessage される、タスク実行リクエストの形状 */
-export type TaskRequest = {
-  taskName?: TaskName | undefined;
-  options?:
-    | {
-        saveData?: SaveDataType | undefined;
-        sort?: SortType | undefined;
-        shouldShowDuplicatePage?: boolean | undefined;
-      }
-    | undefined;
-};
+export type TaskRequest =
+  | {
+      taskName: 'remove';
+      options: {
+        saveData: SaveDataType;
+        shouldShowDuplicatePage: boolean;
+      };
+    }
+  | {
+      taskName: 'sort';
+      options: {
+        saveData: SaveDataType;
+        sort: SortType | undefined;
+      };
+    }
+  | {
+      taskName: 'reload' | 'combine' | 'divide' | 'categorize';
+      options: {
+        saveData: SaveDataType;
+      };
+    };

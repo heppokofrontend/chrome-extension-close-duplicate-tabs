@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## v1.5.9
+
+- Dialogs (confirm/choices/range) can now be dismissed with Escape or a backdrop click, resolving as canceled instead of leaving the action hanging indefinitely.
+- Fixed Escape closing the extension popup itself instead of just the open dialog.
+
 ## v1.5.8
 
 - Duplicates list: added a "Last Accessed" column showing each tab's last-viewed time as a relative duration (seconds/minutes/hours/days).

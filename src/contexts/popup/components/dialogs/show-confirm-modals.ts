@@ -3,55 +3,106 @@ import { getMessage } from '@/utils';
 
 const confirmModal = document.getElementById('confirm') as HTMLDialogElement;
 const confirmModalText = document.getElementById('confirm-text') as HTMLParagraphElement;
-const buttonContainer = document.getElementById('dialog-buttons') as HTMLParagraphElement;
-const templateButton = document.createElement('button');
+const formContainer = document.getElementById('confirm-controls') as HTMLDivElement;
+const buttonContainer = document.getElementById('dialog-buttons') as HTMLElement;
 
-templateButton.type = 'button';
 confirmModal.ariaLabel = getMessage('dialog_confirm');
 
-const openModal = (taskName: string) => {
-  const textContent = getMessage(`dialog_${taskName}`);
+const useAbortController = (resolver: () => void) => {
+  const controller = new AbortController();
+  const { signal } = controller;
 
-  confirmModalText.textContent = '';
-  confirmModalText.insertAdjacentHTML('afterbegin', textContent.replaceAll('\n', '<br>'));
+  const cleanUp = () => {
+    signal.removeEventListener('abort', resolver);
+    confirmModal.removeEventListener('close', onClose);
+  };
+  const onClose = () => {
+    controller.abort();
+    cleanUp();
+  };
 
-  confirmModal.showModal();
-  confirmModal.focus();
+  confirmModal.addEventListener('close', onClose);
+  signal.addEventListener('abort', resolver);
+
+  return {
+    cleanUp,
+  };
 };
 
-const closeModalWhenDone = <V>(promise: Promise<V>) =>
-  promise.finally(() => {
-    buttonContainer.textContent = '';
-    confirmModal.close();
-  });
+const renderButtonsAndWaitUserAnswer = <T extends Command>(commands: readonly T[]) => {
+  return new Promise<T>((resolve) => {
+    const { cleanUp } = useAbortController(() => {
+      resolve('cancel' as T);
+    });
 
-const makeButton = (messageKey: string, onClick: () => void) => {
-  const button = templateButton.cloneNode();
-
-  button.textContent = getMessage(messageKey);
-  button.addEventListener('click', onClick);
-
-  return button;
-};
-
-const renderButtons = <T extends string>(commands: readonly T[]) =>
-  new Promise<T>((resolve) => {
     commands.forEach((command) => {
       buttonContainer.appendChild(
-        makeButton(`dialog_command_${command}`, () => {
+        makeButton(command, () => {
+          cleanUp();
           resolve(command);
         }),
       );
     });
   });
+};
+
+const handleClose = () => {
+  confirmModalText.textContent = '';
+  formContainer.textContent = '';
+  buttonContainer.textContent = '';
+};
+
+function openModal(taskName: string): void;
+function openModal(taskName: string, commands?: Command[]): Promise<Command>;
+function openModal(taskName: string, commands?: Command[]) {
+  const textContent = getMessage(`dialog_${taskName}`);
+
+  confirmModal.removeEventListener('close', handleClose);
+  confirmModal.addEventListener('close', handleClose);
+  confirmModalText.insertAdjacentHTML('afterbegin', textContent.replaceAll('\n', '<br>'));
+  confirmModal.showModal();
+
+  if (commands === undefined) {
+    return;
+  }
+
+  return closeModalWhenGetAnswer(renderButtonsAndWaitUserAnswer(commands));
+}
+
+const closeModalWhenGetAnswer = <V>(renderUIPromise: Promise<V>) =>
+  renderUIPromise.finally(() => {
+    confirmModal.close();
+  });
+
+type Command =
+  | 'confirm'
+  | 'cancel'
+  | 'apply'
+  | 'sortByUrl'
+  | 'sortByTitle'
+  | 'sortByHostAndTitle'
+  | 'sortByLastAccessed'
+  | 'show_duplicate';
+
+const makeButton = (command: Command, onClick: () => void) => {
+  const listItem = document.createElement('li');
+  const button = document.createElement('button');
+
+  button.type = 'button';
+  button.textContent = getMessage(`dialog_command_${command}`);
+  button.dataset['command'] = command;
+  button.addEventListener('click', onClick);
+
+  listItem.appendChild(button);
+  return listItem;
+};
 
 export const showConfirmModal = ({ taskName }: { taskName: string }) => {
   if (STATE.saveData.noConfirm) {
-    return Promise.resolve<'confirm' | 'cancel'>('confirm');
+    return Promise.resolve('confirm');
   }
 
-  openModal(taskName);
-  return closeModalWhenDone(renderButtons(['confirm', 'cancel'] as const));
+  return openModal(taskName, ['confirm', 'cancel']);
 };
 
 export const showChoicesModal = ({
@@ -59,11 +110,8 @@ export const showChoicesModal = ({
   commands,
 }: {
   taskName: string;
-  commands: string[];
-}) => {
-  openModal(taskName);
-  return closeModalWhenDone(renderButtons(commands));
-};
+  commands: Command[];
+}) => openModal(taskName, commands);
 
 export const showRangeModal = ({
   taskName,
@@ -76,7 +124,7 @@ export const showRangeModal = ({
 }) => {
   openModal(taskName);
 
-  return closeModalWhenDone(
+  return closeModalWhenGetAnswer(
     new Promise<number>((resolve) => {
       const field = document.createElement('label');
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
@@ -107,16 +155,22 @@ export const showRangeModal = ({
           });
         }
       });
-      buttonContainer.appendChild(field);
+      formContainer.appendChild(field);
+
+      const { cleanUp } = useAbortController(() => {
+        resolve(Number.NaN);
+      });
 
       buttonContainer.appendChild(
-        makeButton('dialog_command_apply', () => {
+        makeButton('apply', () => {
+          cleanUp();
           resolve(value);
         }),
       );
 
       buttonContainer.appendChild(
-        makeButton('dialog_command_cancel', () => {
+        makeButton('cancel', () => {
+          cleanUp();
           resolve(Number.NaN);
         }),
       );

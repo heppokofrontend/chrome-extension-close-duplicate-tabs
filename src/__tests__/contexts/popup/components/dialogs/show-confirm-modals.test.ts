@@ -23,13 +23,16 @@ const loadModule = async () => {
   document.body.innerHTML = `
     <dialog id="confirm">
       <p id="confirm-text"></p>
-      <p id="dialog-buttons"></p>
+      <div id="confirm-controls"></div>
+      <ul id="dialog-buttons"></ul>
     </dialog>
   `;
 
   const dialog = document.getElementById('confirm') as HTMLDialogElement;
   const showModal = vi.fn();
-  const close = vi.fn();
+  const close = vi.fn(() => {
+    dialog.dispatchEvent(new Event('close'));
+  });
 
   dialog.showModal = showModal;
   dialog.close = close;
@@ -94,18 +97,21 @@ describe('showChoicesModal', () => {
   it('renders one button per command and resolves with the clicked one', async () => {
     const { showChoicesModal } = await loadModule();
 
-    const promise = showChoicesModal({ taskName: 'combine', commands: ['a', 'b', 'c'] });
+    const promise = showChoicesModal({
+      taskName: 'combine',
+      commands: ['sortByUrl', 'sortByTitle', 'sortByHostAndTitle'],
+    });
     const buttons = buttonsIn('#dialog-buttons');
 
     expect(buttons.map((b) => b.textContent)).toStrictEqual([
-      'dialog_command_a',
-      'dialog_command_b',
-      'dialog_command_c',
+      'dialog_command_sortByUrl',
+      'dialog_command_sortByTitle',
+      'dialog_command_sortByHostAndTitle',
     ]);
 
     buttons[1]?.click();
 
-    await expect(promise).resolves.toBe('b');
+    await expect(promise).resolves.toBe('sortByTitle');
   });
 });
 
@@ -115,7 +121,7 @@ describe('showRangeModal', () => {
   });
 
   const changeInput = (valueAsNumber: number) => {
-    const input = requireElement('#dialog-buttons input') as HTMLInputElement;
+    const input = requireElement('#confirm-controls input') as HTMLInputElement;
 
     input.valueAsNumber = valueAsNumber;
     input.dispatchEvent(new Event('change'));
