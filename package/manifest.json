@@ -17,7 +17,7 @@
   "background": {
     "service_worker": "worker.js"
   },
-  "permissions": ["tabs", "windows", "storage"],
+  "permissions": ["tabs", "windows", "storage", "tabGroups"],
   "icons": {
     "128": "images/icon.png"
   },
