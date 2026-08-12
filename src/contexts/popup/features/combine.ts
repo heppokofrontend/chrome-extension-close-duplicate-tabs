@@ -4,7 +4,7 @@ import { STATE } from '@/contexts/popup/state';
 import { sendTaskRequest } from './utils/send-task-request';
 
 /** 全ウィンドウを１つにまとめる */
-export const requestCombine = async () => {
+export const sendCombineRequest = async () => {
   const taskName = 'combine';
   const shouldWarnAboutAllWindows = !STATE.saveData.includeAllWindow;
 

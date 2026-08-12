@@ -1,25 +1,25 @@
 import type { TaskName } from '@/types';
 
-import { requestCategorize } from './categorize';
-import { requestCombine } from './combine';
-import { requestDivide } from './divide';
-import { requestReload } from './reload';
-import { requestRemove } from './remove';
-import { requestSort } from './sort';
+import { sendCategorizeRequest } from './categorize';
+import { sendCombineRequest } from './combine';
+import { sendDivideRequest } from './divide';
+import { sendReloadRequest } from './reload';
+import { sendRemoveRequest } from './remove';
+import { sendSortRequest } from './sort';
 
-export const runTask = (taskName: TaskName) => {
+export const sendRequest = (taskName: TaskName) => {
   switch (taskName) {
     case 'remove':
-      return requestRemove();
+      return sendRemoveRequest();
     case 'reload':
-      return requestReload();
+      return sendReloadRequest();
     case 'combine':
-      return requestCombine();
+      return sendCombineRequest();
     case 'divide':
-      return requestDivide();
+      return sendDivideRequest();
     case 'categorize':
-      return requestCategorize();
+      return sendCategorizeRequest();
     case 'sort':
-      return requestSort();
+      return sendSortRequest();
   }
 };

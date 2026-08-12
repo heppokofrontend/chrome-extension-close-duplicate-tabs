@@ -1,4 +1,4 @@
-import { runTask } from '@/contexts/popup/features';
+import { sendRequest } from '@/contexts/popup/features';
 import { isValidTaskName } from '@/contexts/popup/utils/type-guard';
 
 export const onRunButtonClick = (e: Event) => {
@@ -9,6 +9,6 @@ export const onRunButtonClick = (e: Event) => {
   const taskName = e.currentTarget.dataset['taskName'];
 
   if (isValidTaskName(taskName)) {
-    void runTask(taskName);
+    void sendRequest(taskName);
   }
 };
