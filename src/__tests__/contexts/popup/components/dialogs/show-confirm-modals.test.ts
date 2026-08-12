@@ -37,7 +37,7 @@ const loadModule = async () => {
   dialog.showModal = showModal;
   dialog.close = close;
 
-  const module = await import('@/contexts/popup/components/dialogs/show-confirm-modals');
+  const module = await import('@/contexts/popup/components/dialogs/confirms');
   const { STATE } = await import('@/contexts/popup/state');
 
   return { ...module, STATE, dialogMocks: { showModal, close } };
