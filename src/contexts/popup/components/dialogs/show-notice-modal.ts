@@ -5,12 +5,6 @@ const noticeModalText = document.getElementById('notice-text') as HTMLParagraphE
 const okButton = document.getElementById('notice-close') as HTMLButtonElement;
 
 noticeModal.ariaLabel = getMessage('dialog_notice');
-noticeModal.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape') {
-    e.preventDefault();
-    noticeModal.close();
-  }
-});
 
 okButton.addEventListener('click', () => {
   noticeModal.close();

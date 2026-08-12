@@ -1,4 +1,4 @@
-import { useAbortController } from '@/contexts/popup/components/dialogs/utils';
+import { useAbortController } from '@/contexts/popup/components/dialogs/confirms/utils';
 import { POPUP_UI } from '@/contexts/popup/constants';
 
 import { buildButton } from './build-button';

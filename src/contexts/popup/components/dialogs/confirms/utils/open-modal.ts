@@ -1,4 +1,4 @@
-import { buildButton } from '@/contexts/popup/components/dialogs/renderers';
+import { buildButton } from '@/contexts/popup/components/dialogs/confirms/renderers';
 import type { Command } from '@/contexts/popup/components/dialogs/types';
 import { POPUP_UI } from '@/contexts/popup/constants';
 import { getMessage } from '@/utils';

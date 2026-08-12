@@ -1,7 +1,7 @@
+import type { Command } from '@/contexts/popup/components/dialogs/types';
 import { STATE } from '@/contexts/popup/state';
 
 import { renderRangeModalContent } from './renderers';
-import type { Command } from './types';
 import { closeModalWhenGetAnswer, openModal } from './utils';
 
 export const showConfirmModal = ({ taskName }: { taskName: string }) => {
