@@ -24,7 +24,7 @@ const loadModule = async () => {
     <dialog id="confirm">
       <p id="confirm-text"></p>
       <div id="confirm-controls"></div>
-      <ul id="dialog-buttons"></ul>
+      <ul id="confirm-buttons"></ul>
     </dialog>
   `;
 
@@ -77,7 +77,7 @@ describe('showConfirmModal', () => {
 
     expect(dialogMocks.showModal).toHaveBeenCalled();
 
-    const confirmButton = buttonsIn('#dialog-buttons').find(
+    const confirmButton = buttonsIn('#confirm-buttons').find(
       (b) => b.textContent === 'dialog_command_confirm',
     );
 
@@ -85,7 +85,7 @@ describe('showConfirmModal', () => {
 
     await expect(promise).resolves.toBe('confirm');
     expect(dialogMocks.close).toHaveBeenCalled();
-    expect(requireElement('#dialog-buttons').textContent).toBe('');
+    expect(requireElement('#confirm-buttons').textContent).toBe('');
   });
 });
 
@@ -101,7 +101,7 @@ describe('showChoicesModal', () => {
       taskName: 'combine',
       commands: ['sortByUrl', 'sortByTitle', 'sortByHostAndTitle'],
     });
-    const buttons = buttonsIn('#dialog-buttons');
+    const buttons = buttonsIn('#confirm-buttons');
 
     expect(buttons.map((b) => b.textContent)).toStrictEqual([
       'dialog_command_sortByUrl',
@@ -130,7 +130,7 @@ describe('showRangeModal', () => {
   };
 
   const clickCommand = (command: 'apply' | 'cancel') => {
-    buttonsIn('#dialog-buttons')
+    buttonsIn('#confirm-buttons')
       .find((b) => b.textContent === `dialog_command_${command}`)
       ?.click();
   };

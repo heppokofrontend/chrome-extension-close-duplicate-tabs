@@ -27,7 +27,7 @@ const loadModule = async () => {
     </dialog>
     <dialog id="confirm">
       <p id="confirm-text"></p>
-      <ul id="dialog-buttons"></ul>
+      <ul id="confirm-buttons"></ul>
     </dialog>
   `;
 
