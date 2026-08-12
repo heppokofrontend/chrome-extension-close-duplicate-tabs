@@ -126,11 +126,12 @@ export const showRangeModal = ({
 
   return closeModalWhenGetAnswer(
     new Promise<number>((resolve) => {
+      const wrapper = document.createElement('p');
       const field = document.createElement('label');
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       let value = STATE.saveData.minCategorizeNumber ?? min;
 
-      field.className = 'textfield-label-in-dialog';
+      wrapper.className = 'textfield-for-range';
       field.insertAdjacentHTML(
         'afterbegin',
         `
@@ -155,7 +156,8 @@ export const showRangeModal = ({
           });
         }
       });
-      formContainer.appendChild(field);
+      wrapper.append(field);
+      formContainer.append(wrapper);
 
       const { cleanUp } = useAbortController(() => {
         resolve(Number.NaN);

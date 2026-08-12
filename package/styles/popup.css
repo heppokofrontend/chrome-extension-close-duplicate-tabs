@@ -655,14 +655,53 @@ dialog::backdrop {
   background: rgb(0 0 0 / 40%);
 }
 
-dialog #confirm-text,
-dialog #notice-text {
-  margin-bottom: 24px;
+dialog #confirm-text {
+  margin-bottom: 0.75rem;
+}
+
+dialog #notice-text,
+dialog:has(#confirm-controls:empty) #confirm-text {
+  margin-bottom: 1.5rem;
 }
 
 dialog button {
   min-width: 80px;
   padding: 10px;
+}
+
+#confirm-controls {
+  margin: 0 0 2rem;
+  text-align: left;
+
+  &:empty {
+    display: none;
+  }
+
+  > *:not(:first-child) {
+    margin: 0.5rem 0 0;
+  }
+
+  .textfield-for-range {
+    label {
+      display: block;
+      line-height: calc(1.3125rem + 11px);
+    }
+
+    input[type='number'] {
+      width: 3.5em;
+      padding: 4px 4px 3px;
+      font-size: 1.125rem;
+      line-height: 1;
+      text-align: right;
+      border: 2px solid var(--color-label-border);
+      border-radius: 4px;
+      vertical-align: bottom;
+
+      &::-webkit-inner-spin-button {
+        margin-left: 6px;
+      }
+    }
+  }
 }
 
 #dialog-buttons {
@@ -687,19 +726,4 @@ dialog button {
       background: #b3ccca;
     }
   }
-}
-
-.textfield-label-in-dialog {
-  display: block;
-  margin: 0 0 1.5em;
-  text-align: left;
-}
-
-.textfield-label-in-dialog input[type='number'] {
-  width: 3.5em;
-  padding: 4px;
-  font-size: 1.125rem;
-  text-align: right;
-  letter-spacing: 8px;
-  border-radius: 4px;
 }
