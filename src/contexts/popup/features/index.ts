@@ -17,9 +17,9 @@ export const runTask = (taskName: TaskName) => {
       return requestCombine();
     case 'divide':
       return requestDivide();
-    case 'sort':
-      return requestSort();
     case 'categorize':
       return requestCategorize();
+    case 'sort':
+      return requestSort();
   }
 };
