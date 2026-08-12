@@ -1,6 +1,6 @@
 import { buildButton } from '@/contexts/popup/components/dialogs/renderers';
 import type { Command } from '@/contexts/popup/components/dialogs/types';
-import { UI } from '@/contexts/popup/constants';
+import { POPUP_UI } from '@/contexts/popup/constants';
 import { getMessage } from '@/utils';
 
 import { closeModalWhenGetAnswer } from './close-modal-when-get-answer';
@@ -23,15 +23,15 @@ const renderButtonsAndWaitUserAnswer = <T extends Command>(commands: readonly T[
       const li = document.createElement('li');
 
       li.appendChild(button);
-      UI.confirmDialogButtonContainer.appendChild(li);
+      POPUP_UI.confirmDialogButtonContainer.appendChild(li);
     });
   });
 };
 
 const handleClose = () => {
-  UI.confirmModalText.textContent = '';
-  UI.confirmFormContainer.textContent = '';
-  UI.confirmDialogButtonContainer.textContent = '';
+  POPUP_UI.confirmModalText.textContent = '';
+  POPUP_UI.confirmFormContainer.textContent = '';
+  POPUP_UI.confirmDialogButtonContainer.textContent = '';
 };
 
 export function openModal(taskName: string): void;
@@ -39,10 +39,10 @@ export function openModal(taskName: string, commands?: Command[]): Promise<Comma
 export function openModal(taskName: string, commands?: Command[]) {
   const textContent = getMessage(`dialog_${taskName}`);
 
-  UI.confirmModal.removeEventListener('close', handleClose);
-  UI.confirmModal.addEventListener('close', handleClose);
-  UI.confirmModalText.insertAdjacentHTML('afterbegin', textContent.replaceAll('\n', '<br>'));
-  UI.confirmModal.showModal();
+  POPUP_UI.confirmModal.removeEventListener('close', handleClose);
+  POPUP_UI.confirmModal.addEventListener('close', handleClose);
+  POPUP_UI.confirmModalText.insertAdjacentHTML('afterbegin', textContent.replaceAll('\n', '<br>'));
+  POPUP_UI.confirmModal.showModal();
 
   if (commands === undefined) {
     return;

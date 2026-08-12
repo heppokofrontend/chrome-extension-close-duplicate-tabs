@@ -1,4 +1,4 @@
-import { UI } from '@/contexts/popup/constants';
+import { POPUP_UI } from '@/contexts/popup/constants';
 import { STATE } from '@/contexts/popup/state';
 
 export const renderDatalist = () => {
@@ -9,11 +9,11 @@ export const renderDatalist = () => {
     ...history,
   ];
 
-  UI.advancedPathRuleDatalist.textContent = '';
+  POPUP_UI.advancedPathRuleDatalist.textContent = '';
 
   for (const value of [...new Set(candidates)].filter(Boolean)) {
     const option = document.createElement('option');
     option.value = value;
-    UI.advancedPathRuleDatalist.append(option);
+    POPUP_UI.advancedPathRuleDatalist.append(option);
   }
 };

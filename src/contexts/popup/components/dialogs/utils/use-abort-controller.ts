@@ -1,4 +1,4 @@
-import { UI } from '@/contexts/popup/constants';
+import { POPUP_UI } from '@/contexts/popup/constants';
 
 export const useAbortController = (resolver: () => void) => {
   const controller = new AbortController();
@@ -6,14 +6,14 @@ export const useAbortController = (resolver: () => void) => {
 
   const cleanUp = () => {
     signal.removeEventListener('abort', resolver);
-    UI.confirmModal.removeEventListener('close', onClose);
+    POPUP_UI.confirmModal.removeEventListener('close', onClose);
   };
   const onClose = () => {
     controller.abort();
     cleanUp();
   };
 
-  UI.confirmModal.addEventListener('close', onClose);
+  POPUP_UI.confirmModal.addEventListener('close', onClose);
   signal.addEventListener('abort', resolver);
 
   return {

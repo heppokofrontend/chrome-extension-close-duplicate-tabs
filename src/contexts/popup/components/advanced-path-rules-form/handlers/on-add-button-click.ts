@@ -1,6 +1,6 @@
 import { buildRuleSection } from '@/contexts/popup/components/advanced-path-rules-form/renderers/build-rule-section';
 import { patchRule } from '@/contexts/popup/components/advanced-path-rules-form/utils';
-import { UI } from '@/contexts/popup/constants';
+import { POPUP_UI } from '@/contexts/popup/constants';
 import { STATE } from '@/contexts/popup/state';
 import { type PathRule } from '@/utils';
 
@@ -16,9 +16,9 @@ export const onAddButtonClick = () => {
 
   const fragment = buildRuleSection(key, initialRule);
 
-  UI.advancedPathRulesContainer.append(fragment);
+  POPUP_UI.advancedPathRulesContainer.append(fragment);
 
-  const addedSection = UI.advancedPathRulesContainer.lastElementChild;
+  const addedSection = POPUP_UI.advancedPathRulesContainer.lastElementChild;
 
   if (typeof addedSection?.scrollIntoView === 'function') {
     addedSection.scrollIntoView({ block: 'center', behavior: 'smooth' });

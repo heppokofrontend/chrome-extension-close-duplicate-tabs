@@ -1,5 +1,5 @@
 import { useAbortController } from '@/contexts/popup/components/dialogs/utils';
-import { UI } from '@/contexts/popup/constants';
+import { POPUP_UI } from '@/contexts/popup/constants';
 
 import { buildButton } from './build-button';
 import { buildRangeField } from './build-range-field';
@@ -14,7 +14,7 @@ interface Props {
 export const renderRangeModalContent = ({ taskName, min, max, resolve }: Props) => {
   const { element, getValue } = buildRangeField({ taskName, min, max });
 
-  UI.confirmFormContainer.append(element);
+  POPUP_UI.confirmFormContainer.append(element);
 
   const { cleanUp } = useAbortController(() => {
     resolve(Number.NaN);
@@ -40,6 +40,6 @@ export const renderRangeModalContent = ({ taskName, min, max, resolve }: Props) 
     const li = document.createElement('li');
 
     li.appendChild(button);
-    UI.confirmDialogButtonContainer.appendChild(li);
+    POPUP_UI.confirmDialogButtonContainer.appendChild(li);
   });
 };
