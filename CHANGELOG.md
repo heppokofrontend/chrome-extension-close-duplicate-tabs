@@ -1,5 +1,12 @@
 # CHANGELOG
 
+## v1.6.0
+
+- Added a "Gather specific tabs into a window" command: pick an open origin (including special pages like `about:blank`/`data:`, grouped by protocol) from the current window or all windows, then gather its tabs into the current window, the current window as a new tab group, or a new window.
+- The first time you open the popup after this update, a one-time notice introduces the new gather command.
+- New installs now start with two example Advanced Path Rules preconfigured, for `google.com` (ignoring query except `q`) and `youtube.com` (ignoring query except `v`).
+- Swapped the order of the Combine and Sort buttons in the popup.
+
 ## v1.5.9
 
 - Dialogs (confirm/choices/range) can now be dismissed with a backdrop click, resolving as canceled instead of leaving the action hanging indefinitely.
