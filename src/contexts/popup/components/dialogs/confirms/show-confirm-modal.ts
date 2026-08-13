@@ -2,7 +2,11 @@ import { STATE } from '@/contexts/popup/state';
 
 import { openModal } from './utils';
 
-export const showConfirmModal = ({ taskName }: { taskName: string }) => {
+interface Params {
+  taskName: string;
+}
+
+export const showConfirmModal = ({ taskName }: Params) => {
   if (STATE.saveData.noConfirm) {
     return Promise.resolve('confirm');
   }

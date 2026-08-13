@@ -1,15 +1,13 @@
 import { renderRangeModalContent } from './renderers';
 import { closeModalWhenGetAnswer, openModal } from './utils';
 
-export const showRangeModal = ({
-  taskName,
-  min,
-  max,
-}: {
+interface Params {
   taskName: string;
   min: number;
   max: number;
-}) => {
+}
+
+export const showRangeModal = ({ taskName, min, max }: Params) => {
   openModal(taskName);
 
   return closeModalWhenGetAnswer(
