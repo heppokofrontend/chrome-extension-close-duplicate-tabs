@@ -5,16 +5,20 @@ const noticeModalText = document.getElementById('notice-text') as HTMLParagraphE
 const okButton = document.getElementById('notice-close') as HTMLButtonElement;
 
 noticeModal.ariaLabel = getMessage('dialog_notice');
+noticeModal.addEventListener('close', () => {
+  noticeModalText.textContent = '';
+});
 
 okButton.addEventListener('click', () => {
   noticeModal.close();
 });
 
-export const showNoticeModal = (taskName: string) => {
-  const textContent = getMessage(`dialog_${taskName}`);
+interface Params {
+  message: string;
+}
 
-  noticeModalText.textContent = '';
-  noticeModalText.insertAdjacentHTML('afterbegin', textContent.replaceAll('\n', '<br>'));
+export const showNoticeModal = ({ message }: Params) => {
+  noticeModalText.insertAdjacentHTML('afterbegin', message.replaceAll('\n', '<br>'));
   noticeModal.showModal();
   noticeModal.focus();
 };
