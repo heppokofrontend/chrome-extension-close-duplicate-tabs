@@ -1,6 +1,11 @@
-import type { TASK_NAMES } from '@/constants';
+import type { GATHER_DESTINATIONS, TASK_NAMES } from '@/constants';
 import type { SortType } from '@/contexts/worker/features/sort';
 import type { SaveDataType } from '@/utils';
+
+/** 「特定のホスト名のタブを集める」の対象範囲（このウィンドウのみ／全ウィンドウ）。 */
+export type GatherScope = 'currentWindow' | 'allWindows';
+
+export type GatherDestination = (typeof GATHER_DESTINATIONS)[number];
 
 export type TabWithId = chrome.tabs.Tab & {
   id: number;
@@ -27,6 +32,15 @@ export type TaskRequest =
       options: {
         saveData: SaveDataType;
         sort: SortType | undefined;
+      };
+    }
+  | {
+      taskName: 'gather';
+      options: {
+        saveData: SaveDataType;
+        origin: string;
+        gatherScope: GatherScope;
+        gatherDestination: GatherDestination;
       };
     }
   | {
