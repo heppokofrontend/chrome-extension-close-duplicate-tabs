@@ -7,4 +7,6 @@ export type ActionCommand =
   | 'sortByTitle'
   | 'sortByHostAndTitle'
   | 'sortByLastAccessed'
-  | 'show_duplicate';
+  | 'show_duplicate'
+  | 'gatherFromCurrentWindow'
+  | 'gatherFromAllWindows';

@@ -4,6 +4,7 @@ import {
   runCategorize,
   runCombine,
   runDivide,
+  runGather,
   runReload,
   runRemove,
   runSort,
@@ -30,6 +31,15 @@ chrome.runtime.onConnect.addListener((port) => {
 
       case 'divide':
         void runDivide(request.options);
+        return;
+
+      case 'gather':
+        void runGather({
+          saveData: request.options.saveData,
+          origin: request.options.origin,
+          scope: request.options.gatherScope,
+          destination: request.options.gatherDestination,
+        });
         return;
 
       case 'combine':
