@@ -1,4 +1,5 @@
-export type Command =
+/** 確認モーダルのボタンがユーザーに選ばれたときに返す、UI上のアクション種別。 */
+export type ActionCommand =
   | 'confirm'
   | 'cancel'
   | 'apply'

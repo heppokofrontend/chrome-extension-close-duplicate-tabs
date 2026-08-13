@@ -1,12 +1,12 @@
 import { buildButton } from '@/contexts/popup/components/dialogs/confirms/renderers';
-import type { Command } from '@/contexts/popup/components/dialogs/types';
+import type { ActionCommand } from '@/contexts/popup/components/dialogs/types';
 import { POPUP_UI } from '@/contexts/popup/constants';
 import { getMessage } from '@/utils';
 
 import { closeModalWhenGetAnswer } from './close-modal-when-get-answer';
 import { useAbortController } from './use-abort-controller';
 
-const renderButtonsAndWaitUserAnswer = <T extends Command>(commands: readonly T[]) => {
+const renderButtonsAndWaitUserAnswer = <T extends ActionCommand>(commands: readonly T[]) => {
   return new Promise<T>((resolve) => {
     const { cleanUp } = useAbortController(() => {
       resolve('cancel' as T);
@@ -35,8 +35,8 @@ const handleClose = () => {
 };
 
 export function openModal(taskName: string): void;
-export function openModal(taskName: string, commands?: Command[]): Promise<Command>;
-export function openModal(taskName: string, commands?: Command[]) {
+export function openModal(taskName: string, commands?: ActionCommand[]): Promise<ActionCommand>;
+export function openModal(taskName: string, commands?: ActionCommand[]) {
   const textContent = getMessage(`dialog_${taskName}`);
 
   POPUP_UI.confirmModal.removeEventListener('close', handleClose);

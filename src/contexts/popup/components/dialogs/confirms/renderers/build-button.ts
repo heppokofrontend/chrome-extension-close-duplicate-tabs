@@ -1,8 +1,8 @@
-import type { Command } from '@/contexts/popup/components/dialogs/types';
+import type { ActionCommand } from '@/contexts/popup/components/dialogs/types';
 import { getMessage } from '@/utils';
 
 interface Props {
-  command: Command;
+  command: ActionCommand;
   onClick: () => void;
 }
 

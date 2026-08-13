@@ -1,4 +1,4 @@
-import type { Command } from '@/contexts/popup/components/dialogs/types';
+import type { ActionCommand } from '@/contexts/popup/components/dialogs/types';
 
 import { openModal } from './utils';
 
@@ -7,5 +7,5 @@ export const showChoicesModal = ({
   commands,
 }: {
   taskName: string;
-  commands: Command[];
+  commands: ActionCommand[];
 }) => openModal(taskName, commands);
