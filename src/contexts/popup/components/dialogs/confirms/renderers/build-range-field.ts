@@ -17,7 +17,7 @@ export const buildRangeField = ({ taskName, min, max }: Props) => {
   field.insertAdjacentHTML(
     'afterbegin',
     `
-    ${getMessage(`dialog_command_${taskName}_range1`, undefined, { allowEmpty: true })}
+    ${getMessage(`dialog_command_${taskName}_range1`, { allowEmpty: true })}
     <input type="number" min="${String(min)}" max="${String(max)}" value="${String(value)}" />
     ${getMessage(`dialog_command_${taskName}_range2`)}
   `,
