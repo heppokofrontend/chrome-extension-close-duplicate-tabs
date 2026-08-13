@@ -72,7 +72,7 @@
     "message": "全ウィンドウを\n１つにまとめる"
   },
   "btn_gather": {
-    "message": "特定のホスト名の\nタブを集める"
+    "message": "特定のタブを\nウィンドウに集める"
   },
   "hint_pathname": {
     "message": "推奨：ハッシュとクエリの無視の有効化"
@@ -165,7 +165,7 @@
     "message": "「すべてのウィンドウを対象にする」が\n無効化されています。\n\n本当に実行しますか？"
   },
   "dialog_gather": {
-    "message": "特定のホスト名のタブを集めます。"
+    "message": "特定のタブをウィンドウに集めます。"
   },
   "dialog_gather_empty": {
     "message": "集められるタブがありませんでした。"

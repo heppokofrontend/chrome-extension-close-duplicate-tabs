@@ -79,7 +79,7 @@
     "message": "Combine all windows \ninto one window"
   },
   "btn_gather": {
-    "message": "Gather tabs by \nhostname"
+    "message": "Gather specific tabs \ninto a window"
   },
   "hint_pathname": {
     "message": "Recommended: enable [ Ignore hash ] and [ Ignore query ]."
@@ -172,7 +172,7 @@
     "message": "\"Include all windows\" is disabled.\nAre you sure you want to run it?"
   },
   "dialog_gather": {
-    "message": "Gather tabs of a specific hostname."
+    "message": "Gather specific tabs into a window."
   },
   "dialog_gather_empty": {
     "message": "There were no tabs to gather."

@@ -5,7 +5,7 @@ html {
 }
 
 body {
-  width: 23.75rem;
+  width: 24.5rem;
 }
 
 details {
@@ -37,7 +37,7 @@ details {
 }
 
 .main {
-  --control-margin-block: 0.5rem;
+  --control-margin-block: 0.625rem;
   --label-gap-inline: 0.5rem;
 }
 
@@ -62,10 +62,10 @@ details {
  * Options
  * -------------------------------------------------------------------------- */
 .options {
-  margin: calc(var(--control-margin-block) * 2) 0;
+  margin: calc(var(--control-margin-block) * 1.75) 0 calc(var(--control-margin-block) * 2);
 
-  > p:not(:first-child) {
-    margin-top: var(--control-margin-block);
+  > p:not(:last-child) {
+    margin-bottom: var(--control-margin-block);
   }
 
   :where(p:has([type='checkbox']), p:has(select)) {
@@ -246,7 +246,7 @@ details {
     padding-left: 4px;
     font-size: 0.625rem;
     color: var(--color-hint);
-    margin: calc(var(--control-margin-block) / 2) 0 calc(var(--control-margin-block) * 1.5);
+    margin: calc(var(--control-margin-block) / 2 * -1) 0 calc(var(--control-margin-block) * 1.25);
   }
 
   .hint + .hint {
@@ -557,7 +557,7 @@ details.danger {
 
   .buttons button .img {
     padding-top: 2px;
-    margin-right: 4px;
+    margin-right: 0.5rem;
 
     img {
       width: 2rem;
@@ -585,12 +585,16 @@ details.danger {
     justify-content: flex-start;
   }
 
-  .options .img {
-    background-color: #900;
+  .options {
+    margin-top: 1.25rem;
 
-    img {
-      width: 1rem;
-      height: auto;
+    .img {
+      background-color: #900;
+
+      img {
+        width: 1rem;
+        height: auto;
+      }
     }
   }
 
@@ -609,7 +613,6 @@ details.danger {
   visibility: hidden;
   opacity: 0;
   height: 0;
-  margin: 0 0 calc(var(--control-margin-block) * -1);
   overflow: hidden;
 }
 
@@ -632,7 +635,7 @@ details.danger {
     visibility: unset;
     opacity: unset;
     height: unset;
-    margin: unset;
+    margin: 0 0 calc(var(--control-margin-block) * 1.625);
     overflow: unset;
   }
 }
