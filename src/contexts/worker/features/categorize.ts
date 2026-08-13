@@ -1,6 +1,6 @@
-import { getCurrentTab, getTabs } from '@/contexts/worker/utils';
+import { getCurrentTab } from '@/contexts/worker/utils';
 import type { TabWithId, TabWithIdAndUrl } from '@/types';
-import type { SaveDataType } from '@/utils';
+import { getTabs, type SaveDataType } from '@/utils';
 
 type CurrentPinnedTab = TabWithId & {
   url: string;

@@ -2,9 +2,8 @@ import {
   getCurrentTab,
   getDuplicatedTabIdsToClose,
   getGroupedTabsByNormalizedUrl,
-  getTabs,
 } from '@/contexts/worker/utils';
-import type { SaveDataType } from '@/utils';
+import { getTabs, type SaveDataType } from '@/utils';
 
 let duplicatedListWindow: chrome.windows.Window | null = null;
 
