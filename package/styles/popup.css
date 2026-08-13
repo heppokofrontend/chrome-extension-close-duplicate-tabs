@@ -83,10 +83,10 @@ details {
     .img {
       display: grid;
       place-items: center;
-      min-width: 24px;
-      max-width: 24px;
-      min-height: 24px;
-      max-height: 24px;
+      min-width: 1.5rem;
+      max-width: 1.5rem;
+      min-height: 1.5rem;
+      max-height: 1.5rem;
       font-weight: bold;
       color: #fff;
       background: #008080;
@@ -175,17 +175,22 @@ details {
     .img {
       position: relative;
       margin-right: var(--label-gap-inline);
+
+      img {
+        width: 1rem;
+        height: 1rem;
+      }
     }
 
     label:has([data-value]):not(:has([data-value='none'])) .img::before {
-      width: 16px;
-      height: 16px;
+      width: 1rem;
+      height: 1rem;
       position: absolute;
-      font-size: 10px;
+      font-size: 0.625rem;
       display: grid;
       place-items: center;
-      right: -3px;
-      bottom: -3px;
+      right: -0.1875rem;
+      bottom: -0.1875rem;
       background: #c62828;
       color: #fff;
       border-radius: 4px;
@@ -343,7 +348,8 @@ details {
     .advanced-path-rules__content {
       padding: 0.5rem 0.75rem 0;
       border-top: 1px solid var(--color-label-border);
-      max-height: calc(100vh - 16rem);
+      /* popupの高さに限界があるため固定値 */
+      max-height: calc(100vh - 256px);
       overflow-y: auto;
     }
 
@@ -544,7 +550,7 @@ details.danger {
   }
 
   .buttons button {
-    padding: 10px 16px 10px 8px;
+    padding: 10px 1rem 10px 0.5rem;
     color: #111;
     background-color: #ff7c7c;
   }
@@ -552,6 +558,15 @@ details.danger {
   .buttons button .img {
     padding-top: 2px;
     margin-right: 4px;
+
+    img {
+      width: 2rem;
+      height: auto;
+
+      &[width='28'] {
+        width: 1.75rem;
+      }
+    }
   }
 
   .buttons button [data-i18n] {
@@ -572,6 +587,11 @@ details.danger {
 
   .options .img {
     background-color: #900;
+
+    img {
+      width: 1rem;
+      height: auto;
+    }
   }
 
   .options label input:checked + .label::after {
