@@ -688,6 +688,11 @@ dialog {
     margin-bottom: 1.5rem;
   }
 
+  #notice-title {
+    font-size: 100%;
+    margin-bottom: 1rem;
+  }
+
   &:has(.select-in-dialog:first-child) #confirm-text {
     margin-bottom: 0.75rem;
   }

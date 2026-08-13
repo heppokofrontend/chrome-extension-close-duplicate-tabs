@@ -396,7 +396,14 @@
       </div>
     </main>
 
-    <dialog id="notice" role="dialog" aria-modal="true" closedby="any">
+    <dialog
+      id="notice"
+      role="dialog"
+      aria-labelledby="notice-title"
+      aria-modal="true"
+      closedby="any"
+    >
+      <h2 id="notice-title">loading...</h2>
       <p id="notice-text"></p>
       <p>
         <button type="button" id="notice-close">OK</button>

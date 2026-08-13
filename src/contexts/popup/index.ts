@@ -2,13 +2,14 @@ import {
   renderAdvancedPathRules,
   addAdvancedPathRuleListeners,
 } from '@/contexts/popup/components/advanced-path-rules-form';
+import { showNoticeModal } from '@/contexts/popup/components/dialogs';
 import { initDetailsElements } from '@/contexts/popup/components/disclosures';
 import { initOptionCheckboxes } from '@/contexts/popup/components/option-checkbox';
 import { initOptionSelects } from '@/contexts/popup/components/option-select';
 import { initRunButtons } from '@/contexts/popup/components/run-buttons';
-import { STATE } from '@/contexts/popup/state';
+import { STATE, save } from '@/contexts/popup/state';
 import { setSelectUpdateBadgeModeValue } from '@/contexts/popup/utils/set-select-value';
-import { getLocalStorage } from '@/utils';
+import { getLocalStorage, getMessage } from '@/utils';
 
 const loadSaveData = async () => {
   return Promise.all([
@@ -56,10 +57,28 @@ const addListener = () => {
   initDetailsElements();
 };
 
+/** 新機能のお知らせを、ユーザーごとに初回表示のみ行う。 */
+const announceNewFeature = () => {
+  const key = 'v1.6.0';
+
+  if (STATE.saveData.shown[key]) {
+    return;
+  }
+
+  showNoticeModal({
+    title: getMessage('announcement_new_feature_title'),
+    message: getMessage('announcement_new_feature_message'),
+    cleanup: () => {
+      save({ shown: { [key]: new Date().toISOString() } });
+    },
+  });
+};
+
 const init = async () => {
   await Promise.all([loadSaveData(), loadCurrentTabOrigin()]);
   renderAdvancedPathRules();
   addListener();
+  announceNewFeature();
 
   // CSS Transitionの有効化
   setTimeout(() => {

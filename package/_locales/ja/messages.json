@@ -5,6 +5,12 @@
   "extDesc": {
     "message": "現在のウィンドウでURLが重複しているタブを閉じます。"
   },
+  "announcement_new_feature_title": {
+    "message": "アップデート情報 1.6.0 🎉"
+  },
+  "announcement_new_feature_message": {
+    "message": "新機能\n「特定のタブをウィンドウに集める」\nを追加しました。"
+  },
   "checkbox_hash": {
     "message": "ハッシュを無視する"
   },

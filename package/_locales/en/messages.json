@@ -5,6 +5,12 @@
   "extDesc": {
     "message": "Close duplicate tab on current window."
   },
+  "announcement_new_feature_title": {
+    "message": "Update 1.6.0 🎉"
+  },
+  "announcement_new_feature_message": {
+    "message": "New feature added: \n\"Gather specific tabs into a window\"."
+  },
   "checkbox_hash": {
     "message": "Ignore hash"
   },
