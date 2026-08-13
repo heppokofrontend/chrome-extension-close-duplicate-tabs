@@ -9,7 +9,14 @@ const getTargetTabs = (tabs: chrome.tabs.Tab[], origin: string) =>
     }
 
     try {
-      return new URL(tab.url).origin === origin;
+      const url = new URL(tab.url);
+
+      if (url.origin === origin) {
+        return true;
+      }
+
+      // about:blank などは origin = about:* として送られてくる
+      return `${url.protocol}*` === origin;
     } catch {
       return false;
     }

@@ -49,9 +49,11 @@ const getOrigins = async (scope: GatherScope) => {
     }
 
     try {
-      const { origin } = new URL(url);
+      const { origin, protocol } = new URL(url);
 
-      if (origin) {
+      if (origin === 'null') {
+        origins.add(`${protocol}*`);
+      } else if (origin) {
         origins.add(origin);
       }
     } catch {
