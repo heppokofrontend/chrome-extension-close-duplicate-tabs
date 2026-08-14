@@ -167,6 +167,7 @@ beforeEach(() => {
   vi.resetModules();
   save.mockClear();
   getState().saveData = structuredClone(defaultSaveData);
+  getState().saveData.advancedPathRules = {};
   getState().currentTabOrigin = null;
   getState().editingOriginBeforeValue = '';
   document.body.innerHTML = FIXTURE_HTML;

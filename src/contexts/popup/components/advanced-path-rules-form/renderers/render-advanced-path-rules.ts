@@ -1,4 +1,4 @@
-import { UI } from '@/contexts/popup/constants';
+import { POPUP_UI } from '@/contexts/popup/constants';
 import { STATE } from '@/contexts/popup/state';
 
 import { buildRuleSection } from './build-rule-section';
@@ -8,7 +8,7 @@ import { renderDatalist } from './render-datalist';
 export const renderAdvancedPathRules = () => {
   for (const [key, rule] of Object.entries(STATE.saveData.advancedPathRules)) {
     const fragment = buildRuleSection(key, rule);
-    UI.advancedPathRulesContainer.append(fragment);
+    POPUP_UI.advancedPathRulesContainer.append(fragment);
   }
 
   renderDatalist();

@@ -1,4 +1,4 @@
-import { UI } from '@/contexts/duplicates-list/constants';
+import { LIST_UI } from '@/contexts/duplicates-list/constants';
 import { getSessionStorage } from '@/utils';
 
 import { buildUrlSection } from './build-url-section';
@@ -13,5 +13,5 @@ export const renderDuplicates = async () => {
     fragment.appendChild(section);
   }
 
-  UI.report.appendChild(fragment);
+  LIST_UI.report.appendChild(fragment);
 };

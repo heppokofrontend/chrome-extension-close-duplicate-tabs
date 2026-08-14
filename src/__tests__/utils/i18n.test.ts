@@ -36,4 +36,12 @@ describe('getMessage', () => {
 
     expect(getMessage('optional_key', undefined, { allowEmpty: true })).toBe('');
   });
+
+  it('accepts options as the second argument when substitutions are omitted', () => {
+    const get = vi.fn().mockReturnValue('');
+    mockGetMessage(get);
+
+    expect(getMessage('optional_key', { allowEmpty: true })).toBe('');
+    expect(get).toHaveBeenCalledWith('optional_key', undefined);
+  });
 });

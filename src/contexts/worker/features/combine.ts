@@ -1,6 +1,6 @@
-import { getCurrentTab, getTabs } from '@/contexts/worker/utils';
+import { getCurrentTab } from '@/contexts/worker/utils';
 import type { TabWithId } from '@/types';
-import type { SaveDataType } from '@/utils';
+import { getTabs, type SaveDataType } from '@/utils';
 
 const combineTabs = async (tabs: chrome.tabs.Tab[]) => {
   const { id: currentTabId, windowId } = await getCurrentTab();

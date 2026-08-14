@@ -2,14 +2,14 @@ import { describe, expect, it } from 'vitest';
 
 import duplicatesListHtml from '@package/duplicates-list.html?raw';
 
-describe('duplicates-list constants.ts UI', () => {
-  it('every UI selector matches at least one element in the real duplicates-list.html', async () => {
+describe('duplicates-list constants.ts LIST_UI', () => {
+  it('every LIST_UI selector matches at least one element in the real duplicates-list.html', async () => {
     const body = /<body>([\s\S]*)<\/body>/.exec(duplicatesListHtml)?.[1] ?? '';
     document.body.innerHTML = body;
 
-    const { UI } = await import('@/contexts/duplicates-list/constants');
+    const { LIST_UI } = await import('@/contexts/duplicates-list/constants');
 
-    expect(UI.focusCurrentWindowButton).not.toBeNull();
-    expect(UI.report).not.toBeNull();
+    expect(LIST_UI.focusCurrentWindowButton).not.toBeNull();
+    expect(LIST_UI.report).not.toBeNull();
   });
 });

@@ -11,7 +11,7 @@ import {
   onRuleCheckboxChange,
 } from '@/contexts/popup/components/advanced-path-rules-form/handlers';
 import { headingTextFor } from '@/contexts/popup/components/advanced-path-rules-form/utils';
-import { UI } from '@/contexts/popup/constants';
+import { POPUP_UI } from '@/contexts/popup/constants';
 import { STATE } from '@/contexts/popup/state';
 import { getMessage, type PathRule } from '@/utils';
 
@@ -42,7 +42,7 @@ type RuleTemplate = {
 };
 
 const getTemplate = (): RuleTemplate => {
-  const fragment = UI.advancedPathRuleTemplate.content.cloneNode(true);
+  const fragment = POPUP_UI.advancedPathRuleTemplate.content.cloneNode(true);
 
   if (fragment instanceof DocumentFragment) {
     const section = fragment.querySelector('.advanced-path-rule');

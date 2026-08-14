@@ -5,6 +5,12 @@
   "extDesc": {
     "message": "Close duplicate tab on current window."
   },
+  "announcement_new_feature_title": {
+    "message": "Update 1.6.0 🎉"
+  },
+  "announcement_new_feature_message": {
+    "message": "New feature added: \n\"Gather specific tabs into a window\"."
+  },
   "checkbox_hash": {
     "message": "Ignore hash"
   },
@@ -78,6 +84,9 @@
   "btn_combine": {
     "message": "Combine all windows \ninto one window"
   },
+  "btn_gather": {
+    "message": "Gather specific tabs \ninto a window"
+  },
   "hint_pathname": {
     "message": "Recommended: enable [ Ignore hash ] and [ Ignore query ]."
   },
@@ -117,6 +126,27 @@
   "dialog_command_categorize_range2": {
     "message": " are included in one window."
   },
+  "dialog_command_gather_select_origin": {
+    "message": "Target"
+  },
+  "dialog_command_gather_select_destination": {
+    "message": "Gather method"
+  },
+  "dialog_command_gatherFromCurrentWindow": {
+    "message": "Gather from \nthe current window"
+  },
+  "dialog_command_gatherFromAllWindows": {
+    "message": "Gather from \nall windows"
+  },
+  "dialog_command_currentWindow": {
+    "message": "Gather to the current window"
+  },
+  "dialog_command_currentWindowGroup": {
+    "message": "Gather to the current window as a tab group"
+  },
+  "dialog_command_newWindow": {
+    "message": "Gather to a new window"
+  },
   "dialog_command_sortByUrl": {
     "message": "By URL"
   },
@@ -146,6 +176,15 @@
   },
   "dialog_combine_all": {
     "message": "\"Include all windows\" is disabled.\nAre you sure you want to run it?"
+  },
+  "dialog_gather": {
+    "message": "Gather specific tabs into a window."
+  },
+  "dialog_gather_empty": {
+    "message": "There were no tabs to gather."
+  },
+  "dialog_gather_all": {
+    "message": "\"Include all windows\" is disabled.\nPlease choose a target."
   },
   "dialog_divide": {
     "message": "Will divide all tabs. \nAre you sure you want to run this?"

@@ -12,7 +12,7 @@ vi.mock('@/utils', async () => {
 });
 
 /**
- * show-confirm-modals はモジュールレベルで document.getElementById と getMessage を呼ぶため、
+ * show-range-modal はモジュールレベルで document.getElementById と getMessage を呼ぶため、
  * DOM とスタブを整えてからモジュールを読み直す。
  */
 const loadModule = async () => {
@@ -24,7 +24,7 @@ const loadModule = async () => {
     <dialog id="confirm">
       <p id="confirm-text"></p>
       <div id="confirm-controls"></div>
-      <ul id="dialog-buttons"></ul>
+      <ul id="confirm-buttons"></ul>
     </dialog>
   `;
 
@@ -37,10 +37,9 @@ const loadModule = async () => {
   dialog.showModal = showModal;
   dialog.close = close;
 
-  const module = await import('@/contexts/popup/components/dialogs/show-confirm-modals');
-  const { STATE } = await import('@/contexts/popup/state');
+  const module = await import('@/contexts/popup/components/dialogs/confirms');
 
-  return { ...module, STATE, dialogMocks: { showModal, close } };
+  return { ...module, dialogMocks: { showModal, close } };
 };
 
 const requireElement = (selector: string) => {
@@ -55,65 +54,6 @@ const requireElement = (selector: string) => {
 
 const buttonsIn = (selector: string) =>
   Array.from(requireElement(selector).querySelectorAll<HTMLButtonElement>('button'));
-
-describe('showConfirmModal', () => {
-  afterEach(() => {
-    vi.clearAllMocks();
-  });
-
-  it('resolves with confirm without opening the modal when noConfirm is on', async () => {
-    const { showConfirmModal, STATE, dialogMocks } = await loadModule();
-
-    STATE.saveData = { ...STATE.saveData, noConfirm: true };
-
-    await expect(showConfirmModal({ taskName: 'remove' })).resolves.toBe('confirm');
-    expect(dialogMocks.showModal).not.toHaveBeenCalled();
-  });
-
-  it('opens the modal and resolves with the clicked command', async () => {
-    const { showConfirmModal, dialogMocks } = await loadModule();
-
-    const promise = showConfirmModal({ taskName: 'remove' });
-
-    expect(dialogMocks.showModal).toHaveBeenCalled();
-
-    const confirmButton = buttonsIn('#dialog-buttons').find(
-      (b) => b.textContent === 'dialog_command_confirm',
-    );
-
-    confirmButton?.click();
-
-    await expect(promise).resolves.toBe('confirm');
-    expect(dialogMocks.close).toHaveBeenCalled();
-    expect(requireElement('#dialog-buttons').textContent).toBe('');
-  });
-});
-
-describe('showChoicesModal', () => {
-  afterEach(() => {
-    vi.clearAllMocks();
-  });
-
-  it('renders one button per command and resolves with the clicked one', async () => {
-    const { showChoicesModal } = await loadModule();
-
-    const promise = showChoicesModal({
-      taskName: 'combine',
-      commands: ['sortByUrl', 'sortByTitle', 'sortByHostAndTitle'],
-    });
-    const buttons = buttonsIn('#dialog-buttons');
-
-    expect(buttons.map((b) => b.textContent)).toStrictEqual([
-      'dialog_command_sortByUrl',
-      'dialog_command_sortByTitle',
-      'dialog_command_sortByHostAndTitle',
-    ]);
-
-    buttons[1]?.click();
-
-    await expect(promise).resolves.toBe('sortByTitle');
-  });
-});
 
 describe('showRangeModal', () => {
   afterEach(() => {
@@ -130,7 +70,7 @@ describe('showRangeModal', () => {
   };
 
   const clickCommand = (command: 'apply' | 'cancel') => {
-    buttonsIn('#dialog-buttons')
+    buttonsIn('#confirm-buttons')
       .find((b) => b.textContent === `dialog_command_${command}`)
       ?.click();
   };

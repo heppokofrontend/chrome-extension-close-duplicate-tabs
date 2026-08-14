@@ -2,7 +2,7 @@
 const $ = <T extends Element>(selector: string) => document.querySelector<T>(selector)!;
 const $$ = <T extends Element>(selector: string) => document.querySelectorAll<T>(selector);
 
-export const UI = {
+export const POPUP_UI = {
   runButtons: $$<HTMLButtonElement>('button[data-task-name]'),
   optionCheckboxes: $$<HTMLInputElement>('input[type="checkbox"][data-option-type]'),
   optionSelects: $$<HTMLSelectElement>('select[data-option-type]'),
@@ -11,4 +11,10 @@ export const UI = {
   advancedPathRuleTemplate: $<HTMLTemplateElement>('#advanced-path-rule-template'),
   advancedPathRuleAddButton: $<HTMLButtonElement>('#advanced-path-rules__add'),
   advancedPathRuleDatalist: $<HTMLDataListElement>('#advanced-path-rules__datalist'),
+
+  // confirm dialog interfaces
+  confirmModal: $<HTMLDialogElement>('#confirm'),
+  confirmModalText: $<HTMLParagraphElement>('#confirm-text'),
+  confirmFormContainer: $<HTMLDivElement>('#confirm-controls'),
+  confirmDialogButtonContainer: $<HTMLElement>('#confirm-buttons'),
 };

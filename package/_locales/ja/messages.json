@@ -5,6 +5,12 @@
   "extDesc": {
     "message": "現在のウィンドウでURLが重複しているタブを閉じます。"
   },
+  "announcement_new_feature_title": {
+    "message": "アップデート情報 1.6.0 🎉"
+  },
+  "announcement_new_feature_message": {
+    "message": "新機能\n「特定のタブをウィンドウに集める」\nを追加しました。"
+  },
   "checkbox_hash": {
     "message": "ハッシュを無視する"
   },
@@ -71,6 +77,9 @@
   "btn_combine": {
     "message": "全ウィンドウを\n１つにまとめる"
   },
+  "btn_gather": {
+    "message": "特定のタブを\nウィンドウに集める"
+  },
   "hint_pathname": {
     "message": "推奨：ハッシュとクエリの無視の有効化"
   },
@@ -110,6 +119,27 @@
   "dialog_command_categorize_range2": {
     "message": " 枚以下のタブは1つにまとめる"
   },
+  "dialog_command_gather_select_origin": {
+    "message": "対象"
+  },
+  "dialog_command_gather_select_destination": {
+    "message": "集め方"
+  },
+  "dialog_command_gatherFromCurrentWindow": {
+    "message": "現在のウィンドウ"
+  },
+  "dialog_command_gatherFromAllWindows": {
+    "message": "すべてのウィンドウ"
+  },
+  "dialog_command_currentWindow": {
+    "message": "このウィンドウに集める"
+  },
+  "dialog_command_currentWindowGroup": {
+    "message": "このウィンドウにタブグループで集める"
+  },
+  "dialog_command_newWindow": {
+    "message": "新しいウィンドウに集める"
+  },
   "dialog_command_sortByUrl": {
     "message": "URL順"
   },
@@ -139,6 +169,15 @@
   },
   "dialog_combine_all": {
     "message": "「すべてのウィンドウを対象にする」が\n無効化されています。\n\n本当に実行しますか？"
+  },
+  "dialog_gather": {
+    "message": "特定のタブをウィンドウに集めます。"
+  },
+  "dialog_gather_empty": {
+    "message": "集められるタブがありませんでした。"
+  },
+  "dialog_gather_all": {
+    "message": "「すべてのウィンドウを対象にする」が\n無効化されています。\n\n対象を選択してください。"
   },
   "dialog_divide": {
     "message": "すべてのタブを別窓にします。\nよろしいですか？"

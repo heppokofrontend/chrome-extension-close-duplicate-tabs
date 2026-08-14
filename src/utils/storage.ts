@@ -71,7 +71,22 @@ export const defaultSaveData: Required<SaveDataType> = {
   autoAvoidDuplicate: false,
   updateBadgeMode: 'none',
   useAdvancedPathRule: false,
-  advancedPathRules: {},
+  advancedPathRules: {
+    google: {
+      origin: 'https://www.google.com',
+      pathname: false,
+      query: true,
+      hash: true,
+      allowedQueryParams: 'q',
+    },
+    youtube: {
+      origin: 'https://www.youtube.com',
+      pathname: false,
+      query: true,
+      hash: true,
+      allowedQueryParams: 'v',
+    },
+  },
   shown: {},
   inputHistory: {},
 };

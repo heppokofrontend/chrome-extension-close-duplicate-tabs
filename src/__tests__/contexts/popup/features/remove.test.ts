@@ -11,35 +11,35 @@ vi.mock('@/contexts/popup/features/utils/send-task-request', () => ({ sendTaskRe
 const load = async () => {
   vi.resetModules();
 
-  const { requestRemove } = await import('@/contexts/popup/features/remove');
+  const { sendRemoveRequest } = await import('@/contexts/popup/features/remove');
   const { STATE } = await import('@/contexts/popup/state');
 
-  return { requestRemove, STATE };
+  return { sendRemoveRequest, STATE };
 };
 
-describe('requestRemove', () => {
+describe('sendRemoveRequest', () => {
   afterEach(() => {
     vi.clearAllMocks();
   });
 
   it('skips the confirm dialog and sends the task directly when noConfirm is on', async () => {
-    const { requestRemove, STATE } = await load();
+    const { sendRemoveRequest, STATE } = await load();
 
     STATE.saveData = { ...STATE.saveData, noConfirm: true };
 
-    await requestRemove();
+    await sendRemoveRequest();
 
     expect(showChoicesModal).not.toHaveBeenCalled();
     expect(sendTaskRequest).toHaveBeenCalledWith({ taskName: 'remove' });
   });
 
   it('asks for the all-window message when includeAllWindow is on', async () => {
-    const { requestRemove, STATE } = await load();
+    const { sendRemoveRequest, STATE } = await load();
 
     STATE.saveData = { ...STATE.saveData, includeAllWindow: true };
     showChoicesModal.mockResolvedValue('confirm');
 
-    await requestRemove();
+    await sendRemoveRequest();
 
     expect(showChoicesModal).toHaveBeenCalledWith({
       taskName: 'remove_allwin',
@@ -48,21 +48,21 @@ describe('requestRemove', () => {
   });
 
   it('does nothing when the modal is cancelled', async () => {
-    const { requestRemove } = await load();
+    const { sendRemoveRequest } = await load();
 
     showChoicesModal.mockResolvedValue('cancel');
 
-    await requestRemove();
+    await sendRemoveRequest();
 
     expect(sendTaskRequest).not.toHaveBeenCalled();
   });
 
   it('sends the task without the duplicate-page flag when confirmed', async () => {
-    const { requestRemove } = await load();
+    const { sendRemoveRequest } = await load();
 
     showChoicesModal.mockResolvedValue('confirm');
 
-    await requestRemove();
+    await sendRemoveRequest();
 
     expect(sendTaskRequest).toHaveBeenCalledWith({
       taskName: 'remove',
@@ -71,11 +71,11 @@ describe('requestRemove', () => {
   });
 
   it('sends the task with the duplicate-page flag when show_duplicate is chosen', async () => {
-    const { requestRemove } = await load();
+    const { sendRemoveRequest } = await load();
 
     showChoicesModal.mockResolvedValue('show_duplicate');
 
-    await requestRemove();
+    await sendRemoveRequest();
 
     expect(sendTaskRequest).toHaveBeenCalledWith({
       taskName: 'remove',

@@ -22,12 +22,13 @@ const loadModule = async () => {
 
   document.body.innerHTML = `
     <dialog id="notice">
+      <h2 id="notice-title"></h2>
       <p id="notice-text"></p>
       <p><button type="button" id="notice-close">OK</button></p>
     </dialog>
     <dialog id="confirm">
       <p id="confirm-text"></p>
-      <ul id="dialog-buttons"></ul>
+      <ul id="confirm-buttons"></ul>
     </dialog>
   `;
 

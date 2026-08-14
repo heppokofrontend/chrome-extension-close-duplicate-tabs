@@ -4,7 +4,7 @@ import { isValidSortType } from '@/contexts/popup/utils/type-guard';
 import { sendTaskRequest } from './utils/send-task-request';
 
 /** どのルールでタブを並び替えるか選んでもらう */
-export const requestSort = async () => {
+export const sendSortRequest = async () => {
   const taskName = 'sort';
   const sortType = await showChoicesModal({
     taskName,

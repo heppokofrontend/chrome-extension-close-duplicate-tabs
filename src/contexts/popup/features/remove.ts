@@ -4,7 +4,7 @@ import { STATE } from '@/contexts/popup/state';
 import { sendTaskRequest } from './utils/send-task-request';
 
 /** 重複したタブを閉じる */
-export const requestRemove = async () => {
+export const sendRemoveRequest = async () => {
   const taskName = 'remove';
   const messageName = STATE.saveData.includeAllWindow ? 'remove_allwin' : taskName;
 

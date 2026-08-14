@@ -1,26 +1,33 @@
 import { getMessage } from '@/utils';
 
 const noticeModal = document.getElementById('notice') as HTMLDialogElement;
+const noticeModalTitle = document.getElementById('notice-title') as HTMLParagraphElement;
 const noticeModalText = document.getElementById('notice-text') as HTMLParagraphElement;
 const okButton = document.getElementById('notice-close') as HTMLButtonElement;
 
-noticeModal.ariaLabel = getMessage('dialog_notice');
-noticeModal.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape') {
-    e.preventDefault();
-    noticeModal.close();
-  }
+const ref = {
+  cleanup: undefined as undefined | (() => void),
+};
+
+noticeModal.addEventListener('close', () => {
+  noticeModalText.textContent = '';
 });
 
 okButton.addEventListener('click', () => {
   noticeModal.close();
+  ref.cleanup?.();
 });
 
-export const showNoticeModal = (taskName: string) => {
-  const textContent = getMessage(`dialog_${taskName}`);
+interface Params {
+  title?: string;
+  message: string;
+  cleanup?: () => void;
+}
 
-  noticeModalText.textContent = '';
-  noticeModalText.insertAdjacentHTML('afterbegin', textContent.replaceAll('\n', '<br>'));
+export const showNoticeModal = ({ title = '', message, cleanup }: Params) => {
+  ref.cleanup = cleanup;
+  noticeModalTitle.textContent = title || getMessage('dialog_notice');
+  noticeModalText.insertAdjacentHTML('afterbegin', message.replaceAll('\n', '<br>'));
   noticeModal.showModal();
   noticeModal.focus();
 };

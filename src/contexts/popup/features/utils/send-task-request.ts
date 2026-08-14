@@ -1,11 +1,17 @@
 import { STATE } from '@/contexts/popup/state';
 import type { SortType } from '@/contexts/worker/features/sort';
-import type { TaskRequest } from '@/types';
+import type { GatherDestination, GatherScope, TaskRequest } from '@/types';
 
 export type SendTaskRequestParams =
   | {
       taskName: 'remove';
       shouldShowDuplicatePage?: boolean;
+    }
+  | {
+      taskName: 'gather';
+      origin: string;
+      gatherScope: GatherScope;
+      gatherDestination: GatherDestination;
     }
   | {
       taskName: 'sort';
@@ -26,6 +32,17 @@ export const sendTaskRequest = (params: SendTaskRequestParams) => {
           options: {
             saveData: STATE.saveData,
             shouldShowDuplicatePage: params.shouldShowDuplicatePage ?? false,
+          },
+        };
+
+      case 'gather':
+        return {
+          taskName: params.taskName,
+          options: {
+            saveData: STATE.saveData,
+            origin: params.origin,
+            gatherScope: params.gatherScope,
+            gatherDestination: params.gatherDestination,
           },
         };
 

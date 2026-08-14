@@ -16,10 +16,10 @@
   --color-danger-label-bg: #f1f1f1;
   --color-hint: #446ca9;
   --color-dialog-text: #333;
+  --color-dialog-label: #585858;
   --color-dialog-background: #fff;
   --border-details: 1px solid #ff7c7c;
   --border-top-details-content: 0;
-  --border-bottom-h1: 0;
   --border-bottom-h1: 1px solid #33333340;
 }
 
@@ -42,6 +42,7 @@
     --color-danger-label-bg: #414245;
     --color-hint: #8ab4f8;
     --color-dialog-text: #fff;
+    --color-dialog-label: #b6b6b6;
     --color-dialog-background: #292a2d;
     --border-details: 1px solid #703031;
     --border-top-details-content: 2px solid #292a2d;

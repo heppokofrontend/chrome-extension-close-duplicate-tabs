@@ -1,7 +1,7 @@
 import { showNoticeModal } from '@/contexts/popup/components/dialogs';
 import { STATE, save } from '@/contexts/popup/state';
 import { isValidOptionType } from '@/contexts/popup/utils/type-guard';
-import { type SaveDataType } from '@/utils';
+import { getMessage, type SaveDataType } from '@/utils';
 
 export const onOptionCheckboxChange = (e: Event) => {
   if (!(e.currentTarget instanceof HTMLInputElement)) {
@@ -30,12 +30,12 @@ export const onOptionCheckboxChange = (e: Event) => {
     switch (optionType) {
       case 'ignorePathname':
       case 'noConfirm':
-        showNoticeModal(optionType);
+        showNoticeModal({ message: getMessage(`dialog_${optionType}`) });
         break;
 
       case 'autoAvoidDuplicate': {
         if (!STATE.saveData.shown[optionType]) {
-          showNoticeModal(optionType);
+          showNoticeModal({ message: getMessage(`dialog_${optionType}`) });
           patch.shown = { [optionType]: new Date().toISOString() };
         }
         break;

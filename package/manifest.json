@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "__MSG_extName__",
-  "version": "1.5.9",
+  "version": "1.6.0",
   "description": "__MSG_extDesc__",
   "minimum_chrome_version": "121",
   "action": {
@@ -17,7 +17,7 @@
   "background": {
     "service_worker": "worker.js"
   },
-  "permissions": ["tabs", "windows", "storage"],
+  "permissions": ["tabs", "windows", "storage", "tabGroups"],
   "icons": {
     "128": "images/icon.png"
   },

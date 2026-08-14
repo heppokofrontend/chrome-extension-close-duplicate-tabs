@@ -251,12 +251,12 @@
               </p>
 
               <p>
-                <button type="button" data-task-name="sort">
+                <button type="button" data-task-name="gather">
                   <span class="inner">
                     <span class="img">
-                      <img src="./images/sort.svg" width="32" height="24" alt="" />
+                      <img src="./images/gather.svg" width="32" height="32" alt="" />
                     </span>
-                    <span data-i18n="btn_sort">loading...</span>
+                    <span data-i18n="btn_gather">loading...</span>
                   </span>
                 </button>
               </p>
@@ -268,6 +268,17 @@
                       <img src="./images/combine.svg" width="32" height="32" alt="" />
                     </span>
                     <span data-i18n="btn_combine">loading...</span>
+                  </span>
+                </button>
+              </p>
+
+              <p>
+                <button type="button" data-task-name="sort">
+                  <span class="inner">
+                    <span class="img">
+                      <img src="./images/sort.svg" width="32" height="24" alt="" />
+                    </span>
+                    <span data-i18n="btn_sort">loading...</span>
                   </span>
                 </button>
               </p>
@@ -385,7 +396,14 @@
       </div>
     </main>
 
-    <dialog id="notice" role="dialog" aria-modal="true" closedby="any">
+    <dialog
+      id="notice"
+      role="dialog"
+      aria-labelledby="notice-title"
+      aria-modal="true"
+      closedby="any"
+    >
+      <h2 id="notice-title">loading...</h2>
       <p id="notice-text"></p>
       <p>
         <button type="button" id="notice-close">OK</button>
@@ -395,7 +413,7 @@
     <dialog id="confirm" role="alertdialog" closedby="any">
       <p id="confirm-text"></p>
       <div id="confirm-controls"></div>
-      <ul id="dialog-buttons"></ul>
+      <ul id="confirm-buttons"></ul>
     </dialog>
   </body>
 </html>

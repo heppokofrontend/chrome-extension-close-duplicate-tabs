@@ -1,5 +1,6 @@
+import { TASK_NAMES } from '@/constants';
 import { sortTypes, type SortType } from '@/contexts/worker/features/sort';
-import { taskNames, type TaskName } from '@/types';
+import { type TaskName } from '@/types';
 import {
   defaultSaveData,
   UPDATE_BADGE_MODES,
@@ -23,5 +24,5 @@ export const isValidSortType = (value: unknown): value is SortType => {
 };
 
 export const isValidTaskName = (value: unknown): value is TaskName => {
-  return typeof value === 'string' && (taskNames as readonly string[]).includes(value);
+  return typeof value === 'string' && (TASK_NAMES as readonly string[]).includes(value);
 };

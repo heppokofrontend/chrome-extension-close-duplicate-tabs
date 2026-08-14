@@ -4,7 +4,7 @@ import { STATE } from '@/contexts/popup/state';
 import { sendTaskRequest } from './utils/send-task-request';
 
 /** すべてのタブを別窓にする */
-export const requestDivide = async () => {
+export const sendDivideRequest = async () => {
   const taskName = 'divide';
   const shouldWarnAboutAllWindows = STATE.saveData.includeAllWindow;
 
