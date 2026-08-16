@@ -23,6 +23,9 @@
   "checkbox_pinned": {
     "message": "固定されたタブを対象にする"
   },
+  "checkbox_grouped": {
+    "message": "タブグループ内のタブを対象にする"
+  },
   "checkbox_pathname": {
     "message": "パス名を無視する"
   },

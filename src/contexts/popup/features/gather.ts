@@ -40,6 +40,7 @@ const getOrigins = async (scope: GatherScope) => {
   const tabs = await getTabs({
     includeAllWindow: scope === 'allWindows',
     includePinnedTabs: STATE.saveData.includePinnedTabs,
+    includeGroupedTabs: STATE.saveData.includeGroupedTabs,
   });
   const origins = new Set<string>();
 

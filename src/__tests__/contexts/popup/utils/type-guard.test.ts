@@ -24,6 +24,7 @@ describe('isValidOptionType', () => {
     'ignoreHash',
     'includeAllWindow',
     'includePinnedTabs',
+    'includeGroupedTabs',
     'forcedChangeURLWhenClickedAnchorLink',
     'noConfirm',
     'minCategorizeNumber',

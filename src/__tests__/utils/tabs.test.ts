@@ -46,4 +46,38 @@ describe('getTabs', () => {
       pinned: undefined,
     });
   });
+
+  it('includes tabs in a tab group by default', async () => {
+    const query = vi.fn().mockResolvedValue([
+      { id: 1, groupId: -1 },
+      { id: 2, groupId: 10 },
+    ]);
+    vi.stubGlobal('chrome', { tabs: { query } });
+
+    const result = await getTabs({ includeAllWindow: false, includePinnedTabs: false });
+
+    expect(result).toStrictEqual([
+      { id: 1, groupId: -1 },
+      { id: 2, groupId: 10 },
+    ]);
+  });
+
+  it('excludes tabs in a tab group when includeGroupedTabs is false', async () => {
+    const query = vi.fn().mockResolvedValue([
+      { id: 1, groupId: -1 },
+      { id: 2, groupId: 10 },
+    ]);
+    vi.stubGlobal('chrome', {
+      tabs: { query },
+      tabGroups: { TAB_GROUP_ID_NONE: -1 },
+    });
+
+    const result = await getTabs({
+      includeAllWindow: false,
+      includePinnedTabs: false,
+      includeGroupedTabs: false,
+    });
+
+    expect(result).toStrictEqual([{ id: 1, groupId: -1 }]);
+  });
 });
