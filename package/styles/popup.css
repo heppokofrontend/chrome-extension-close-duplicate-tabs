@@ -599,6 +599,10 @@ details.danger {
       img {
         width: 1rem;
         height: auto;
+
+        &[width='12'] {
+          width: 0.75rem;
+        }
       }
     }
 
