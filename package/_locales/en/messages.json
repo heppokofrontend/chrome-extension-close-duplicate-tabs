@@ -23,6 +23,9 @@
   "checkbox_pinned": {
     "message": "Include pinned tabs"
   },
+  "checkbox_grouped": {
+    "message": "Include tabs in tab groups"
+  },
   "checkbox_pathname": {
     "message": "Ignore pathname"
   },

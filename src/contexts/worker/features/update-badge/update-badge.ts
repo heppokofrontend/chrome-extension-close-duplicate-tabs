@@ -62,7 +62,12 @@ export const registerUpdateBadgeListeners = () => {
   chrome.tabs.onCreated.addListener(() => void updateBadge());
   chrome.tabs.onRemoved.addListener(() => void updateBadge());
   chrome.tabs.onUpdated.addListener((_tabId, changeInfo) => {
-    if (changeInfo.url !== undefined || changeInfo.pinned !== undefined) {
+    if (
+      // 変化すると重複タブの母数が変わるパラメタを監視する
+      changeInfo.url !== undefined ||
+      changeInfo.pinned !== undefined ||
+      changeInfo.groupId !== undefined
+    ) {
       void updateBadge();
     }
   });

@@ -1,14 +1,23 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
 import { resolveDuplicatedCreatedTab } from '@/contexts/worker/features/auto-avoid-duplicates/resolve-duplicated-created-tab';
 import type { CreatedTab } from '@/contexts/worker/features/auto-avoid-duplicates/types';
 
+beforeEach(() => {
+  vi.stubGlobal('chrome', { tabGroups: { TAB_GROUP_ID_NONE: -1 } });
+});
+
+afterEach(() => {
+  vi.unstubAllGlobals();
+});
+
 const toCreatedTab = (
-  tab: Pick<CreatedTab, 'id' | 'url' | 'windowId'> & { pinned?: boolean },
+  tab: Pick<CreatedTab, 'id' | 'url' | 'windowId'> & { pinned?: boolean; groupId?: number },
 ): CreatedTab => ({
   active: true,
   index: 0,
   pinned: false,
+  groupId: -1,
   ...tab,
 });
 
@@ -17,7 +26,7 @@ describe('resolveDuplicatedCreatedTab', () => {
     const result = resolveDuplicatedCreatedTab({
       createdTab: toCreatedTab({ id: 2, url: 'https://a.com/', windowId: 1, pinned: false }),
       existingTabs: [{ id: 1, url: 'https://b.com/', windowId: 1 }],
-      userSettings: { includeAllWindow: false, includePinnedTabs: false },
+      userSettings: { includeAllWindow: false, includePinnedTabs: false, includeGroupedTabs: true },
     });
 
     expect(result).toBeNull();
@@ -27,7 +36,7 @@ describe('resolveDuplicatedCreatedTab', () => {
     const result = resolveDuplicatedCreatedTab({
       createdTab: toCreatedTab({ id: 2, url: 'https://a.com/', windowId: 1 }),
       existingTabs: [{ id: 1, url: 'https://a.com/', windowId: 1 }],
-      userSettings: { includeAllWindow: false, includePinnedTabs: false },
+      userSettings: { includeAllWindow: false, includePinnedTabs: false, includeGroupedTabs: true },
     });
 
     expect(result).toStrictEqual({
@@ -40,7 +49,7 @@ describe('resolveDuplicatedCreatedTab', () => {
     const result = resolveDuplicatedCreatedTab({
       createdTab: toCreatedTab({ id: 2, url: 'https://a.com/', windowId: 1 }),
       existingTabs: [{ id: 1, url: 'https://a.com/', windowId: 2 }],
-      userSettings: { includeAllWindow: false, includePinnedTabs: false },
+      userSettings: { includeAllWindow: false, includePinnedTabs: false, includeGroupedTabs: true },
     });
 
     expect(result).toBeNull();
@@ -50,7 +59,7 @@ describe('resolveDuplicatedCreatedTab', () => {
     const result = resolveDuplicatedCreatedTab({
       createdTab: toCreatedTab({ id: 2, url: 'https://a.com/', windowId: 1 }),
       existingTabs: [{ id: 1, url: 'https://a.com/', windowId: 2 }],
-      userSettings: { includeAllWindow: true, includePinnedTabs: false },
+      userSettings: { includeAllWindow: true, includePinnedTabs: false, includeGroupedTabs: true },
     });
 
     expect(result).toStrictEqual({
@@ -63,7 +72,7 @@ describe('resolveDuplicatedCreatedTab', () => {
     const result = resolveDuplicatedCreatedTab({
       createdTab: toCreatedTab({ id: 2, url: 'https://a.com/', windowId: 1 }),
       existingTabs: [{ id: 1, url: 'https://a.com/', windowId: 1, pinned: true }],
-      userSettings: { includeAllWindow: false, includePinnedTabs: false },
+      userSettings: { includeAllWindow: false, includePinnedTabs: false, includeGroupedTabs: true },
     });
 
     expect(result).toBeNull();
@@ -73,7 +82,7 @@ describe('resolveDuplicatedCreatedTab', () => {
     const result = resolveDuplicatedCreatedTab({
       createdTab: toCreatedTab({ id: 2, url: 'https://a.com/', windowId: 1 }),
       existingTabs: [{ id: 1, url: 'https://a.com/', windowId: 1, pinned: true }],
-      userSettings: { includeAllWindow: false, includePinnedTabs: true },
+      userSettings: { includeAllWindow: false, includePinnedTabs: true, includeGroupedTabs: true },
     });
 
     expect(result).toStrictEqual({
@@ -86,7 +95,7 @@ describe('resolveDuplicatedCreatedTab', () => {
     const result = resolveDuplicatedCreatedTab({
       createdTab: toCreatedTab({ id: 2, url: 'https://a.com/', windowId: 1, pinned: true }),
       existingTabs: [{ id: 1, url: 'https://a.com/', windowId: 1 }],
-      userSettings: { includeAllWindow: false, includePinnedTabs: false },
+      userSettings: { includeAllWindow: false, includePinnedTabs: false, includeGroupedTabs: true },
     });
 
     expect(result).toBeNull();
@@ -96,7 +105,7 @@ describe('resolveDuplicatedCreatedTab', () => {
     const result = resolveDuplicatedCreatedTab({
       createdTab: toCreatedTab({ id: 2, url: 'https://a.com/', windowId: 1, pinned: true }),
       existingTabs: [{ id: 1, url: 'https://a.com/', windowId: 1 }],
-      userSettings: { includeAllWindow: false, includePinnedTabs: true },
+      userSettings: { includeAllWindow: false, includePinnedTabs: true, includeGroupedTabs: true },
     });
 
     expect(result).toStrictEqual({
@@ -112,6 +121,7 @@ describe('resolveDuplicatedCreatedTab', () => {
       userSettings: {
         includeAllWindow: false,
         includePinnedTabs: false,
+        includeGroupedTabs: true,
         urlNormalizeOptions: { ignoreHash: true },
       },
     });
@@ -129,6 +139,7 @@ describe('resolveDuplicatedCreatedTab', () => {
       userSettings: {
         includeAllWindow: false,
         includePinnedTabs: false,
+        includeGroupedTabs: true,
         urlNormalizeOptions: { ignoreQuery: true },
       },
     });
@@ -146,6 +157,7 @@ describe('resolveDuplicatedCreatedTab', () => {
       userSettings: {
         includeAllWindow: false,
         includePinnedTabs: false,
+        includeGroupedTabs: true,
         urlNormalizeOptions: { ignorePathname: true },
       },
     });
@@ -160,7 +172,7 @@ describe('resolveDuplicatedCreatedTab', () => {
     const result = resolveDuplicatedCreatedTab({
       createdTab: toCreatedTab({ id: 2, url: '', windowId: 1 }),
       existingTabs: [{ id: 1, url: 'https://a.com/', windowId: 1 }],
-      userSettings: { includeAllWindow: false, includePinnedTabs: false },
+      userSettings: { includeAllWindow: false, includePinnedTabs: false, includeGroupedTabs: true },
     });
 
     expect(result).toBeNull();
@@ -170,7 +182,7 @@ describe('resolveDuplicatedCreatedTab', () => {
     const result = resolveDuplicatedCreatedTab({
       createdTab: toCreatedTab({ id: 1, url: 'https://a.com/', windowId: 1 }),
       existingTabs: [{ id: 1, url: 'https://a.com/', windowId: 1 }],
-      userSettings: { includeAllWindow: false, includePinnedTabs: false },
+      userSettings: { includeAllWindow: false, includePinnedTabs: false, includeGroupedTabs: true },
     });
 
     expect(result).toBeNull();
@@ -183,7 +195,7 @@ describe('resolveDuplicatedCreatedTab', () => {
         { id: 5, url: 'https://a.com/', windowId: 1 },
         { id: 2, url: 'https://a.com/', windowId: 1 },
       ],
-      userSettings: { includeAllWindow: false, includePinnedTabs: false },
+      userSettings: { includeAllWindow: false, includePinnedTabs: false, includeGroupedTabs: true },
     });
 
     expect(result).toStrictEqual({
@@ -199,12 +211,66 @@ describe('resolveDuplicatedCreatedTab', () => {
         { id: 3, url: 'https://a.com/', windowId: 7 },
         { id: 5, url: 'https://a.com/', windowId: 9 },
       ],
-      userSettings: { includeAllWindow: true, includePinnedTabs: false },
+      userSettings: { includeAllWindow: true, includePinnedTabs: false, includeGroupedTabs: true },
     });
 
     expect(result).toStrictEqual({
       closeTabId: 10,
       keepTabId: 3,
+    });
+  });
+
+  it('returns null when the only candidate is in a tab group and includeGroupedTabs is off', () => {
+    const result = resolveDuplicatedCreatedTab({
+      createdTab: toCreatedTab({ id: 2, url: 'https://a.com/', windowId: 1 }),
+      existingTabs: [{ id: 1, url: 'https://a.com/', windowId: 1, groupId: 5 }],
+      userSettings: {
+        includeAllWindow: false,
+        includePinnedTabs: false,
+        includeGroupedTabs: false,
+      },
+    });
+
+    expect(result).toBeNull();
+  });
+
+  it('returns the grouped candidate when includeGroupedTabs is on', () => {
+    const result = resolveDuplicatedCreatedTab({
+      createdTab: toCreatedTab({ id: 2, url: 'https://a.com/', windowId: 1 }),
+      existingTabs: [{ id: 1, url: 'https://a.com/', windowId: 1, groupId: 5 }],
+      userSettings: { includeAllWindow: false, includePinnedTabs: false, includeGroupedTabs: true },
+    });
+
+    expect(result).toStrictEqual({
+      closeTabId: 2,
+      keepTabId: 1,
+    });
+  });
+
+  it('returns null when the target tab itself is in a tab group and includeGroupedTabs is off', () => {
+    const result = resolveDuplicatedCreatedTab({
+      createdTab: toCreatedTab({ id: 2, url: 'https://a.com/', windowId: 1, groupId: 5 }),
+      existingTabs: [{ id: 1, url: 'https://a.com/', windowId: 1 }],
+      userSettings: {
+        includeAllWindow: false,
+        includePinnedTabs: false,
+        includeGroupedTabs: false,
+      },
+    });
+
+    expect(result).toBeNull();
+  });
+
+  it('returns the target when the target tab itself is in a tab group and includeGroupedTabs is on', () => {
+    const result = resolveDuplicatedCreatedTab({
+      createdTab: toCreatedTab({ id: 2, url: 'https://a.com/', windowId: 1, groupId: 5 }),
+      existingTabs: [{ id: 1, url: 'https://a.com/', windowId: 1 }],
+      userSettings: { includeAllWindow: false, includePinnedTabs: false, includeGroupedTabs: true },
+    });
+
+    expect(result).toStrictEqual({
+      closeTabId: 2,
+      keepTabId: 1,
     });
   });
 });

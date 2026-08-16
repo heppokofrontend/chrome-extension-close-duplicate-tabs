@@ -299,9 +299,10 @@ describe('registerUpdateBadgeListeners', () => {
       await fire(listeners.onFocusChanged);
       await fire(listeners.onUpdated, 1, { url: 'https://a.com/' });
       await fire(listeners.onUpdated, 1, { pinned: true });
+      await fire(listeners.onUpdated, 1, { groupId: 5 });
       await fire(listeners.onStorageChanged, { saveData: {} }, 'local');
 
-      expect(mocks.setBadgeText.mock.calls.length).toBe(initialCalls + 10);
+      expect(mocks.setBadgeText.mock.calls.length).toBe(initialCalls + 11);
     });
 
     it('does not update on onUpdated events unrelated to URL/pinned, or storage changes unrelated to saveData', async () => {

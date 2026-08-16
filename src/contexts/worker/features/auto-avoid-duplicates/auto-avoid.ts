@@ -45,6 +45,7 @@ const resolveCreatedTab = async (createdTab: CreatedTab) => {
       userSettings: {
         includeAllWindow: saveData.includeAllWindow,
         includePinnedTabs: saveData.includePinnedTabs,
+        includeGroupedTabs: saveData.includeGroupedTabs,
         urlNormalizeOptions: {
           ignorePathname: saveData.ignorePathname,
           ignoreQuery: saveData.ignoreQuery,
