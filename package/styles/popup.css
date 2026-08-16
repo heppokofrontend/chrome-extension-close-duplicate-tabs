@@ -672,15 +672,17 @@ details.danger {
 
 dialog {
   inset: 0 0 30px;
-  max-width: 324px;
-  padding: 32px 28px;
+  max-width: 90%;
+  /* ホスト名ごとに整理する */
+  min-width: 18.125rem;
+  padding: 32px 28px 2rem;
   margin: auto;
-  overflow: hidden;
+  overflow: auto;
   color: var(--color-dialog-text);
   text-align: center;
   background: var(--color-dialog-background);
   border: 0;
-  border-radius: 4px;
+  border-radius: 6px;
   box-shadow: 0 0 10px 0 rgb(0 0 0 / 80%);
 
   &::backdrop {
