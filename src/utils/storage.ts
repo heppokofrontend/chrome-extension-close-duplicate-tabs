@@ -18,9 +18,16 @@ export type PathRule = {
   allowedQueryParams?: string;
 };
 
+/** 1つの入力欄あたりに保持する履歴の最大件数。 */
+export const INPUT_HISTORY_MAX_ENTRIES = 5;
+
 /** 入力履歴を管理する対象の入力欄を識別するキー。 */
-export const INPUT_HISTORY_KEYS = ['advancedPathRuleOrigin'] as const;
-export type InputHistoryKey = (typeof INPUT_HISTORY_KEYS)[number];
+interface InputHistoryMap {
+  /** テキスト入力欄の入力履歴（新しい順、最大 INPUT_HISTORY_MAX_ENTRIES 件）。 */
+  advancedPathRuleOrigin: string[];
+}
+
+export type InputHistoryKey = keyof InputHistoryMap;
 
 export type SaveDataType = {
   ignorePathname?: boolean;
@@ -38,8 +45,8 @@ export type SaveDataType = {
   advancedPathRules?: Record<string, PathRule>;
   /** お知らせダイアログの表示済みキーと、表示した日時（ISO 8601 文字列）の記録。 */
   shown?: Record<string, string>;
-  /** 各入力欄の入力履歴（キー = 入力欄の識別子、値は新しい順、最大 INPUT_HISTORY_MAX_ENTRIES 件）。 */
-  inputHistory?: Partial<Record<InputHistoryKey, string[]>>;
+  /** 各入力欄の入力履歴・直近値（キー = 入力欄の識別子）。 */
+  inputHistory?: Partial<InputHistoryMap>;
 };
 
 export type UrlNormalizeOptions = Pick<

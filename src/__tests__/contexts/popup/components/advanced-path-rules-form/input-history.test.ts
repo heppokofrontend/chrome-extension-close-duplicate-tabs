@@ -12,7 +12,8 @@ const { STATE } = vi.hoisted(() => {
 
 vi.mock('@/contexts/popup/state', () => ({ STATE }));
 
-const { INPUT_HISTORY_MAX_ENTRIES, createInputHistoryPatch } =
+const { INPUT_HISTORY_MAX_ENTRIES } = await import('@/utils');
+const { createInputHistoryPatch } =
   await import('@/contexts/popup/components/advanced-path-rules-form/utils/input-history');
 
 const KEY = 'advancedPathRuleOrigin';
