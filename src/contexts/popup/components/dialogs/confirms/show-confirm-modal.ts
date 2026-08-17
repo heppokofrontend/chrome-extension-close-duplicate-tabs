@@ -6,7 +6,7 @@ interface Params {
   message: string;
 }
 
-export const showConfirmModal = ({ message }: Params) => {
+export const showConfirmModal = ({ message }: Params): Promise<'confirm' | 'cancel'> => {
   if (STATE.saveData.noConfirm) {
     return Promise.resolve('confirm');
   }

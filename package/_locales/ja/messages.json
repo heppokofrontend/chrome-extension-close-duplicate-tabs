@@ -162,7 +162,10 @@
     "message": "すべてのウィンドウの重複したタブを閉じます。\nよろしいですか？"
   },
   "dialog_reload": {
-    "message": "すべてのタブをリロードします。\nよろしいですか？"
+    "message": "$COUNT$枚のタブをリロードします。\nよろしいですか？",
+    "placeholders": {
+      "COUNT": { "content": "$1" }
+    }
   },
   "dialog_reload_allwin": {
     "message": "すべてのウィンドウの\nすべてのタブをリロードします。\nよろしいですか？"
