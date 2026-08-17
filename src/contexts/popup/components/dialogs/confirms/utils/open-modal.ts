@@ -40,8 +40,8 @@ const handleClose = () => {
 };
 
 export function openModal(message: string, commands?: undefined): void;
-export function openModal(message: string, commands: ActionCommand[]): Promise<ActionCommand>;
-export function openModal(message: string, commands?: ActionCommand[]) {
+export function openModal<T extends ActionCommand>(message: string, commands: T[]): Promise<T>;
+export function openModal<T extends ActionCommand>(message: string, commands?: T[]) {
   POPUP_UI.confirmModal.removeEventListener('close', handleClose);
   POPUP_UI.confirmModal.addEventListener('close', handleClose);
   POPUP_UI.confirmModalText.insertAdjacentHTML('afterbegin', message.replaceAll('\n', '<br>'));

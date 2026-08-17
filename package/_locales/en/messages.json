@@ -169,7 +169,10 @@
     "message": "Will close duplicate tabs in all windows. \nAre you sure you want to run this?"
   },
   "dialog_reload": {
-    "message": "Will reload all tabs. \nAre you sure you want to run this?"
+    "message": "Will reload $COUNT$ tabs. \nAre you sure you want to run this?",
+    "placeholders": {
+      "COUNT": { "content": "$1" }
+    }
   },
   "dialog_reload_allwin": {
     "message": "Will reload all tabs in all windows. \nAre you sure you want to run this?"
