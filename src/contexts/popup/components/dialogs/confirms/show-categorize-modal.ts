@@ -1,3 +1,5 @@
+import { getMessage } from '@/utils';
+
 import { renderRangeModalContent } from './renderers';
 import { closeModalWhenGetAnswer, openModal } from './utils';
 
@@ -7,8 +9,8 @@ interface Params {
   max: number;
 }
 
-export const showRangeModal = ({ taskName, min, max }: Params) => {
-  openModal(taskName);
+export const showCategorizeModal = ({ taskName, min, max }: Params) => {
+  openModal(getMessage(`dialog_${taskName}`));
 
   return closeModalWhenGetAnswer(
     new Promise<number>((resolve) => {

@@ -20,7 +20,7 @@ const resolveScope = async (taskName: string): Promise<GatherScope | 'cancel'> =
   }
 
   const command = await showChoicesModal({
-    taskName: `${taskName}_all`,
+    message: getMessage(`dialog_${taskName}_all`),
     commands: [FROM_CURRENT_WINDOW, FROM_ALL_WINDOWS, 'cancel'],
   });
 
@@ -82,10 +82,11 @@ export const sendGatherRequest = async () => {
   }
 
   const result = await showSelectModal({
-    taskName,
+    message: getMessage('dialog_gather'),
     fields: [
       {
         key: 'origin',
+        label: getMessage('dialog_command_gather_select_origin', { allowEmpty: true }),
         options: origins.map((origin) => ({
           label: origin,
           value: origin,
@@ -93,6 +94,7 @@ export const sendGatherRequest = async () => {
       },
       {
         key: 'destination',
+        label: getMessage('dialog_command_gather_select_destination', { allowEmpty: true }),
         options: GATHER_DESTINATIONS.map((destination) => ({
           label: getMessage(`dialog_command_${destination}`),
           value: destination,

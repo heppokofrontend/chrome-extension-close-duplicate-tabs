@@ -1,5 +1,6 @@
 import { showChoicesModal } from '@/contexts/popup/components/dialogs';
 import { STATE } from '@/contexts/popup/state';
+import { getMessage } from '@/utils';
 
 import { sendTaskRequest } from './utils/send-task-request';
 
@@ -17,7 +18,7 @@ export const sendRemoveRequest = async () => {
   const SHOW_DUPLICATE = 'show_duplicate';
 
   const result = await showChoicesModal({
-    taskName: messageName,
+    message: getMessage(`dialog_${messageName}`),
     commands: ['confirm', SHOW_DUPLICATE, 'cancel'],
   });
 

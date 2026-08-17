@@ -55,7 +55,7 @@ const requireElement = (selector: string) => {
 const buttonsIn = (selector: string) =>
   Array.from(requireElement(selector).querySelectorAll<HTMLButtonElement>('button'));
 
-describe('showRangeModal', () => {
+describe('showCategorizeModal', () => {
   afterEach(() => {
     vi.clearAllMocks();
   });
@@ -76,9 +76,9 @@ describe('showRangeModal', () => {
   };
 
   it('keeps in-range values as-is and persists them', async () => {
-    const { showRangeModal } = await loadModule();
+    const { showCategorizeModal } = await loadModule();
 
-    const promise = showRangeModal({ taskName: 'categorize', min: 1, max: 10 });
+    const promise = showCategorizeModal({ taskName: 'categorize', min: 1, max: 10 });
     const input = changeInput(5);
 
     expect(input.valueAsNumber).toBe(5);
@@ -90,27 +90,27 @@ describe('showRangeModal', () => {
   });
 
   it('clamps values above max down to max', async () => {
-    const { showRangeModal } = await loadModule();
+    const { showCategorizeModal } = await loadModule();
 
-    void showRangeModal({ taskName: 'categorize', min: 1, max: 10 });
+    void showCategorizeModal({ taskName: 'categorize', min: 1, max: 10 });
     const input = changeInput(999);
 
     expect(input.valueAsNumber).toBe(10);
   });
 
   it('clamps values below min up to min', async () => {
-    const { showRangeModal } = await loadModule();
+    const { showCategorizeModal } = await loadModule();
 
-    void showRangeModal({ taskName: 'categorize', min: 1, max: 10 });
+    void showCategorizeModal({ taskName: 'categorize', min: 1, max: 10 });
     const input = changeInput(-5);
 
     expect(input.valueAsNumber).toBe(1);
   });
 
   it('falls back to the previous value when the input is not a number', async () => {
-    const { showRangeModal } = await loadModule();
+    const { showCategorizeModal } = await loadModule();
 
-    void showRangeModal({ taskName: 'categorize', min: 1, max: 10 });
+    void showCategorizeModal({ taskName: 'categorize', min: 1, max: 10 });
     changeInput(7);
     setSaveData.mockClear();
 
@@ -121,9 +121,9 @@ describe('showRangeModal', () => {
   });
 
   it('resolves with NaN when the modal is cancelled', async () => {
-    const { showRangeModal } = await loadModule();
+    const { showCategorizeModal } = await loadModule();
 
-    const promise = showRangeModal({ taskName: 'categorize', min: 1, max: 10 });
+    const promise = showCategorizeModal({ taskName: 'categorize', min: 1, max: 10 });
 
     clickCommand('cancel');
 

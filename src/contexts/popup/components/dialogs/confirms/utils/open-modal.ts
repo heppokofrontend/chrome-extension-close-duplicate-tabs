@@ -1,7 +1,6 @@
 import { buildButton } from '@/contexts/popup/components/dialogs/confirms/renderers';
 import type { ActionCommand } from '@/contexts/popup/components/dialogs/types';
 import { POPUP_UI } from '@/contexts/popup/constants';
-import { getMessage } from '@/utils';
 
 import { closeModalWhenGetAnswer } from './close-modal-when-get-answer';
 import { useAbortController } from './use-abort-controller';
@@ -40,14 +39,12 @@ const handleClose = () => {
   POPUP_UI.confirmDialogButtonContainer.textContent = '';
 };
 
-export function openModal(taskName: string): void;
-export function openModal(taskName: string, commands?: ActionCommand[]): Promise<ActionCommand>;
-export function openModal(taskName: string, commands?: ActionCommand[]) {
-  const textContent = getMessage(`dialog_${taskName}`);
-
+export function openModal(message: string, commands?: undefined): void;
+export function openModal(message: string, commands: ActionCommand[]): Promise<ActionCommand>;
+export function openModal(message: string, commands?: ActionCommand[]) {
   POPUP_UI.confirmModal.removeEventListener('close', handleClose);
   POPUP_UI.confirmModal.addEventListener('close', handleClose);
-  POPUP_UI.confirmModalText.insertAdjacentHTML('afterbegin', textContent.replaceAll('\n', '<br>'));
+  POPUP_UI.confirmModalText.insertAdjacentHTML('afterbegin', message.replaceAll('\n', '<br>'));
   POPUP_UI.confirmModal.showModal();
   isOpen = true;
 

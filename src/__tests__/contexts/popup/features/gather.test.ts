@@ -55,7 +55,7 @@ describe('sendGatherRequest', () => {
     await sendGatherRequest();
 
     expect(showChoicesModal).toHaveBeenCalledWith({
-      taskName: 'gather_all',
+      message: 'dialog_gather_all',
       commands: ['gatherFromCurrentWindow', 'gatherFromAllWindows', 'cancel'],
     });
     expect(showSelectModal).not.toHaveBeenCalled();
@@ -120,14 +120,16 @@ describe('sendGatherRequest', () => {
     await sendGatherRequest();
 
     expect(showSelectModal).toHaveBeenCalledWith({
-      taskName: 'gather',
+      message: 'dialog_gather',
       fields: [
         {
           key: 'origin',
+          label: 'dialog_command_gather_select_origin',
           options: [{ value: 'https://a.example.com', label: 'https://a.example.com' }],
         },
         {
           key: 'destination',
+          label: 'dialog_command_gather_select_destination',
           options: [
             { value: 'currentWindow', label: 'dialog_command_currentWindow' },
             { value: 'currentWindowGroup', label: 'dialog_command_currentWindowGroup' },
@@ -152,16 +154,18 @@ describe('sendGatherRequest', () => {
       pinned: undefined,
     });
     expect(showSelectModal).toHaveBeenCalledWith({
-      taskName: 'gather',
+      message: 'dialog_gather',
       fields: [
         {
           key: 'origin',
+          label: 'dialog_command_gather_select_origin',
           options: [
             { value: 'https://pinned-only.example.com', label: 'https://pinned-only.example.com' },
           ],
         },
         {
           key: 'destination',
+          label: 'dialog_command_gather_select_destination',
           options: [
             { value: 'currentWindow', label: 'dialog_command_currentWindow' },
             { value: 'currentWindowGroup', label: 'dialog_command_currentWindowGroup' },
@@ -184,14 +188,16 @@ describe('sendGatherRequest', () => {
     await sendGatherRequest();
 
     expect(showSelectModal).toHaveBeenCalledWith({
-      taskName: 'gather',
+      message: 'dialog_gather',
       fields: [
         {
           key: 'origin',
+          label: 'dialog_command_gather_select_origin',
           options: [{ value: 'https://a.example.com', label: 'https://a.example.com' }],
         },
         {
           key: 'destination',
+          label: 'dialog_command_gather_select_destination',
           options: [
             { value: 'currentWindow', label: 'dialog_command_currentWindow' },
             { value: 'currentWindowGroup', label: 'dialog_command_currentWindowGroup' },
@@ -211,10 +217,11 @@ describe('sendGatherRequest', () => {
     await sendGatherRequest();
 
     expect(showSelectModal).toHaveBeenCalledWith({
-      taskName: 'gather',
+      message: 'dialog_gather',
       fields: [
         {
           key: 'origin',
+          label: 'dialog_command_gather_select_origin',
           options: [
             {
               value: 'https://grouped-only.example.com',
@@ -224,6 +231,7 @@ describe('sendGatherRequest', () => {
         },
         {
           key: 'destination',
+          label: 'dialog_command_gather_select_destination',
           options: [
             { value: 'currentWindow', label: 'dialog_command_currentWindow' },
             { value: 'currentWindowGroup', label: 'dialog_command_currentWindowGroup' },
@@ -262,10 +270,11 @@ describe('sendGatherRequest', () => {
     await sendGatherRequest();
 
     expect(showSelectModal).toHaveBeenCalledWith({
-      taskName: 'gather',
+      message: 'dialog_gather',
       fields: [
         {
           key: 'origin',
+          label: 'dialog_command_gather_select_origin',
           options: [
             { value: 'https://a.example.com', label: 'https://a.example.com' },
             { value: 'https://b.example.com', label: 'https://b.example.com' },
@@ -273,6 +282,7 @@ describe('sendGatherRequest', () => {
         },
         {
           key: 'destination',
+          label: 'dialog_command_gather_select_destination',
           options: [
             { value: 'currentWindow', label: 'dialog_command_currentWindow' },
             { value: 'currentWindowGroup', label: 'dialog_command_currentWindowGroup' },

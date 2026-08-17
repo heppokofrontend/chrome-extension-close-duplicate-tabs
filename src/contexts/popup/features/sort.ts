@@ -1,5 +1,6 @@
 import { showChoicesModal } from '@/contexts/popup/components/dialogs';
 import { isValidSortType } from '@/contexts/popup/utils/type-guard';
+import { getMessage } from '@/utils';
 
 import { sendTaskRequest } from './utils/send-task-request';
 
@@ -7,7 +8,7 @@ import { sendTaskRequest } from './utils/send-task-request';
 export const sendSortRequest = async () => {
   const taskName = 'sort';
   const sortType = await showChoicesModal({
-    taskName,
+    message: getMessage(`dialog_${taskName}`),
     commands: ['sortByUrl', 'sortByTitle', 'sortByHostAndTitle', 'sortByLastAccessed', 'cancel'],
   });
 
