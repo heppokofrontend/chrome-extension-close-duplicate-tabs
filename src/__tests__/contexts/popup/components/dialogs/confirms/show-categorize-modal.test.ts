@@ -78,7 +78,7 @@ describe('showCategorizeModal', () => {
   it('keeps in-range values as-is and persists them', async () => {
     const { showCategorizeModal } = await loadModule();
 
-    const promise = showCategorizeModal({ taskName: 'categorize', min: 1, max: 10 });
+    const promise = showCategorizeModal({ taskName: 'categorize' });
     const input = changeInput(5);
 
     expect(input.valueAsNumber).toBe(5);
@@ -89,28 +89,29 @@ describe('showCategorizeModal', () => {
     await expect(promise).resolves.toBe(5);
   });
 
-  it('clamps values above max down to max', async () => {
+  it('accepts values above the old max without clamping', async () => {
     const { showCategorizeModal } = await loadModule();
 
-    void showCategorizeModal({ taskName: 'categorize', min: 1, max: 10 });
-    const input = changeInput(999);
+    void showCategorizeModal({ taskName: 'categorize' });
 
-    expect(input.valueAsNumber).toBe(10);
+    expect(changeInput(999).valueAsNumber).toBe(999);
   });
 
-  it('clamps values below min up to min', async () => {
+  it('normalizes a negative input to its absolute value', async () => {
     const { showCategorizeModal } = await loadModule();
 
-    void showCategorizeModal({ taskName: 'categorize', min: 1, max: 10 });
+    void showCategorizeModal({ taskName: 'categorize' });
+
     const input = changeInput(-5);
 
-    expect(input.valueAsNumber).toBe(1);
+    expect(input.valueAsNumber).toBe(5);
+    expect(setSaveData).toHaveBeenCalledWith(expect.objectContaining({ minCategorizeNumber: 5 }));
   });
 
   it('falls back to the previous value when the input is not a number', async () => {
     const { showCategorizeModal } = await loadModule();
 
-    void showCategorizeModal({ taskName: 'categorize', min: 1, max: 10 });
+    void showCategorizeModal({ taskName: 'categorize' });
     changeInput(7);
     setSaveData.mockClear();
 
@@ -123,7 +124,7 @@ describe('showCategorizeModal', () => {
   it('resolves with NaN when the modal is cancelled', async () => {
     const { showCategorizeModal } = await loadModule();
 
-    const promise = showCategorizeModal({ taskName: 'categorize', min: 1, max: 10 });
+    const promise = showCategorizeModal({ taskName: 'categorize' });
 
     clickCommand('cancel');
 
