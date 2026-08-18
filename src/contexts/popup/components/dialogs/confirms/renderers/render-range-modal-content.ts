@@ -6,13 +6,11 @@ import { buildRangeField } from './build-range-field';
 
 interface Props {
   taskName: string;
-  min: number;
-  max: number;
   resolve: (result: number) => void;
 }
 
-export const renderRangeModalContent = ({ taskName, min, max, resolve }: Props) => {
-  const { element, getValue } = buildRangeField({ taskName, min, max });
+export const renderRangeModalContent = ({ taskName, resolve }: Props) => {
+  const { element, getValue } = buildRangeField({ taskName });
 
   POPUP_UI.confirmFormContainer.append(element);
 
