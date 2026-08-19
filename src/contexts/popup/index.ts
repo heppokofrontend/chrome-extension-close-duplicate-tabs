@@ -60,7 +60,7 @@ const addListener = () => {
 /** 新機能のお知らせを、ユーザーごとに初回表示のみ行う。 */
 const announceNewFeature = () => {
   const key = 'update-announcement';
-  const version = 'v1.6.0';
+  const version = 'v1.6.1';
   const value = STATE.saveData.shown[key];
 
   // すでに表示したユーザ

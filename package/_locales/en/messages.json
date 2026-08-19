@@ -6,10 +6,10 @@
     "message": "Close duplicate tab on current window."
   },
   "announcement_new_feature_title": {
-    "message": "Update 1.6.0 🎉"
+    "message": "Update 1.6.1 🎉"
   },
   "announcement_new_feature_message": {
-    "message": "New feature added: \n\"Gather specific tabs into a window\"."
+    "message": "New feature added: \n\"Include tabs in tab groups\"."
   },
   "checkbox_hash": {
     "message": "Ignore hash"
