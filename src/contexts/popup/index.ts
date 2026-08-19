@@ -59,9 +59,18 @@ const addListener = () => {
 
 /** 新機能のお知らせを、ユーザーごとに初回表示のみ行う。 */
 const announceNewFeature = () => {
-  const key = 'v1.6.0';
+  const key = 'update-announcement';
+  const version = 'v1.6.0';
+  const value = STATE.saveData.shown[key];
 
-  if (STATE.saveData.shown[key]) {
+  // すでに表示したユーザ
+  if (value === version) {
+    return;
+  }
+
+  // 一度もお知らせ等を記録したことがない新規インストールユーザにはモーダルを表示せず現在のバージョンだけ記録しておく
+  if (Object.keys(STATE.saveData.shown).length === 0) {
+    save({ shown: { [key]: version } });
     return;
   }
 
@@ -69,7 +78,7 @@ const announceNewFeature = () => {
     title: getMessage('announcement_new_feature_title'),
     message: getMessage('announcement_new_feature_message'),
     cleanup: () => {
-      save({ shown: { [key]: new Date().toISOString() } });
+      save({ shown: { [key]: version } });
     },
   });
 };
