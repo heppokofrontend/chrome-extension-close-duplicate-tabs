@@ -1,22 +1,17 @@
-import { getMessage } from '@/utils';
-
 import type { AnswersOf, SelectField } from './renderers';
 import { renderSelectModalContent } from './renderers';
 import { closeModalWhenGetAnswer, openModal } from './utils';
 
-export const showSelectModal = <const F extends readonly SelectField<string>[]>(params: {
-  taskName: string;
+interface Params<F> {
+  message: string;
   fields: F;
-}) => {
-  openModal(params.taskName);
+}
 
-  const fields = params.fields.map(({ key, options }) => ({
-    key,
-    label: getMessage(`dialog_command_${params.taskName}_select_${key}`, {
-      allowEmpty: true,
-    }),
-    options,
-  }));
+export const showSelectModal = <const F extends readonly SelectField<string>[]>({
+  message,
+  fields,
+}: Params<F>) => {
+  openModal(message);
 
   return closeModalWhenGetAnswer(
     new Promise<AnswersOf<F> | 'cancel'>((resolve) => {

@@ -3,34 +3,29 @@ import { getMessage } from '@/utils';
 
 interface Props {
   taskName: string;
-  min: number;
-  max: number;
 }
 
-export const buildRangeField = ({ taskName, min, max }: Props) => {
+export const buildRangeField = ({ taskName }: Props) => {
   const wrapper = document.createElement('p');
   const field = document.createElement('label');
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-  let value = STATE.saveData.minCategorizeNumber ?? min;
+  let value = STATE.saveData.minCategorizeNumber;
 
   wrapper.className = 'textfield-for-range';
   field.insertAdjacentHTML(
     'afterbegin',
     `
     ${getMessage(`dialog_command_${taskName}_range1`, { allowEmpty: true })}
-    <input type="number" min="${String(min)}" max="${String(max)}" value="${String(value)}" />
+    <input type="number" value="${String(value)}" min="0" />
     ${getMessage(`dialog_command_${taskName}_range2`)}
   `,
   );
   field.querySelector('input')?.addEventListener('change', (e) => {
     if (e.target instanceof HTMLInputElement) {
       const valueAsNumber = e.target.valueAsNumber;
-      const clamped = Number.isNaN(valueAsNumber)
-        ? value
-        : Math.min(max, Math.max(min, valueAsNumber));
+      const next = Number.isNaN(valueAsNumber) ? value : Math.abs(valueAsNumber);
 
-      e.target.valueAsNumber = clamped;
-      value = clamped;
+      e.target.valueAsNumber = next;
+      value = next;
 
       save({
         ...STATE.saveData,

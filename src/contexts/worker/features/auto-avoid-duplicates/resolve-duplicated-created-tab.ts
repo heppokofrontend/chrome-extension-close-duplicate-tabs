@@ -1,12 +1,13 @@
 import type { CreatedTab } from '@/contexts/worker/features/auto-avoid-duplicates/types';
 import { getGroupedTabsByNormalizedUrl, normalizeUrl } from '@/contexts/worker/utils';
-import type { UrlNormalizeOptions } from '@/utils';
+import { isInTabGroup, type UrlNormalizeOptions } from '@/utils';
 
 interface CandidateTab {
   id: number;
   url?: string | undefined;
   windowId: number;
   pinned?: boolean;
+  groupId?: number;
 }
 
 interface Params {
@@ -15,6 +16,7 @@ interface Params {
   userSettings: {
     includeAllWindow: boolean | undefined;
     includePinnedTabs: boolean | undefined;
+    includeGroupedTabs: boolean | undefined;
     urlNormalizeOptions?: UrlNormalizeOptions;
   };
 }
@@ -23,9 +25,12 @@ interface Params {
 export const resolveDuplicatedCreatedTab = ({
   createdTab,
   existingTabs,
-  userSettings: { includeAllWindow, includePinnedTabs, urlNormalizeOptions },
+  userSettings: { includeAllWindow, includePinnedTabs, includeGroupedTabs, urlNormalizeOptions },
 }: Params) => {
-  if (createdTab.pinned && !includePinnedTabs) {
+  if (
+    (createdTab.pinned && !includePinnedTabs) ||
+    (includeGroupedTabs === false && isInTabGroup(createdTab.groupId))
+  ) {
     return null;
   }
 
@@ -40,15 +45,12 @@ export const resolveDuplicatedCreatedTab = ({
     options: urlNormalizeOptions,
   }).get(targetUrl);
   const candidates = (sameUrlTabs ?? []).filter((tab) => {
-    if (tab.id === createdTab.id) {
-      return false;
-    }
-
-    if (tab.pinned && !includePinnedTabs) {
-      return false;
-    }
-
-    if (!includeAllWindow && tab.windowId !== createdTab.windowId) {
+    if (
+      tab.id === createdTab.id ||
+      (tab.pinned && !includePinnedTabs) ||
+      (includeGroupedTabs === false && isInTabGroup(tab.groupId)) ||
+      (!includeAllWindow && tab.windowId !== createdTab.windowId)
+    ) {
       return false;
     }
 

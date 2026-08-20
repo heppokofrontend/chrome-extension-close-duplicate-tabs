@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## v1.6.1
+
+- Added an "Include tabs in tab groups" option (on by default) to exclude tabs currently in a tab group from duplicate detection, gathering, and auto-avoid-duplicates.
+- Reloading all windows now shows the number of tabs that will be reloaded and requires an extra confirmation once the count exceeds a safety threshold.
+- Removed the fixed min/max bounds on the categorize threshold field; negative values are now normalized instead of being clamped.
+- Fixed a dialog occasionally being canceled immediately after it was opened right after closing another dialog.
+- Minor visual adjustments to the categorize dialog and popup icons.
+
 ## v1.6.0
 
 - Added a "Gather specific tabs into a window" command: pick an open origin (including special pages like `about:blank`/`data:`, grouped by protocol) from the current window or all windows, then gather its tabs into the current window, the current window as a new tab group, or a new window.

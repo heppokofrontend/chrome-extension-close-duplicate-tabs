@@ -6,6 +6,7 @@ import { buildSelectField } from './build-select-field';
 
 export type SelectField<K extends string, V extends string = string> = {
   key: K;
+  label: string;
   options: { value: V; label: string }[];
 };
 
@@ -18,7 +19,7 @@ export const renderSelectModalContent = <F extends readonly SelectField<string>[
   fields,
   resolve,
 }: {
-  fields: readonly (SelectField<F[number]['key']> & { label: string })[];
+  fields: readonly SelectField<F[number]['key']>[];
   resolve: (result: { answers: AnswersOf<F> } | 'cancel') => void;
 }) => {
   const getters = fields.map(({ key, label, options }) => {

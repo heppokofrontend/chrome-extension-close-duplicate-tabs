@@ -64,14 +64,14 @@ describe('showConfirmModal', () => {
 
     STATE.saveData = { ...STATE.saveData, noConfirm: true };
 
-    await expect(showConfirmModal({ taskName: 'remove' })).resolves.toBe('confirm');
+    await expect(showConfirmModal({ message: 'remove confirm text' })).resolves.toBe('confirm');
     expect(dialogMocks.showModal).not.toHaveBeenCalled();
   });
 
   it('opens the modal and resolves with the clicked command', async () => {
     const { showConfirmModal, dialogMocks } = await loadModule();
 
-    const promise = showConfirmModal({ taskName: 'remove' });
+    const promise = showConfirmModal({ message: 'remove confirm text' });
 
     expect(dialogMocks.showModal).toHaveBeenCalled();
 

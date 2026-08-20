@@ -6,10 +6,10 @@
     "message": "Close duplicate tab on current window."
   },
   "announcement_new_feature_title": {
-    "message": "Update 1.6.0 🎉"
+    "message": "Update 1.6.1 🎉"
   },
   "announcement_new_feature_message": {
-    "message": "New feature added: \n\"Gather specific tabs into a window\"."
+    "message": "New feature added: \n\"Include tabs in tab groups\"."
   },
   "checkbox_hash": {
     "message": "Ignore hash"
@@ -22,6 +22,9 @@
   },
   "checkbox_pinned": {
     "message": "Include pinned tabs"
+  },
+  "checkbox_grouped": {
+    "message": "Include tabs in tab groups"
   },
   "checkbox_pathname": {
     "message": "Ignore pathname"
@@ -166,7 +169,10 @@
     "message": "Will close duplicate tabs in all windows. \nAre you sure you want to run this?"
   },
   "dialog_reload": {
-    "message": "Will reload all tabs. \nAre you sure you want to run this?"
+    "message": "Will reload $COUNT$ tabs. \nAre you sure you want to run this?",
+    "placeholders": {
+      "COUNT": { "content": "$1" }
+    }
   },
   "dialog_reload_allwin": {
     "message": "Will reload all tabs in all windows. \nAre you sure you want to run this?"

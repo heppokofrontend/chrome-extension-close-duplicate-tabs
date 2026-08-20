@@ -62,7 +62,7 @@ describe('showChoicesModal', () => {
     const { showChoicesModal } = await loadModule();
 
     const promise = showChoicesModal({
-      taskName: 'combine',
+      message: 'combine confirm text',
       commands: ['sortByUrl', 'sortByTitle', 'sortByHostAndTitle'],
     });
     const buttons = buttonsIn('#confirm-buttons');

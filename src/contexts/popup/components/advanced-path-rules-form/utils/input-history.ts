@@ -1,8 +1,5 @@
 import { STATE } from '@/contexts/popup/state';
-import { normalizeOrigin, type InputHistoryKey } from '@/utils';
-
-/** 1つの入力欄あたりに保持する履歴の最大件数。 */
-export const INPUT_HISTORY_MAX_ENTRIES = 5;
+import { INPUT_HISTORY_MAX_ENTRIES, normalizeOrigin, type InputHistoryKey } from '@/utils';
 
 /**
  * 空文字列は履歴に追加しない（null を返す）。既存の同じ値は取り除いてから

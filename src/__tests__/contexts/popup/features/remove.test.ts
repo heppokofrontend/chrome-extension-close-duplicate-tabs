@@ -1,12 +1,18 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-const { showChoicesModal, sendTaskRequest } = vi.hoisted(() => ({
+const { showChoicesModal, sendTaskRequest, getMessage } = vi.hoisted(() => ({
   showChoicesModal: vi.fn(),
   sendTaskRequest: vi.fn(),
+  getMessage: vi.fn((key: string) => key),
 }));
 
 vi.mock('@/contexts/popup/components/dialogs', () => ({ showChoicesModal }));
 vi.mock('@/contexts/popup/features/utils/send-task-request', () => ({ sendTaskRequest }));
+vi.mock('@/utils', async () => {
+  const actual = await vi.importActual<typeof import('@/utils')>('@/utils');
+
+  return { ...actual, getMessage };
+});
 
 const load = async () => {
   vi.resetModules();
@@ -42,7 +48,7 @@ describe('sendRemoveRequest', () => {
     await sendRemoveRequest();
 
     expect(showChoicesModal).toHaveBeenCalledWith({
-      taskName: 'remove_allwin',
+      message: 'dialog_remove_allwin',
       commands: ['confirm', 'show_duplicate', 'cancel'],
     });
   });

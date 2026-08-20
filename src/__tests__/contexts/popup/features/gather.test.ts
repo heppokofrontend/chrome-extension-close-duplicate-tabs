@@ -23,13 +23,16 @@ const load = async () => {
   return { sendGatherRequest, STATE };
 };
 
-const stubTabs = (tabs: Array<{ url?: string | undefined; pinned?: boolean }>) => {
+const stubTabs = (
+  tabs: Array<{ url?: string | undefined; pinned?: boolean; groupId?: number }>,
+) => {
   const query = vi.fn((arg: { pinned?: boolean }) =>
     Promise.resolve(arg.pinned === false ? tabs.filter((tab) => !tab.pinned) : tabs),
   );
 
   vi.stubGlobal('chrome', {
     tabs: { query },
+    tabGroups: { TAB_GROUP_ID_NONE: -1 },
     i18n: { getMessage: vi.fn((key: string) => key) },
   });
 
@@ -52,7 +55,7 @@ describe('sendGatherRequest', () => {
     await sendGatherRequest();
 
     expect(showChoicesModal).toHaveBeenCalledWith({
-      taskName: 'gather_all',
+      message: 'dialog_gather_all',
       commands: ['gatherFromCurrentWindow', 'gatherFromAllWindows', 'cancel'],
     });
     expect(showSelectModal).not.toHaveBeenCalled();
@@ -117,14 +120,16 @@ describe('sendGatherRequest', () => {
     await sendGatherRequest();
 
     expect(showSelectModal).toHaveBeenCalledWith({
-      taskName: 'gather',
+      message: 'dialog_gather',
       fields: [
         {
           key: 'origin',
+          label: 'dialog_command_gather_select_origin',
           options: [{ value: 'https://a.example.com', label: 'https://a.example.com' }],
         },
         {
           key: 'destination',
+          label: 'dialog_command_gather_select_destination',
           options: [
             { value: 'currentWindow', label: 'dialog_command_currentWindow' },
             { value: 'currentWindowGroup', label: 'dialog_command_currentWindowGroup' },
@@ -149,16 +154,84 @@ describe('sendGatherRequest', () => {
       pinned: undefined,
     });
     expect(showSelectModal).toHaveBeenCalledWith({
-      taskName: 'gather',
+      message: 'dialog_gather',
       fields: [
         {
           key: 'origin',
+          label: 'dialog_command_gather_select_origin',
           options: [
             { value: 'https://pinned-only.example.com', label: 'https://pinned-only.example.com' },
           ],
         },
         {
           key: 'destination',
+          label: 'dialog_command_gather_select_destination',
+          options: [
+            { value: 'currentWindow', label: 'dialog_command_currentWindow' },
+            { value: 'currentWindowGroup', label: 'dialog_command_currentWindowGroup' },
+            { value: 'newWindow', label: 'dialog_command_newWindow' },
+          ],
+        },
+      ],
+    });
+  });
+
+  it('excludes origins that only have grouped tabs when includeGroupedTabs is off', async () => {
+    const { sendGatherRequest, STATE } = await load();
+
+    STATE.saveData = { ...STATE.saveData, includeAllWindow: true, includeGroupedTabs: false };
+    stubTabs([
+      { url: 'https://grouped-only.example.com/x', groupId: 1 },
+      { url: 'https://a.example.com/y', groupId: -1 },
+    ]);
+
+    await sendGatherRequest();
+
+    expect(showSelectModal).toHaveBeenCalledWith({
+      message: 'dialog_gather',
+      fields: [
+        {
+          key: 'origin',
+          label: 'dialog_command_gather_select_origin',
+          options: [{ value: 'https://a.example.com', label: 'https://a.example.com' }],
+        },
+        {
+          key: 'destination',
+          label: 'dialog_command_gather_select_destination',
+          options: [
+            { value: 'currentWindow', label: 'dialog_command_currentWindow' },
+            { value: 'currentWindowGroup', label: 'dialog_command_currentWindowGroup' },
+            { value: 'newWindow', label: 'dialog_command_newWindow' },
+          ],
+        },
+      ],
+    });
+  });
+
+  it('includes origins from grouped tabs when includeGroupedTabs is on', async () => {
+    const { sendGatherRequest, STATE } = await load();
+
+    STATE.saveData = { ...STATE.saveData, includeAllWindow: true, includeGroupedTabs: true };
+    stubTabs([{ url: 'https://grouped-only.example.com/x', groupId: 1 }]);
+
+    await sendGatherRequest();
+
+    expect(showSelectModal).toHaveBeenCalledWith({
+      message: 'dialog_gather',
+      fields: [
+        {
+          key: 'origin',
+          label: 'dialog_command_gather_select_origin',
+          options: [
+            {
+              value: 'https://grouped-only.example.com',
+              label: 'https://grouped-only.example.com',
+            },
+          ],
+        },
+        {
+          key: 'destination',
+          label: 'dialog_command_gather_select_destination',
           options: [
             { value: 'currentWindow', label: 'dialog_command_currentWindow' },
             { value: 'currentWindowGroup', label: 'dialog_command_currentWindowGroup' },
@@ -197,10 +270,11 @@ describe('sendGatherRequest', () => {
     await sendGatherRequest();
 
     expect(showSelectModal).toHaveBeenCalledWith({
-      taskName: 'gather',
+      message: 'dialog_gather',
       fields: [
         {
           key: 'origin',
+          label: 'dialog_command_gather_select_origin',
           options: [
             { value: 'https://a.example.com', label: 'https://a.example.com' },
             { value: 'https://b.example.com', label: 'https://b.example.com' },
@@ -208,6 +282,7 @@ describe('sendGatherRequest', () => {
         },
         {
           key: 'destination',
+          label: 'dialog_command_gather_select_destination',
           options: [
             { value: 'currentWindow', label: 'dialog_command_currentWindow' },
             { value: 'currentWindowGroup', label: 'dialog_command_currentWindowGroup' },

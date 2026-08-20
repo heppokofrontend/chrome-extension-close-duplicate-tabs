@@ -73,10 +73,11 @@ describe('showSelectModal', () => {
     const { showSelectModal } = await loadModule();
 
     const promise = showSelectModal({
-      taskName: 'gather',
+      message: 'dialog_gather',
       fields: [
         {
           key: 'origin',
+          label: 'dialog_command_gather_select_origin',
           options: [
             { value: 'https://a.example.com', label: 'https://a.example.com' },
             { value: 'https://b.example.com', label: 'https://b.example.com' },
@@ -84,6 +85,7 @@ describe('showSelectModal', () => {
         },
         {
           key: 'destination',
+          label: 'dialog_command_gather_select_destination',
           options: [
             { value: 'currentWindow', label: 'dialog_command_currentWindow' },
             { value: 'newWindow', label: 'dialog_command_newWindow' },
@@ -119,8 +121,8 @@ describe('showSelectModal', () => {
     const { showSelectModal, dialogMocks } = await loadModule();
 
     void showSelectModal({
-      taskName: 'gather',
-      fields: [{ key: 'origin', options: [] }],
+      message: 'dialog_gather',
+      fields: [{ key: 'origin', label: 'dialog_command_gather_select_origin', options: [] }],
     });
 
     clickCommand('apply');
@@ -132,10 +134,11 @@ describe('showSelectModal', () => {
     const { showSelectModal } = await loadModule();
 
     const promise = showSelectModal({
-      taskName: 'gather',
+      message: 'dialog_gather',
       fields: [
         {
           key: 'origin',
+          label: 'dialog_command_gather_select_origin',
           options: [{ value: 'https://a.example.com', label: 'https://a.example.com' }],
         },
       ],
