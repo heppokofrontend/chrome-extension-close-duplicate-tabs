@@ -16,7 +16,7 @@ const onClick = (e: MouseEvent) => {
   }
 };
 
-const run = () => {
+export const initForcedChangeURLWhenClickedAnchorLink = () => {
   void getLocalStorage('saveData').then((saveData) => {
     window.removeEventListener('click', onClick);
 
@@ -25,8 +25,3 @@ const run = () => {
     }
   });
 };
-
-window.addEventListener('focus', () => {
-  run();
-});
-run();
