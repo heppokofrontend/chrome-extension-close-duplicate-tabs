@@ -1,21 +1,28 @@
 import { getLocalStorage } from '@/utils';
 
+const resolveTarget = (node: EventTarget | null) => {
+  if (!(node instanceof Element)) {
+    return null;
+  }
+
+  return node.closest('a');
+};
+
 const onClick = (e: MouseEvent) => {
-  if (e.currentTarget instanceof HTMLAnchorElement) {
-    history.pushState(null, '', e.currentTarget.href);
+  const anchor = resolveTarget(e.target);
+
+  if (anchor?.getAttribute('href')?.startsWith('#')) {
+    history.pushState(null, '', anchor.href);
   }
 };
+
 const run = () => {
   void getLocalStorage('saveData').then((saveData) => {
-    const anchors = document.querySelectorAll<HTMLAnchorElement>('a[href^="#"]');
+    window.removeEventListener('click', onClick);
 
-    anchors.forEach((a) => {
-      a.removeEventListener('click', onClick);
-
-      if (saveData.forcedChangeURLWhenClickedAnchorLink) {
-        a.addEventListener('click', onClick);
-      }
-    });
+    if (saveData.forcedChangeURLWhenClickedAnchorLink) {
+      window.addEventListener('click', onClick);
+    }
   });
 };
 

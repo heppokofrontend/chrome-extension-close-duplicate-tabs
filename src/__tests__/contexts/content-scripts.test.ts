@@ -7,35 +7,52 @@ const flushPromises = async () => {
   }
 };
 
+type ListenersByType = Record<string, Array<(e: Event) => void>>;
+
 /**
- * content-scripts はトップレベルで window の 'focus' に永続リスナーを張るモジュールのため、
- * resetModules を跨いでも window に実リスナーが積み上がらないよう addEventListener を横取りし、
+ * content-scripts はトップレベルで window に 'focus'/'click' の永続リスナーを張るモジュールのため、
+ * resetModules を跨いでも window に実リスナーが積み上がらないよう add/removeEventListener を横取りし、
  * 呼び出し元がリスナーを直接起動できるようにする（chrome スタブを整えてからモジュールを読み直す）。
  */
-const loadContentScript = async (forcedChangeURLWhenClickedAnchorLink: boolean) => {
+const loadContentScript = async (
+  get: ReturnType<typeof vi.fn> = vi.fn().mockResolvedValue({ saveData: {} }),
+) => {
   vi.resetModules();
 
-  const get = vi.fn().mockResolvedValue({ saveData: { forcedChangeURLWhenClickedAnchorLink } });
-  const focusListeners: Array<() => void> = [];
+  const listeners: ListenersByType = { focus: [], click: [] };
 
   vi.stubGlobal('chrome', { storage: { local: { get } } });
   vi.spyOn(window, 'addEventListener').mockImplementation((type, listener) => {
-    if (type === 'focus' && typeof listener === 'function') {
-      focusListeners.push(listener as () => void);
+    if (typeof listener === 'function' && type in listeners) {
+      listeners[type]?.push(listener);
+    }
+  });
+  vi.spyOn(window, 'removeEventListener').mockImplementation((type, listener) => {
+    if (type in listeners) {
+      listeners[type] = (listeners[type] ?? []).filter((l) => l !== listener);
     }
   });
 
   await import('@/contexts/content-scripts');
   await flushPromises();
 
+  const clickAnchor = (target: Element) => {
+    const event = new MouseEvent('click', { bubbles: true, cancelable: true });
+    Object.defineProperty(event, 'target', { value: target, enumerable: true });
+
+    for (const listener of listeners['click'] ?? []) {
+      listener(event);
+    }
+  };
+
   const triggerFocus = async () => {
-    for (const listener of focusListeners) {
-      listener();
+    for (const listener of listeners['focus'] ?? []) {
+      listener(new Event('focus'));
     }
     await flushPromises();
   };
 
-  return { triggerFocus };
+  return { clickAnchor, triggerFocus };
 };
 
 describe('content-scripts', () => {
@@ -45,24 +62,41 @@ describe('content-scripts', () => {
     document.body.innerHTML = '';
   });
 
+  const stubSaveData = (forcedChangeURLWhenClickedAnchorLink: boolean) =>
+    vi.fn().mockResolvedValue({ saveData: { forcedChangeURLWhenClickedAnchorLink } });
+
   it('rewrites the URL via pushState when clicking a hash link and the option is enabled', async () => {
     document.body.innerHTML = '<a id="anchor" href="#section">link</a>';
-    await loadContentScript(true);
+    const { clickAnchor } = await loadContentScript(stubSaveData(true));
 
     const pushState = vi.spyOn(history, 'pushState');
+    const anchor = document.getElementById('anchor') as HTMLAnchorElement;
 
-    document.getElementById('anchor')?.click();
+    clickAnchor(anchor);
+
+    expect(pushState).toHaveBeenCalledWith(null, '', expect.stringContaining('#section'));
+  });
+
+  it('rewrites the URL when clicking a descendant of a hash link', async () => {
+    document.body.innerHTML = '<a id="anchor" href="#section"><span>link</span></a>';
+    const { clickAnchor } = await loadContentScript(stubSaveData(true));
+
+    const pushState = vi.spyOn(history, 'pushState');
+    const span = document.querySelector('span') as HTMLSpanElement;
+
+    clickAnchor(span);
 
     expect(pushState).toHaveBeenCalledWith(null, '', expect.stringContaining('#section'));
   });
 
   it('does not touch the URL when the option is disabled', async () => {
     document.body.innerHTML = '<a id="anchor" href="#section">link</a>';
-    await loadContentScript(false);
+    const { clickAnchor } = await loadContentScript(stubSaveData(false));
 
     const pushState = vi.spyOn(history, 'pushState');
+    const anchor = document.getElementById('anchor') as HTMLAnchorElement;
 
-    document.getElementById('anchor')?.click();
+    clickAnchor(anchor);
 
     expect(pushState).not.toHaveBeenCalled();
   });
@@ -74,21 +108,17 @@ describe('content-scripts', () => {
       .fn()
       .mockResolvedValueOnce({ saveData: { forcedChangeURLWhenClickedAnchorLink: false } })
       .mockResolvedValueOnce({ saveData: { forcedChangeURLWhenClickedAnchorLink: true } });
-
-    vi.stubGlobal('chrome', { storage: { local: { get } } });
-    vi.resetModules();
-    await import('@/contexts/content-scripts');
-    await flushPromises();
+    const { clickAnchor, triggerFocus } = await loadContentScript(get);
 
     const pushState = vi.spyOn(history, 'pushState');
+    const anchor = document.getElementById('anchor') as HTMLAnchorElement;
 
-    document.getElementById('anchor')?.click();
+    clickAnchor(anchor);
     expect(pushState).not.toHaveBeenCalled();
 
-    window.dispatchEvent(new Event('focus'));
-    await flushPromises();
+    await triggerFocus();
 
-    document.getElementById('anchor')?.click();
+    clickAnchor(anchor);
     expect(pushState).toHaveBeenCalledWith(null, '', expect.stringContaining('#section'));
   });
 });
