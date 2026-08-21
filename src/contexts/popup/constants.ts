@@ -3,6 +3,7 @@ const $ = <T extends Element>(selector: string) => document.querySelector<T>(sel
 const $$ = <T extends Element>(selector: string) => document.querySelectorAll<T>(selector);
 
 export const POPUP_UI = {
+  showUpdateInfoButton: $<HTMLButtonElement>('#show-update-info-button'),
   runButtons: $$<HTMLButtonElement>('button[data-task-name]'),
   optionCheckboxes: $$<HTMLInputElement>('input[type="checkbox"][data-option-type]'),
   optionSelects: $$<HTMLSelectElement>('select[data-option-type]'),

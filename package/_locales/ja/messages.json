@@ -6,10 +6,18 @@
     "message": "現在のウィンドウでURLが重複しているタブを閉じます。"
   },
   "announcement_new_feature_title": {
-    "message": "アップデート情報 1.6.1 🎉"
+    "message": "アップデート情報 $VERSION$ 🎉",
+    "placeholders": {
+      "VERSION": {
+        "content": "$1"
+      }
+    }
   },
   "announcement_new_feature_message": {
-    "message": "新機能\n「タブグループ内のタブを対象にする」\nを追加しました。"
+    "message": "アップデート情報の自動表示をやめました。\n次の機能開発のため、「並び替え」「全部別窓」ボタンの位置を移動しました。"
+  },
+  "btn_viewUpdateInfo": {
+    "message": "アップデート情報を見る"
   },
   "checkbox_hash": {
     "message": "ハッシュを無視する"

@@ -6,10 +6,18 @@
     "message": "Close duplicate tab on current window."
   },
   "announcement_new_feature_title": {
-    "message": "Update 1.6.1 🎉"
+    "message": "Update $VERSION$ 🎉",
+    "placeholders": {
+      "VERSION": {
+        "content": "$1"
+      }
+    }
   },
   "announcement_new_feature_message": {
-    "message": "New feature added: \n\"Include tabs in tab groups\"."
+    "message": "Update notices are no longer shown automatically.\nMoved the Sort and Divide buttons to make room for an upcoming feature."
+  },
+  "btn_viewUpdateInfo": {
+    "message": "View update info"
   },
   "checkbox_hash": {
     "message": "Ignore hash"

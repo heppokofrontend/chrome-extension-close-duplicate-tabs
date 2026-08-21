@@ -7,6 +7,10 @@ button {
   line-height: inherit;
 }
 
+.str-header {
+  padding: 0 16px;
+}
+
 .focus-current-window-button-wrapper {
   width: fit-content;
   padding: 1.75rem 1.75rem 0;

@@ -7,6 +7,7 @@ import { initDetailsElements } from '@/contexts/popup/components/disclosures';
 import { initOptionCheckboxes } from '@/contexts/popup/components/option-checkbox';
 import { initOptionSelects } from '@/contexts/popup/components/option-select';
 import { initRunButtons } from '@/contexts/popup/components/run-buttons';
+import { POPUP_UI } from '@/contexts/popup/constants';
 import { STATE, save } from '@/contexts/popup/state';
 import { setSelectUpdateBadgeModeValue } from '@/contexts/popup/utils/set-select-value';
 import { getLocalStorage, getMessage } from '@/utils';
@@ -49,45 +50,50 @@ const loadCurrentTabOrigin = async () => {
   }
 };
 
-const addListener = () => {
-  initRunButtons();
-  initOptionSelects();
-  initOptionCheckboxes();
-  addAdvancedPathRuleListeners();
-  initDetailsElements();
-};
-
-/** 新機能のお知らせを、ユーザーごとに初回表示のみ行う。 */
-const announceNewFeature = () => {
+/** 新機能のお知らせモーダルのスイッチにお知らせバッジを表示する。 */
+const initAnnounceNewFeature = () => {
   const key = 'update-announcement';
-  const version = 'v1.6.1';
+  const version = 'v1.6.3';
   const value = STATE.saveData.shown[key];
+
+  POPUP_UI.showUpdateInfoButton.addEventListener('click', () => {
+    showNoticeModal({
+      title: getMessage('announcement_new_feature_title', version.replace(/^v/, '')),
+      message: getMessage('announcement_new_feature_message'),
+      cleanup: () => {
+        save({ shown: { [key]: version } });
+        POPUP_UI.showUpdateInfoButton.dataset['checked'] = 'true';
+      },
+    });
+  });
 
   // すでに表示したユーザ
   if (value === version) {
     return;
   }
 
-  // 一度もお知らせ等を記録したことがない新規インストールユーザにはモーダルを表示せず現在のバージョンだけ記録しておく
+  // 一度もお知らせ等を記録したことがない新規インストールユーザにはバッジを表示せず現在のバージョンだけ記録しておく
   if (Object.keys(STATE.saveData.shown).length === 0) {
     save({ shown: { [key]: version } });
     return;
   }
 
-  showNoticeModal({
-    title: getMessage('announcement_new_feature_title'),
-    message: getMessage('announcement_new_feature_message'),
-    cleanup: () => {
-      save({ shown: { [key]: version } });
-    },
-  });
+  POPUP_UI.showUpdateInfoButton.dataset['checked'] = 'false';
+};
+
+const addListener = () => {
+  initRunButtons();
+  initOptionSelects();
+  initOptionCheckboxes();
+  addAdvancedPathRuleListeners();
+  initDetailsElements();
+  initAnnounceNewFeature();
 };
 
 const init = async () => {
   await Promise.all([loadSaveData(), loadCurrentTabOrigin()]);
   renderAdvancedPathRules();
   addListener();
-  announceNewFeature();
 
   // CSS Transitionの有効化
   setTimeout(() => {
