@@ -13,8 +13,8 @@ import { getLocalStorage, getMessage } from '@/utils';
 
 const loadSaveData = async () => {
   return Promise.all([
-    getLocalStorage('dialogOpenStatus').then((dialogOpenStatus) => {
-      Object.assign(STATE.dialogOpenStatus, dialogOpenStatus);
+    getLocalStorage('disclosureOpenStatus').then((disclosureOpenStatus) => {
+      Object.assign(STATE.disclosureOpenStatus, disclosureOpenStatus);
     }),
     getLocalStorage('saveData').then((saveData) => {
       for (const [key, value] of Object.entries(saveData)) {

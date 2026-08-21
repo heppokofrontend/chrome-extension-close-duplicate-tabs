@@ -8,10 +8,12 @@ const mockStoredSaveData = (value: unknown) => {
   vi.stubGlobal('chrome', { storage: { local: { get } } });
 };
 
-const mockStoredDialogOpenStatus = (value: unknown) => {
-  const get = vi.fn().mockResolvedValue({ dialogOpenStatus: value });
+const mockStoredDisclosureOpenStatus = (value: unknown) => {
+  const get = vi.fn().mockResolvedValue({ disclosureOpenStatus: value });
+  const set = vi.fn().mockResolvedValue(undefined);
+  const remove = vi.fn().mockResolvedValue(undefined);
 
-  vi.stubGlobal('chrome', { storage: { local: { get } } });
+  vi.stubGlobal('chrome', { storage: { local: { get, set, remove } } });
 };
 
 const mockStorageSet = (set = vi.fn().mockResolvedValue(undefined)) => {
@@ -53,23 +55,23 @@ describe('getLocalStorage', () => {
     expect(defaultSaveData).toStrictEqual(defaultsCopy);
   });
 
-  it('returns the stored value for dialogOpenStatus when it is a boolean record', async () => {
-    mockStoredDialogOpenStatus({ dangerZone: true, advancedPathRules: false });
-    expect(await getLocalStorage('dialogOpenStatus')).toStrictEqual({
+  it('returns the stored value for disclosureOpenStatus when it is a boolean record', async () => {
+    mockStoredDisclosureOpenStatus({ dangerZone: true, advancedPathRules: false });
+    expect(await getLocalStorage('disclosureOpenStatus')).toStrictEqual({
       dangerZone: true,
       advancedPathRules: false,
     });
   });
 
-  it('falls back to an empty object for dialogOpenStatus when the stored value is not a boolean record', async () => {
-    mockStoredDialogOpenStatus(undefined);
-    expect(await getLocalStorage('dialogOpenStatus')).toStrictEqual({});
+  it('falls back to an empty object for disclosureOpenStatus when the stored value is not a boolean record', async () => {
+    mockStoredDisclosureOpenStatus(undefined);
+    expect(await getLocalStorage('disclosureOpenStatus')).toStrictEqual({});
 
-    mockStoredDialogOpenStatus({ dangerZone: 'yes' });
-    expect(await getLocalStorage('dialogOpenStatus')).toStrictEqual({});
+    mockStoredDisclosureOpenStatus({ dangerZone: 'yes' });
+    expect(await getLocalStorage('disclosureOpenStatus')).toStrictEqual({});
 
-    mockStoredDialogOpenStatus('nope');
-    expect(await getLocalStorage('dialogOpenStatus')).toStrictEqual({});
+    mockStoredDisclosureOpenStatus('nope');
+    expect(await getLocalStorage('disclosureOpenStatus')).toStrictEqual({});
   });
 });
 

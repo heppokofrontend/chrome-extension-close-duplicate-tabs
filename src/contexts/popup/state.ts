@@ -8,7 +8,7 @@ export const DETAILS_OPEN_STATUS_KEYS = {
 export type DetailsOpenStatusKey = keyof typeof DETAILS_OPEN_STATUS_KEYS;
 
 export const STATE = {
-  dialogOpenStatus: {
+  disclosureOpenStatus: {
     dangerZone: false,
     advancedPathRules: false,
   },

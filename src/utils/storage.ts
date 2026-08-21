@@ -101,7 +101,7 @@ export const defaultSaveData: Required<SaveDataType> = {
 };
 
 export function getLocalStorage(key: 'saveData'): Promise<Required<SaveDataType>>;
-export function getLocalStorage(key: 'dialogOpenStatus'): Promise<Record<string, boolean>>;
+export function getLocalStorage(key: 'disclosureOpenStatus'): Promise<Record<string, boolean>>;
 export function getLocalStorage(key: string): Promise<unknown>;
 export async function getLocalStorage(key: string) {
   const result = await chrome.storage.local.get(key);
@@ -110,8 +110,22 @@ export async function getLocalStorage(key: string) {
     return mergeSaveData(result['saveData'], defaultSaveData);
   }
 
-  if (key === 'dialogOpenStatus') {
-    return isBooleanRecord(result['dialogOpenStatus']) ? result['dialogOpenStatus'] : {};
+  if (key === 'disclosureOpenStatus') {
+    // 1.6.3以降のユーザのみになったら削除する
+    const oldTypoKey = 'dialogOpenStatus';
+    const fallback = await chrome.storage.local.get(oldTypoKey);
+    const resolvedFallback = isBooleanRecord(fallback[oldTypoKey]) ? fallback[oldTypoKey] : {};
+
+    void chrome.storage.local.remove(oldTypoKey);
+    void chrome.storage.local.remove('dangerZoneIsOpen');
+
+    if (isBooleanRecord(result['disclosureOpenStatus'])) {
+      return result['disclosureOpenStatus'];
+    }
+
+    await chrome.storage.local.set({ disclosureOpenStatus: resolvedFallback });
+
+    return resolvedFallback;
   }
 
   return result[key];

@@ -17,12 +17,12 @@ export const onSummaryClick = (e: MouseEvent) => {
   }
 
   const isOpen = !detailsElement.open;
-  const dialogOpenStatusKey = DETAILS_OPEN_STATUS_KEYS[detailsElement.id];
+  const disclosureOpenStatusKey = DETAILS_OPEN_STATUS_KEYS[detailsElement.id];
 
   clearTimeout(setTimeoutIdMap.get(summaryElement));
 
-  STATE.dialogOpenStatus[dialogOpenStatusKey] = isOpen;
-  void chrome.storage.local.set({ dialogOpenStatus: STATE.dialogOpenStatus });
+  STATE.disclosureOpenStatus[disclosureOpenStatusKey] = isOpen;
+  void chrome.storage.local.set({ disclosureOpenStatus: STATE.disclosureOpenStatus });
 
   if (isOpen) {
     const setTimeoutId = setTimeout(() => {

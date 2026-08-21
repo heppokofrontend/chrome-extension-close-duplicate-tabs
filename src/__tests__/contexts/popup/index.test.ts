@@ -44,10 +44,12 @@ const loadPopup = async (shown: Record<string, string>) => {
   vi.resetModules();
   vi.clearAllMocks();
 
-  const get = vi.fn().mockResolvedValue({ saveData: { shown }, dialogOpenStatus: {} });
+  const get = vi.fn().mockResolvedValue({ saveData: { shown }, disclosureOpenStatus: {} });
+  const set = vi.fn().mockResolvedValue(undefined);
+  const remove = vi.fn().mockResolvedValue(undefined);
   const query = vi.fn().mockResolvedValue([]);
 
-  vi.stubGlobal('chrome', { storage: { local: { get } }, tabs: { query } });
+  vi.stubGlobal('chrome', { storage: { local: { get, set, remove } }, tabs: { query } });
 
   await import('@/contexts/popup/index');
   await flushPromises();
