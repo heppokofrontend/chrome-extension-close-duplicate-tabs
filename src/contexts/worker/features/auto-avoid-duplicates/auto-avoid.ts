@@ -80,7 +80,7 @@ const resolveCreatedTab = async (createdTab: CreatedTab) => {
 
       const targetWindow = await chrome.windows.get(freshCreatedTab.windowId);
 
-      if (targetWindow.focused) {
+      if (!targetWindow.focused) {
         await chrome.windows.update(freshCreatedTab.windowId, { focused: true });
       }
 

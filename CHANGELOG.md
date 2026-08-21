@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## v1.6.2
+
+- Fixed the "Force URL Hash Change" option not applying to anchor links added to the page after it finished loading.
+- Fixed auto-avoid-duplicates not focusing the target window when switching away from a duplicate tab.
+
 ## v1.6.1
 
 - Added an "Include tabs in tab groups" option (on by default) to exclude tabs currently in a tab group from duplicate detection, gathering, and auto-avoid-duplicates.

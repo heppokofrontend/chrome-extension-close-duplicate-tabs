@@ -164,8 +164,37 @@ describe('registerAutoAvoidListeners', () => {
 
     expect(mocks.move).toHaveBeenCalledWith(1, { windowId: 1, index: 3 });
     expect(mocks.update).toHaveBeenCalledWith(1, { active: true });
-    expect(mocks.windowsUpdate).toHaveBeenCalledWith(1, { focused: true });
+    expect(mocks.windowsUpdate).not.toHaveBeenCalled();
     expect(mocks.remove).toHaveBeenCalledWith(2);
+  });
+
+  it('focuses the target window when it is not the focused window', async () => {
+    const { listeners, mocks } = stubChrome({
+      saveData: { autoAvoidDuplicate: true },
+      existingTabs: [makeTab({ id: 1, url: 'https://dup.com/', windowId: 1, active: false })],
+      freshCreatedTab: makeTab({
+        id: 2,
+        url: 'https://dup.com/',
+        windowId: 1,
+        active: true,
+        index: 2,
+      }),
+      targetWindowFocused: false,
+    });
+    const registerAutoAvoidListeners = await loadRegisterAutoAvoidListeners();
+
+    registerAutoAvoidListeners();
+
+    const onCreated = getListener<[{ id: number }]>(listeners.onCreated.addListener);
+    const onUpdated = getListener<[number, chrome.tabs.OnUpdatedInfo, chrome.tabs.Tab]>(
+      listeners.onUpdated.addListener,
+    );
+
+    onCreated({ id: 2 });
+    onUpdated(2, { url: 'https://dup.com/' }, makeTab({ id: 2, url: 'https://dup.com/' }));
+    await flushPromises();
+
+    expect(mocks.windowsUpdate).toHaveBeenCalledWith(1, { focused: true });
   });
 
   it('does nothing when autoAvoidDuplicate is off', async () => {
