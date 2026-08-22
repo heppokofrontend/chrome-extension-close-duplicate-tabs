@@ -17,6 +17,6 @@ export const initDetailsElements = () => {
 
     summaryElement?.addEventListener('click', onSummaryClick);
 
-    detailsElement.open = STATE.dialogOpenStatus[detailsOpenStatusKey];
+    detailsElement.open = STATE.disclosureOpenStatus[detailsOpenStatusKey];
   });
 };

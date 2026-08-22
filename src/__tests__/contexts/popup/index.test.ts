@@ -44,43 +44,68 @@ const loadPopup = async (shown: Record<string, string>) => {
   vi.resetModules();
   vi.clearAllMocks();
 
-  const get = vi.fn().mockResolvedValue({ saveData: { shown }, dialogOpenStatus: {} });
+  document.body.innerHTML = '<button id="show-update-info-button"></button>';
+
+  const get = vi.fn().mockResolvedValue({ saveData: { shown }, disclosureOpenStatus: {} });
+  const set = vi.fn().mockResolvedValue(undefined);
+  const remove = vi.fn().mockResolvedValue(undefined);
   const query = vi.fn().mockResolvedValue([]);
 
-  vi.stubGlobal('chrome', { storage: { local: { get } }, tabs: { query } });
+  vi.stubGlobal('chrome', { storage: { local: { get, set, remove } }, tabs: { query } });
 
   await import('@/contexts/popup/index');
   await flushPromises();
 };
 
-describe('announceNewFeature (via popup init)', () => {
+const clickShowUpdateInfoButton = () => {
+  document.querySelector<HTMLButtonElement>('#show-update-info-button')?.click();
+};
+
+describe('initAnnounceNewFeature (via popup init)', () => {
   afterEach(() => {
     vi.unstubAllGlobals();
   });
 
-  it('records the current version without showing the modal on a fresh install', async () => {
+  it('records the current version without showing a badge on a fresh install', async () => {
     await loadPopup({});
 
-    expect(showNoticeModal).not.toHaveBeenCalled();
-    expect(save).toHaveBeenCalledWith({ shown: { 'update-announcement': 'v1.6.1' } });
+    expect(save).toHaveBeenCalledWith({ shown: { 'update-announcement': 'v1.6.3' } });
+    expect(
+      document.querySelector('#show-update-info-button')?.getAttribute('data-checked'),
+    ).toBeNull();
   });
 
-  it('shows the notice modal for an existing user who has not seen this version yet', async () => {
+  it('shows a badge for an existing user who has not seen this version yet, and shows the modal on click', async () => {
     await loadPopup({ autoAvoidDuplicate: '2026-01-01T00:00:00.000Z' });
 
-    expect(showNoticeModal).toHaveBeenCalledTimes(1);
     expect(save).not.toHaveBeenCalled();
+    expect(document.querySelector('#show-update-info-button')?.getAttribute('data-checked')).toBe(
+      'false',
+    );
+
+    clickShowUpdateInfoButton();
+
+    expect(showNoticeModal).toHaveBeenCalledTimes(1);
 
     const { cleanup } = showNoticeModal.mock.calls[0]?.[0] as { cleanup: () => void };
     cleanup();
 
-    expect(save).toHaveBeenCalledWith({ shown: { 'update-announcement': 'v1.6.1' } });
+    expect(save).toHaveBeenCalledWith({ shown: { 'update-announcement': 'v1.6.3' } });
+    expect(document.querySelector('#show-update-info-button')?.getAttribute('data-checked')).toBe(
+      'true',
+    );
   });
 
-  it('does nothing when the user has already seen this version', async () => {
-    await loadPopup({ 'update-announcement': 'v1.6.1' });
+  it('does not show a badge when the user has already seen this version, but the modal still opens on click', async () => {
+    await loadPopup({ 'update-announcement': 'v1.6.3' });
 
-    expect(showNoticeModal).not.toHaveBeenCalled();
     expect(save).not.toHaveBeenCalled();
+    expect(
+      document.querySelector('#show-update-info-button')?.getAttribute('data-checked'),
+    ).toBeNull();
+
+    clickShowUpdateInfoButton();
+
+    expect(showNoticeModal).toHaveBeenCalledTimes(1);
   });
 });

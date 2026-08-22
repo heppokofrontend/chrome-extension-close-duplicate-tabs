@@ -67,17 +67,22 @@ body {
   background: var(--color-background);
 }
 
-h1 {
-  padding: 10px 16px;
-  font-family: monospace;
-  font-size: 0.75rem;
-  font-weight: normal;
-  line-height: 1.2;
+.str-header {
+  display: grid;
+  place-items: center;
+  min-height: 2.25rem;
   color: var(--color-h1-text);
   text-align: center;
-  letter-spacing: 2px;
   background: var(--color-h1-bg);
   border-bottom: var(--border-bottom-h1);
+
+  h1 {
+    font-family: monospace;
+    font-size: 0.75rem;
+    font-weight: normal;
+    line-height: 1.2;
+    letter-spacing: 2px;
+  }
 }
 
 button {

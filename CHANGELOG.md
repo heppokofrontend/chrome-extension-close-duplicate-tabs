@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## v1.6.3
+
+- Update notices are no longer shown automatically; a badge on the header button now indicates an unread update, and clicking it opens the notice.
+- Swapped the order of the Sort and Divide buttons.
+
 ## v1.6.2
 
 - Fixed the "Force URL Hash Change" option not applying to anchor links added to the page after it finished loading.

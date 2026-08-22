@@ -8,7 +8,7 @@ export const DETAILS_OPEN_STATUS_KEYS = {
 export type DetailsOpenStatusKey = keyof typeof DETAILS_OPEN_STATUS_KEYS;
 
 export const STATE = {
-  dialogOpenStatus: {
+  disclosureOpenStatus: {
     dangerZone: false,
     advancedPathRules: false,
   },
@@ -26,18 +26,27 @@ export const STATE = {
 const applySaveDataPatch = (
   base: Required<SaveDataType>,
   patch: Partial<SaveDataType>,
-): Required<SaveDataType> => ({
-  ...base,
-  ...patch,
-  shown: {
-    ...base.shown,
-    ...patch.shown,
-  },
-  inputHistory: {
-    ...base.inputHistory,
-    ...patch.inputHistory,
-  },
-});
+): Required<SaveDataType> => {
+  const result = {
+    ...base,
+    ...patch,
+    shown: {
+      ...base.shown,
+      ...patch.shown,
+    },
+    inputHistory: {
+      ...base.inputHistory,
+      ...patch.inputHistory,
+    },
+  };
+
+  // 1.6.3以降のユーザのみになったら削除
+  delete result.shown['1.6.0'];
+  delete result.shown['v1.6.0'];
+  delete result.shown['v1.6.1'];
+
+  return result;
+};
 
 export const save = (patch: Partial<SaveDataType>) => {
   const previous = STATE.saveData;
