@@ -627,17 +627,30 @@ details.danger {
     }
 
     button {
-      padding: 10px 0.875rem 10px 0.5rem;
+      padding: 0.625rem 0.625rem 0.5rem 0.5rem;
       color: #111;
       background-color: var(--_danger-accent);
 
+      .inner {
+        display: grid;
+        grid-template-columns: 2rem 1fr;
+        gap: 0.25rem;
+        align-items: center;
+      }
+
       .img {
-        padding-top: 2px;
-        margin-right: 0.5rem;
+        display: grid;
+        place-items: center;
+        width: 2rem;
 
         img {
+          display: block;
           width: 2rem;
           height: auto;
+
+          &[width='26'] {
+            width: 1.625rem;
+          }
 
           &[width='28'] {
             width: 1.75rem;
@@ -645,21 +658,17 @@ details.danger {
         }
       }
 
-      [data-i18n] {
-        flex-grow: 1;
-      }
-
       &[data-task-name='categorize'] .img {
-        padding-top: 4px;
-        margin-right: 12px;
-        margin-left: 2px;
+        padding-top: 2px;
       }
-    }
 
-    .inner {
-      display: flex;
-      align-items: center;
-      justify-content: flex-start;
+      &[data-task-name='combine'] {
+        padding-left: 0.3125rem;
+
+        .inner {
+          gap: 0;
+        }
+      }
     }
   }
 
