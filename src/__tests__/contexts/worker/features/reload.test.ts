@@ -1,23 +1,8 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
 
+import { createChromeTabStub } from '@/__tests__/__helpers__';
 import { runReload } from '@/contexts/worker/features/reload';
 import type { SaveDataType } from '@/utils';
-
-const makeChromeTab = (overrides: Partial<chrome.tabs.Tab> = {}): chrome.tabs.Tab => ({
-  index: 0,
-  pinned: false,
-  highlighted: false,
-  windowId: 1,
-  active: false,
-  frozen: false,
-  incognito: false,
-  selected: false,
-  discarded: false,
-  autoDiscardable: true,
-  groupId: -1,
-  lastAccessed: 0,
-  ...overrides,
-});
 
 const saveData: SaveDataType = { includeAllWindow: false, includePinnedTabs: false };
 
@@ -28,9 +13,9 @@ afterEach(() => {
 describe('runReload', () => {
   it('reloads every tab that has a numeric id', async () => {
     const tabs = [
-      makeChromeTab({ id: 1 }),
-      makeChromeTab({ id: 2 }),
-      makeChromeTab({ id: undefined }),
+      createChromeTabStub({ id: 1 }),
+      createChromeTabStub({ id: 2 }),
+      createChromeTabStub({ id: undefined }),
     ];
     const query = vi.fn().mockResolvedValue(tabs);
     const reload = vi.fn();

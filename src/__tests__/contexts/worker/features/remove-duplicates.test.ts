@@ -1,22 +1,7 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
 
+import { createChromeTabStub } from '@/__tests__/__helpers__';
 import type { SaveDataType } from '@/utils';
-
-const makeChromeTab = (overrides: Partial<chrome.tabs.Tab> = {}): chrome.tabs.Tab => ({
-  index: 0,
-  pinned: false,
-  highlighted: false,
-  windowId: 1,
-  active: false,
-  frozen: false,
-  incognito: false,
-  selected: false,
-  discarded: false,
-  autoDiscardable: true,
-  groupId: -1,
-  lastAccessed: 0,
-  ...overrides,
-});
 
 const saveData: SaveDataType = {
   includeAllWindow: false,
@@ -94,11 +79,11 @@ afterEach(() => {
 describe('runRemove', () => {
   describe('重複タブを閉じる（既定の経路）', () => {
     it('各正規化 URL につき最初の 1 つを残し、残りの重複タブを閉じる', async () => {
-      const currentTab = makeChromeTab({ id: 9, url: 'https://other.com/', windowId: 1 });
+      const currentTab = createChromeTabStub({ id: 9, url: 'https://other.com/', windowId: 1 });
       const tabs = [
-        makeChromeTab({ id: 1, url: 'https://dup.com/', windowId: 1 }),
-        makeChromeTab({ id: 2, url: 'https://dup.com/', windowId: 1 }),
-        makeChromeTab({ id: 3, url: 'https://unique.com/', windowId: 1 }),
+        createChromeTabStub({ id: 1, url: 'https://dup.com/', windowId: 1 }),
+        createChromeTabStub({ id: 2, url: 'https://dup.com/', windowId: 1 }),
+        createChromeTabStub({ id: 3, url: 'https://unique.com/', windowId: 1 }),
       ];
       const query = vi.fn((arg: chrome.tabs.QueryInfo) =>
         Promise.resolve(arg.active ? [currentTab] : tabs),
@@ -114,10 +99,10 @@ describe('runRemove', () => {
     });
 
     it('重複がなければ何も閉じない', async () => {
-      const currentTab = makeChromeTab({ id: 9, url: 'https://other.com/', windowId: 1 });
+      const currentTab = createChromeTabStub({ id: 9, url: 'https://other.com/', windowId: 1 });
       const tabs = [
-        makeChromeTab({ id: 1, url: 'https://a.com/', windowId: 1 }),
-        makeChromeTab({ id: 2, url: 'https://b.com/', windowId: 1 }),
+        createChromeTabStub({ id: 1, url: 'https://a.com/', windowId: 1 }),
+        createChromeTabStub({ id: 2, url: 'https://b.com/', windowId: 1 }),
       ];
       const query = vi.fn((arg: chrome.tabs.QueryInfo) =>
         Promise.resolve(arg.active ? [currentTab] : tabs),
@@ -135,10 +120,10 @@ describe('runRemove', () => {
 
   describe('重複ページを表示する経路（shouldShowDuplicatePage）', () => {
     it('重複一覧を session storage へ保存し、既存ウィンドウが無ければ新規に開く', async () => {
-      const currentTab = makeChromeTab({ id: 9, url: 'https://other.com/', windowId: 7 });
+      const currentTab = createChromeTabStub({ id: 9, url: 'https://other.com/', windowId: 7 });
       const tabs = [
-        makeChromeTab({ id: 1, url: 'https://dup.com/', windowId: 7 }),
-        makeChromeTab({ id: 2, url: 'https://dup.com/', windowId: 7 }),
+        createChromeTabStub({ id: 1, url: 'https://dup.com/', windowId: 7 }),
+        createChromeTabStub({ id: 2, url: 'https://dup.com/', windowId: 7 }),
       ];
       const { mocks } = stubChromeForDuplicatePage({
         currentTab,
@@ -169,10 +154,10 @@ describe('runRemove', () => {
     });
 
     it('一覧ウィンドウが生存していれば再作成せず、フォーカスして中身をリロードする', async () => {
-      const currentTab = makeChromeTab({ id: 9, url: 'https://other.com/', windowId: 7 });
+      const currentTab = createChromeTabStub({ id: 9, url: 'https://other.com/', windowId: 7 });
       const tabs = [
-        makeChromeTab({ id: 1, url: 'https://dup.com/', windowId: 7 }),
-        makeChromeTab({ id: 2, url: 'https://dup.com/', windowId: 7 }),
+        createChromeTabStub({ id: 1, url: 'https://dup.com/', windowId: 7 }),
+        createChromeTabStub({ id: 2, url: 'https://dup.com/', windowId: 7 }),
       ];
       const { chrome, mocks } = stubChromeForDuplicatePage({
         currentTab,
@@ -205,10 +190,10 @@ describe('runRemove', () => {
     });
 
     it('falls back to null when windows.create resolves a falsy value', async () => {
-      const currentTab = makeChromeTab({ id: 9, url: 'https://other.com/', windowId: 7 });
+      const currentTab = createChromeTabStub({ id: 9, url: 'https://other.com/', windowId: 7 });
       const tabs = [
-        makeChromeTab({ id: 1, url: 'https://dup.com/', windowId: 7 }),
-        makeChromeTab({ id: 2, url: 'https://dup.com/', windowId: 7 }),
+        createChromeTabStub({ id: 1, url: 'https://dup.com/', windowId: 7 }),
+        createChromeTabStub({ id: 2, url: 'https://dup.com/', windowId: 7 }),
       ];
       const { chrome, mocks } = stubChromeForDuplicatePage({
         currentTab,
@@ -236,10 +221,10 @@ describe('runRemove', () => {
     });
 
     it('skips focusing/reloading when the kept window has no numeric id', async () => {
-      const currentTab = makeChromeTab({ id: 9, url: 'https://other.com/', windowId: 7 });
+      const currentTab = createChromeTabStub({ id: 9, url: 'https://other.com/', windowId: 7 });
       const tabs = [
-        makeChromeTab({ id: 1, url: 'https://dup.com/', windowId: 7 }),
-        makeChromeTab({ id: 2, url: 'https://dup.com/', windowId: 7 }),
+        createChromeTabStub({ id: 1, url: 'https://dup.com/', windowId: 7 }),
+        createChromeTabStub({ id: 2, url: 'https://dup.com/', windowId: 7 }),
       ];
       const { chrome, mocks } = stubChromeForDuplicatePage({
         currentTab,
@@ -266,10 +251,10 @@ describe('runRemove', () => {
     });
 
     it('focuses the surviving window but skips reload when it has no tabs yet', async () => {
-      const currentTab = makeChromeTab({ id: 9, url: 'https://other.com/', windowId: 7 });
+      const currentTab = createChromeTabStub({ id: 9, url: 'https://other.com/', windowId: 7 });
       const tabs = [
-        makeChromeTab({ id: 1, url: 'https://dup.com/', windowId: 7 }),
-        makeChromeTab({ id: 2, url: 'https://dup.com/', windowId: 7 }),
+        createChromeTabStub({ id: 1, url: 'https://dup.com/', windowId: 7 }),
+        createChromeTabStub({ id: 2, url: 'https://dup.com/', windowId: 7 }),
       ];
       const { chrome, mocks } = stubChromeForDuplicatePage({
         currentTab,
