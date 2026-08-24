@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v1.6.4
+
+- Redesigned the "Combine all windows" button icon and its layout.
+
 ## v1.6.3
 
 - Update notices are no longer shown automatically; a badge on the header button now indicates an unread update, and clicking it opens the notice.
