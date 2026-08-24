@@ -14,7 +14,7 @@
     }
   },
   "announcement_new_feature_message": {
-    "message": "アップデート情報の自動表示をやめました。\n次の機能開発のため、「並び替え」「全部別窓」ボタンの位置を移動しました。"
+    "message": "「全ウィンドウを１つにまとめる」ボタンのアイコンと表記を更新しました。"
   },
   "btn_viewUpdateInfo": {
     "message": "アップデート情報を見る"
@@ -86,7 +86,7 @@
     "message": "タブを並び変える"
   },
   "btn_combine": {
-    "message": "全ウィンドウを\n１つにまとめる"
+    "message": "すべてのウィンドウを\n１つにまとめる"
   },
   "btn_gather": {
     "message": "特定のタブを\nウィンドウに集める"

@@ -14,7 +14,7 @@
     }
   },
   "announcement_new_feature_message": {
-    "message": "Update notices are no longer shown automatically.\nMoved the Sort and Divide buttons to make room for an upcoming feature."
+    "message": "Updated the icon for the \"Combine all windows\" button."
   },
   "btn_viewUpdateInfo": {
     "message": "View update info"

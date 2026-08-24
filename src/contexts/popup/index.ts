@@ -53,7 +53,7 @@ const loadCurrentTabOrigin = async () => {
 /** 新機能のお知らせモーダルのスイッチにお知らせバッジを表示する。 */
 const initAnnounceNewFeature = () => {
   const key = 'update-announcement';
-  const version = 'v1.6.3';
+  const version = 'v1.6.4';
   const value = STATE.saveData.shown[key];
 
   POPUP_UI.showUpdateInfoButton.addEventListener('click', () => {

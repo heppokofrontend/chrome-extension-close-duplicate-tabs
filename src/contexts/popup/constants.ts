@@ -2,6 +2,9 @@
 const $ = <T extends Element>(selector: string) => document.querySelector<T>(selector)!;
 const $$ = <T extends Element>(selector: string) => document.querySelectorAll<T>(selector);
 
+/** リリースごとに手動で更新する、新機能お知らせバッジの対象バージョン。 */
+export const ANNOUNCEMENT_VERSION = 'v1.6.4';
+
 export const POPUP_UI = {
   showUpdateInfoButton: $<HTMLButtonElement>('#show-update-info-button'),
   runButtons: $$<HTMLButtonElement>('button[data-task-name]'),
