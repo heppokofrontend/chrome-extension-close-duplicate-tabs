@@ -69,7 +69,7 @@ describe('initAnnounceNewFeature (via popup init)', () => {
   it('records the current version without showing a badge on a fresh install', async () => {
     await loadPopup({});
 
-    expect(save).toHaveBeenCalledWith({ shown: { 'update-announcement': 'v1.6.3' } });
+    expect(save).toHaveBeenCalledWith({ shown: { 'update-announcement': 'v1.6.4' } });
     expect(
       document.querySelector('#show-update-info-button')?.getAttribute('data-checked'),
     ).toBeNull();
@@ -90,14 +90,14 @@ describe('initAnnounceNewFeature (via popup init)', () => {
     const { cleanup } = showNoticeModal.mock.calls[0]?.[0] as { cleanup: () => void };
     cleanup();
 
-    expect(save).toHaveBeenCalledWith({ shown: { 'update-announcement': 'v1.6.3' } });
+    expect(save).toHaveBeenCalledWith({ shown: { 'update-announcement': 'v1.6.4' } });
     expect(document.querySelector('#show-update-info-button')?.getAttribute('data-checked')).toBe(
       'true',
     );
   });
 
   it('does not show a badge when the user has already seen this version, but the modal still opens on click', async () => {
-    await loadPopup({ 'update-announcement': 'v1.6.3' });
+    await loadPopup({ 'update-announcement': 'v1.6.4' });
 
     expect(save).not.toHaveBeenCalled();
     expect(
