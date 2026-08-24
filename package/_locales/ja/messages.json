@@ -82,6 +82,9 @@
   "btn_divide": {
     "message": "すべてのタブを\n別窓にする"
   },
+  "btn_ungroup": {
+    "message": "すべてのグループを\n解除する"
+  },
   "btn_sort": {
     "message": "タブを並び変える"
   },

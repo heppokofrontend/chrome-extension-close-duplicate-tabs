@@ -89,6 +89,9 @@
   "btn_divide": {
     "message": "Divide all tabs"
   },
+  "btn_ungroup": {
+    "message": "Ungroup all tab groups"
+  },
   "btn_sort": {
     "message": "Sort the tabs"
   },
