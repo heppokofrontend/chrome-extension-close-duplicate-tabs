@@ -1,20 +1,6 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
 
-const makeTab = (overrides: Partial<chrome.tabs.Tab> = {}): chrome.tabs.Tab => ({
-  index: 0,
-  pinned: false,
-  highlighted: false,
-  windowId: 1,
-  active: false,
-  frozen: false,
-  incognito: false,
-  selected: false,
-  discarded: false,
-  autoDiscardable: true,
-  groupId: -1,
-  lastAccessed: 0,
-  ...overrides,
-});
+import { createChromeTabStub } from '@/__tests__/__helpers__';
 
 /** 保留中の microtask を掃き出す。 */
 const flushPromises = async () => {
@@ -91,8 +77,15 @@ describe('registerAutoAvoidListeners', () => {
   it('closes the new tab when it duplicates the already-active tab in its window', async () => {
     const { listeners, mocks } = stubChrome({
       saveData: { autoAvoidDuplicate: true },
-      existingTabs: [makeTab({ id: 1, url: 'https://dup.com/', windowId: 1, active: true })],
-      freshCreatedTab: makeTab({ id: 2, url: 'https://dup.com/', windowId: 1, active: false }),
+      existingTabs: [
+        createChromeTabStub({ id: 1, url: 'https://dup.com/', windowId: 1, active: true }),
+      ],
+      freshCreatedTab: createChromeTabStub({
+        id: 2,
+        url: 'https://dup.com/',
+        windowId: 1,
+        active: false,
+      }),
     });
     const registerAutoAvoidListeners = await loadRegisterAutoAvoidListeners();
 
@@ -104,7 +97,11 @@ describe('registerAutoAvoidListeners', () => {
     );
 
     onCreated({ id: 2 });
-    onUpdated(2, { url: 'https://dup.com/' }, makeTab({ id: 2, url: 'https://dup.com/' }));
+    onUpdated(
+      2,
+      { url: 'https://dup.com/' },
+      createChromeTabStub({ id: 2, url: 'https://dup.com/' }),
+    );
     await flushPromises();
 
     expect(mocks.move).not.toHaveBeenCalled();
@@ -115,10 +112,21 @@ describe('registerAutoAvoidListeners', () => {
     const { listeners, mocks } = stubChrome({
       saveData: { autoAvoidDuplicate: true },
       existingTabs: [
-        makeTab({ id: 1, url: 'https://dup.com/', windowId: 1, active: false }),
-        makeTab({ id: 3, url: 'https://other.com/', windowId: 1, active: true, index: 4 }),
+        createChromeTabStub({ id: 1, url: 'https://dup.com/', windowId: 1, active: false }),
+        createChromeTabStub({
+          id: 3,
+          url: 'https://other.com/',
+          windowId: 1,
+          active: true,
+          index: 4,
+        }),
       ],
-      freshCreatedTab: makeTab({ id: 2, url: 'https://dup.com/', windowId: 1, active: false }),
+      freshCreatedTab: createChromeTabStub({
+        id: 2,
+        url: 'https://dup.com/',
+        windowId: 1,
+        active: false,
+      }),
     });
     const registerAutoAvoidListeners = await loadRegisterAutoAvoidListeners();
 
@@ -130,7 +138,11 @@ describe('registerAutoAvoidListeners', () => {
     );
 
     onCreated({ id: 2 });
-    onUpdated(2, { url: 'https://dup.com/' }, makeTab({ id: 2, url: 'https://dup.com/' }));
+    onUpdated(
+      2,
+      { url: 'https://dup.com/' },
+      createChromeTabStub({ id: 2, url: 'https://dup.com/' }),
+    );
     await flushPromises();
 
     expect(mocks.move).toHaveBeenCalledWith(1, { windowId: 1, index: 5 });
@@ -140,8 +152,10 @@ describe('registerAutoAvoidListeners', () => {
   it('activates the existing duplicate and closes the new tab when the new tab was itself activated', async () => {
     const { listeners, mocks } = stubChrome({
       saveData: { autoAvoidDuplicate: true },
-      existingTabs: [makeTab({ id: 1, url: 'https://dup.com/', windowId: 1, active: false })],
-      freshCreatedTab: makeTab({
+      existingTabs: [
+        createChromeTabStub({ id: 1, url: 'https://dup.com/', windowId: 1, active: false }),
+      ],
+      freshCreatedTab: createChromeTabStub({
         id: 2,
         url: 'https://dup.com/',
         windowId: 1,
@@ -160,7 +174,11 @@ describe('registerAutoAvoidListeners', () => {
     );
 
     onCreated({ id: 2 });
-    onUpdated(2, { url: 'https://dup.com/' }, makeTab({ id: 2, url: 'https://dup.com/' }));
+    onUpdated(
+      2,
+      { url: 'https://dup.com/' },
+      createChromeTabStub({ id: 2, url: 'https://dup.com/' }),
+    );
     await flushPromises();
 
     expect(mocks.move).toHaveBeenCalledWith(1, { windowId: 1, index: 3 });
@@ -172,8 +190,10 @@ describe('registerAutoAvoidListeners', () => {
   it('focuses the target window when it is not the focused window', async () => {
     const { listeners, mocks } = stubChrome({
       saveData: { autoAvoidDuplicate: true },
-      existingTabs: [makeTab({ id: 1, url: 'https://dup.com/', windowId: 1, active: false })],
-      freshCreatedTab: makeTab({
+      existingTabs: [
+        createChromeTabStub({ id: 1, url: 'https://dup.com/', windowId: 1, active: false }),
+      ],
+      freshCreatedTab: createChromeTabStub({
         id: 2,
         url: 'https://dup.com/',
         windowId: 1,
@@ -192,7 +212,11 @@ describe('registerAutoAvoidListeners', () => {
     );
 
     onCreated({ id: 2 });
-    onUpdated(2, { url: 'https://dup.com/' }, makeTab({ id: 2, url: 'https://dup.com/' }));
+    onUpdated(
+      2,
+      { url: 'https://dup.com/' },
+      createChromeTabStub({ id: 2, url: 'https://dup.com/' }),
+    );
     await flushPromises();
 
     expect(mocks.windowsUpdate).toHaveBeenCalledWith(1, { focused: true });
@@ -201,8 +225,10 @@ describe('registerAutoAvoidListeners', () => {
   it('does nothing when autoAvoidDuplicate is off', async () => {
     const { listeners, mocks } = stubChrome({
       saveData: { autoAvoidDuplicate: false },
-      existingTabs: [makeTab({ id: 1, url: 'https://dup.com/', windowId: 1, active: true })],
-      freshCreatedTab: makeTab({ id: 2, url: 'https://dup.com/', windowId: 1 }),
+      existingTabs: [
+        createChromeTabStub({ id: 1, url: 'https://dup.com/', windowId: 1, active: true }),
+      ],
+      freshCreatedTab: createChromeTabStub({ id: 2, url: 'https://dup.com/', windowId: 1 }),
     });
     const registerAutoAvoidListeners = await loadRegisterAutoAvoidListeners();
 
@@ -214,7 +240,11 @@ describe('registerAutoAvoidListeners', () => {
     );
 
     onCreated({ id: 2 });
-    onUpdated(2, { url: 'https://dup.com/' }, makeTab({ id: 2, url: 'https://dup.com/' }));
+    onUpdated(
+      2,
+      { url: 'https://dup.com/' },
+      createChromeTabStub({ id: 2, url: 'https://dup.com/' }),
+    );
     await flushPromises();
 
     expect(mocks.remove).not.toHaveBeenCalled();
@@ -223,8 +253,10 @@ describe('registerAutoAvoidListeners', () => {
   it('does nothing when there is no duplicate', async () => {
     const { listeners, mocks } = stubChrome({
       saveData: { autoAvoidDuplicate: true },
-      existingTabs: [makeTab({ id: 1, url: 'https://unique.com/', windowId: 1, active: true })],
-      freshCreatedTab: makeTab({ id: 2, url: 'https://dup.com/', windowId: 1 }),
+      existingTabs: [
+        createChromeTabStub({ id: 1, url: 'https://unique.com/', windowId: 1, active: true }),
+      ],
+      freshCreatedTab: createChromeTabStub({ id: 2, url: 'https://dup.com/', windowId: 1 }),
     });
     const registerAutoAvoidListeners = await loadRegisterAutoAvoidListeners();
 
@@ -236,7 +268,11 @@ describe('registerAutoAvoidListeners', () => {
     );
 
     onCreated({ id: 2 });
-    onUpdated(2, { url: 'https://dup.com/' }, makeTab({ id: 2, url: 'https://dup.com/' }));
+    onUpdated(
+      2,
+      { url: 'https://dup.com/' },
+      createChromeTabStub({ id: 2, url: 'https://dup.com/' }),
+    );
     await flushPromises();
 
     expect(mocks.remove).not.toHaveBeenCalled();
@@ -245,7 +281,9 @@ describe('registerAutoAvoidListeners', () => {
   it('skips resolution when the new tab already closed before the check', async () => {
     const { listeners, mocks } = stubChrome({
       saveData: { autoAvoidDuplicate: true },
-      existingTabs: [makeTab({ id: 1, url: 'https://dup.com/', windowId: 1, active: true })],
+      existingTabs: [
+        createChromeTabStub({ id: 1, url: 'https://dup.com/', windowId: 1, active: true }),
+      ],
       freshCreatedTab: null,
     });
     const registerAutoAvoidListeners = await loadRegisterAutoAvoidListeners();
@@ -258,7 +296,11 @@ describe('registerAutoAvoidListeners', () => {
     );
 
     onCreated({ id: 2 });
-    onUpdated(2, { url: 'https://dup.com/' }, makeTab({ id: 2, url: 'https://dup.com/' }));
+    onUpdated(
+      2,
+      { url: 'https://dup.com/' },
+      createChromeTabStub({ id: 2, url: 'https://dup.com/' }),
+    );
     await flushPromises();
 
     expect(mocks.move).not.toHaveBeenCalled();
@@ -268,8 +310,10 @@ describe('registerAutoAvoidListeners', () => {
   it('ignores updates without a url change', async () => {
     const { listeners, mocks } = stubChrome({
       saveData: { autoAvoidDuplicate: true },
-      existingTabs: [makeTab({ id: 1, url: 'https://dup.com/', windowId: 1, active: true })],
-      freshCreatedTab: makeTab({ id: 2, url: 'https://dup.com/', windowId: 1 }),
+      existingTabs: [
+        createChromeTabStub({ id: 1, url: 'https://dup.com/', windowId: 1, active: true }),
+      ],
+      freshCreatedTab: createChromeTabStub({ id: 2, url: 'https://dup.com/', windowId: 1 }),
     });
     const registerAutoAvoidListeners = await loadRegisterAutoAvoidListeners();
 
@@ -281,7 +325,7 @@ describe('registerAutoAvoidListeners', () => {
     );
 
     onCreated({ id: 2 });
-    onUpdated(2, { status: 'loading' }, makeTab({ id: 2 }));
+    onUpdated(2, { status: 'loading' }, createChromeTabStub({ id: 2 }));
     await flushPromises();
 
     expect(mocks.storageGet).not.toHaveBeenCalled();
@@ -291,7 +335,7 @@ describe('registerAutoAvoidListeners', () => {
     const { listeners, mocks } = stubChrome({
       saveData: { autoAvoidDuplicate: true },
       existingTabs: [],
-      freshCreatedTab: makeTab({ id: 2, url: 'chrome://newtab/', windowId: 1 }),
+      freshCreatedTab: createChromeTabStub({ id: 2, url: 'chrome://newtab/', windowId: 1 }),
     });
     const registerAutoAvoidListeners = await loadRegisterAutoAvoidListeners();
 
@@ -303,7 +347,7 @@ describe('registerAutoAvoidListeners', () => {
     );
 
     onCreated({ id: 2 });
-    onUpdated(2, { url: 'chrome://newtab/' }, makeTab({ id: 2 }));
+    onUpdated(2, { url: 'chrome://newtab/' }, createChromeTabStub({ id: 2 }));
     await flushPromises();
 
     expect(mocks.storageGet).not.toHaveBeenCalled();
@@ -312,8 +356,10 @@ describe('registerAutoAvoidListeners', () => {
   it('forgets a tab once it is removed, so a later update for it is ignored', async () => {
     const { listeners, mocks } = stubChrome({
       saveData: { autoAvoidDuplicate: true },
-      existingTabs: [makeTab({ id: 1, url: 'https://dup.com/', windowId: 1, active: true })],
-      freshCreatedTab: makeTab({ id: 2, url: 'https://dup.com/', windowId: 1 }),
+      existingTabs: [
+        createChromeTabStub({ id: 1, url: 'https://dup.com/', windowId: 1, active: true }),
+      ],
+      freshCreatedTab: createChromeTabStub({ id: 2, url: 'https://dup.com/', windowId: 1 }),
     });
     const registerAutoAvoidListeners = await loadRegisterAutoAvoidListeners();
 
@@ -327,7 +373,7 @@ describe('registerAutoAvoidListeners', () => {
 
     onCreated({ id: 2 });
     onRemoved(2);
-    onUpdated(2, { url: 'https://dup.com/' }, makeTab({ id: 2 }));
+    onUpdated(2, { url: 'https://dup.com/' }, createChromeTabStub({ id: 2 }));
     await flushPromises();
 
     expect(mocks.storageGet).not.toHaveBeenCalled();
@@ -336,8 +382,10 @@ describe('registerAutoAvoidListeners', () => {
   it('suppresses newly created tabs during the post-startup grace period', async () => {
     const { listeners, mocks } = stubChrome({
       saveData: { autoAvoidDuplicate: true },
-      existingTabs: [makeTab({ id: 1, url: 'https://dup.com/', windowId: 1, active: true })],
-      freshCreatedTab: makeTab({ id: 2, url: 'https://dup.com/', windowId: 1 }),
+      existingTabs: [
+        createChromeTabStub({ id: 1, url: 'https://dup.com/', windowId: 1, active: true }),
+      ],
+      freshCreatedTab: createChromeTabStub({ id: 2, url: 'https://dup.com/', windowId: 1 }),
     });
     const registerAutoAvoidListeners = await loadRegisterAutoAvoidListeners();
 
@@ -351,7 +399,7 @@ describe('registerAutoAvoidListeners', () => {
 
     onStartup();
     onCreated({ id: 2 });
-    onUpdated(2, { url: 'https://dup.com/' }, makeTab({ id: 2 }));
+    onUpdated(2, { url: 'https://dup.com/' }, createChromeTabStub({ id: 2 }));
     await flushPromises();
 
     expect(mocks.storageGet).not.toHaveBeenCalled();

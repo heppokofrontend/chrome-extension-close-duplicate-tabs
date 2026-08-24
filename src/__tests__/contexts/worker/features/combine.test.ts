@@ -1,23 +1,8 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
 
+import { createChromeTabStub } from '@/__tests__/__helpers__';
 import { runCombine } from '@/contexts/worker/features/combine';
 import type { SaveDataType } from '@/utils';
-
-const makeChromeTab = (overrides: Partial<chrome.tabs.Tab> = {}): chrome.tabs.Tab => ({
-  index: 0,
-  pinned: false,
-  highlighted: false,
-  windowId: 1,
-  active: false,
-  frozen: false,
-  incognito: false,
-  selected: false,
-  discarded: false,
-  autoDiscardable: true,
-  groupId: -1,
-  lastAccessed: 0,
-  ...overrides,
-});
 
 const saveData: SaveDataType = { includeAllWindow: false, includePinnedTabs: false };
 
@@ -40,7 +25,7 @@ afterEach(() => {
 
 describe('runCombine', () => {
   it('always queries every window regardless of includeAllWindow', async () => {
-    const currentTab = makeChromeTab({ id: 99, windowId: 1, active: true });
+    const currentTab = createChromeTabStub({ id: 99, windowId: 1, active: true });
     const { query } = stubChrome(currentTab, []);
 
     await runCombine({ saveData });
@@ -53,11 +38,11 @@ describe('runCombine', () => {
   });
 
   it('moves every tab into the current window, preserves pinned state, and re-activates the current tab', async () => {
-    const currentTab = makeChromeTab({ id: 99, windowId: 1, active: true });
+    const currentTab = createChromeTabStub({ id: 99, windowId: 1, active: true });
     const tabs = [
-      makeChromeTab({ id: 1, windowId: 2, pinned: true }),
-      makeChromeTab({ id: 2, windowId: 3, pinned: false }),
-      makeChromeTab({ id: undefined, windowId: 4 }),
+      createChromeTabStub({ id: 1, windowId: 2, pinned: true }),
+      createChromeTabStub({ id: 2, windowId: 3, pinned: false }),
+      createChromeTabStub({ id: undefined, windowId: 4 }),
     ];
     const { move, update } = stubChrome(currentTab, tabs);
 
@@ -73,8 +58,8 @@ describe('runCombine', () => {
   });
 
   it('skips re-activating when the current tab has no numeric id', async () => {
-    const currentTab = makeChromeTab({ id: undefined, windowId: 1, active: true });
-    const tabs = [makeChromeTab({ id: 1, windowId: 2, pinned: false })];
+    const currentTab = createChromeTabStub({ id: undefined, windowId: 1, active: true });
+    const tabs = [createChromeTabStub({ id: 1, windowId: 2, pinned: false })];
     const { update } = stubChrome(currentTab, tabs);
 
     await runCombine({ saveData });

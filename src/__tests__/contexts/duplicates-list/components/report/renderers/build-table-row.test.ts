@@ -1,23 +1,13 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
 
+import { createChromeTabStub } from '@/__tests__/__helpers__';
 import { buildTableRow } from '@/contexts/duplicates-list/components/report/renderers/build-table-row';
 import type { TabWithIdAndUrl } from '@/types';
 
 const makeTab = (overrides: Partial<TabWithIdAndUrl> = {}): TabWithIdAndUrl => ({
+  ...createChromeTabStub(),
   id: 1,
   url: 'https://example.com/',
-  windowId: 1,
-  index: 0,
-  pinned: false,
-  highlighted: false,
-  active: false,
-  frozen: false,
-  incognito: false,
-  selected: false,
-  discarded: false,
-  autoDiscardable: true,
-  groupId: -1,
-  lastAccessed: 0,
   ...overrides,
 });
 

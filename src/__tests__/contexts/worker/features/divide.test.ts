@@ -1,23 +1,8 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
 
+import { createChromeTabStub } from '@/__tests__/__helpers__';
 import { runDivide } from '@/contexts/worker/features/divide';
 import type { SaveDataType } from '@/utils';
-
-const makeChromeTab = (overrides: Partial<chrome.tabs.Tab> = {}): chrome.tabs.Tab => ({
-  index: 0,
-  pinned: false,
-  highlighted: false,
-  windowId: 1,
-  active: false,
-  frozen: false,
-  incognito: false,
-  selected: false,
-  discarded: false,
-  autoDiscardable: true,
-  groupId: -1,
-  lastAccessed: 0,
-  ...overrides,
-});
 
 const saveData: SaveDataType = { includeAllWindow: false, includePinnedTabs: false };
 
@@ -43,12 +28,12 @@ afterEach(() => {
 
 describe('runDivide', () => {
   it('opens a new window for every tab except the current one and preserves pinned state', async () => {
-    const currentTab = makeChromeTab({ id: 99, windowId: 5 });
+    const currentTab = createChromeTabStub({ id: 99, windowId: 5 });
     const tabs = [
-      makeChromeTab({ id: 99, windowId: 5 }),
-      makeChromeTab({ id: 1, pinned: true }),
-      makeChromeTab({ id: 2, pinned: false }),
-      makeChromeTab({ id: undefined }),
+      createChromeTabStub({ id: 99, windowId: 5 }),
+      createChromeTabStub({ id: 1, pinned: true }),
+      createChromeTabStub({ id: 2, pinned: false }),
+      createChromeTabStub({ id: undefined }),
     ];
     const { windowsCreate, windowsUpdate, update } = stubChrome(currentTab, tabs);
 
@@ -62,8 +47,8 @@ describe('runDivide', () => {
   });
 
   it('does not create any window when only the current tab is present', async () => {
-    const currentTab = makeChromeTab({ id: 99, windowId: 5 });
-    const tabs = [makeChromeTab({ id: 99, windowId: 5 })];
+    const currentTab = createChromeTabStub({ id: 99, windowId: 5 });
+    const tabs = [createChromeTabStub({ id: 99, windowId: 5 })];
     const { windowsCreate, windowsUpdate } = stubChrome(currentTab, tabs);
 
     await runDivide({ saveData });
@@ -73,8 +58,8 @@ describe('runDivide', () => {
   });
 
   it('skips refocusing the window when the current tab has no numeric id', async () => {
-    const currentTab = makeChromeTab({ id: undefined, windowId: 5 });
-    const tabs = [makeChromeTab({ id: 1, pinned: false })];
+    const currentTab = createChromeTabStub({ id: undefined, windowId: 5 });
+    const tabs = [createChromeTabStub({ id: 1, pinned: false })];
     const { windowsUpdate, update } = stubChrome(currentTab, tabs);
 
     await runDivide({ saveData });
