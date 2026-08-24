@@ -4,7 +4,9 @@
   "version": "1.6.4",
   "author": "heppokofrontend",
   "allowScripts": {
-    "esbuild@0.28.2": true
+    "esbuild@0.28.2": true,
+    "fsevents@2.3.3": true,
+    "unrs-resolver@1.12.2": true
   },
   "bugs": {
     "url": "https://github.com/heppokofrontend/chrome-extension-close-duplicate-tabs/issues"
