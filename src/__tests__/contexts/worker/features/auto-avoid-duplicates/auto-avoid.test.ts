@@ -12,6 +12,7 @@ const makeTab = (overrides: Partial<chrome.tabs.Tab> = {}): chrome.tabs.Tab => (
   discarded: false,
   autoDiscardable: true,
   groupId: -1,
+  lastAccessed: 0,
   ...overrides,
 });
 

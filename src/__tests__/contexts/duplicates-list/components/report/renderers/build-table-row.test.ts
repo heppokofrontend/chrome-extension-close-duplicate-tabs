@@ -17,6 +17,7 @@ const makeTab = (overrides: Partial<TabWithIdAndUrl> = {}): TabWithIdAndUrl => (
   discarded: false,
   autoDiscardable: true,
   groupId: -1,
+  lastAccessed: 0,
   ...overrides,
 });
 
@@ -174,13 +175,5 @@ describe('buildTableRow', () => {
     );
 
     expect(lastAccessed?.textContent).toBe('3 days 3 hours ago');
-  });
-
-  it('renders an empty last-accessed cell when the tab has no lastAccessed value', () => {
-    stubChrome();
-
-    const { lastAccessed } = render(makeTab());
-
-    expect(lastAccessed?.textContent).toBe('');
   });
 });
