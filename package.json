@@ -4,32 +4,34 @@
   "version": "1.6.4",
   "author": "heppokofrontend",
   "allowScripts": {
-    "esbuild@0.28.1": true
+    "esbuild@0.28.2": true,
+    "fsevents@2.3.3": true,
+    "unrs-resolver@1.12.2": true
   },
   "bugs": {
     "url": "https://github.com/heppokofrontend/chrome-extension-close-duplicate-tabs/issues"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",
-    "@types/chrome": "0.2.0",
-    "@types/node": "26.1.0",
-    "@vitest/coverage-v8": "4.1.9",
-    "esbuild": "0.28.1",
-    "eslint": "10.6.0",
+    "@types/chrome": "0.2.6",
+    "@types/node": "26.2.0",
+    "@vitest/coverage-v8": "4.1.11",
+    "esbuild": "0.28.2",
+    "eslint": "10.9.0",
     "eslint-config-prettier": "10.1.8",
     "eslint-import-resolver-node": "0.4.0",
     "eslint-import-resolver-typescript": "4.4.5",
     "eslint-plugin-import-x": "4.17.1",
     "gh-pages": "6.3.0",
-    "globals": "17.7.0",
+    "globals": "17.11.0",
     "http-server": "14.1.1",
     "husky": "9.1.7",
-    "jsdom": "29.1.1",
-    "lint-staged": "17.0.8",
-    "prettier": "3.9.4",
+    "jsdom": "30.0.1",
+    "lint-staged": "17.3.0",
+    "prettier": "3.9.6",
     "typescript": "6.0.3",
-    "typescript-eslint": "8.62.1",
-    "vitest": "4.1.9"
+    "typescript-eslint": "8.67.0",
+    "vitest": "4.1.11"
   },
   "homepage": "https://github.com/heppokofrontend/chrome-extension-close-duplicate-tabs#readme",
   "keywords": [],

@@ -1,22 +1,8 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
 
+import { createChromeTabStub } from '@/__tests__/__helpers__';
 import { runGather } from '@/contexts/worker/features/gather';
 import type { SaveDataType } from '@/utils';
-
-const makeChromeTab = (overrides: Partial<chrome.tabs.Tab> = {}): chrome.tabs.Tab => ({
-  index: 0,
-  pinned: false,
-  highlighted: false,
-  windowId: 1,
-  active: false,
-  frozen: false,
-  incognito: false,
-  selected: false,
-  discarded: false,
-  autoDiscardable: true,
-  groupId: -1,
-  ...overrides,
-});
 
 const saveData: SaveDataType = { includeAllWindow: false, includePinnedTabs: false };
 
@@ -61,7 +47,7 @@ afterEach(() => {
 
 describe('runGather', () => {
   it('scope が allWindows のとき、全ウィンドウを対象に問い合わせる', async () => {
-    const currentTab = makeChromeTab({ id: 99, windowId: 1, active: true });
+    const currentTab = createChromeTabStub({ id: 99, windowId: 1, active: true });
     const { query } = stubChrome(currentTab, []);
 
     await runGather({
@@ -79,7 +65,7 @@ describe('runGather', () => {
   });
 
   it('scope が currentWindow のとき、現在のウィンドウのみを対象に問い合わせる', async () => {
-    const currentTab = makeChromeTab({ id: 99, windowId: 1, active: true });
+    const currentTab = createChromeTabStub({ id: 99, windowId: 1, active: true });
     const { query } = stubChrome(currentTab, []);
 
     await runGather({
@@ -97,8 +83,8 @@ describe('runGather', () => {
   });
 
   it('一致するタブが無い場合は何もしない', async () => {
-    const currentTab = makeChromeTab({ id: 99, windowId: 1, active: true });
-    const tabs = [makeChromeTab({ id: 1, url: 'https://b.com/', windowId: 2 })];
+    const currentTab = createChromeTabStub({ id: 99, windowId: 1, active: true });
+    const tabs = [createChromeTabStub({ id: 1, url: 'https://b.com/', windowId: 2 })];
     const { move, windowsCreate } = stubChrome(currentTab, tabs);
 
     await runGather({
@@ -114,11 +100,11 @@ describe('runGather', () => {
 
   describe('destination: currentWindow', () => {
     it('originが一致するタブだけを現在のウィンドウへ移動し、pinned 状態を保ってカレントタブへフォーカスを戻す', async () => {
-      const currentTab = makeChromeTab({ id: 99, windowId: 1, active: true });
+      const currentTab = createChromeTabStub({ id: 99, windowId: 1, active: true });
       const tabs = [
-        makeChromeTab({ id: 1, url: 'https://a.com/x', windowId: 2, pinned: true }),
-        makeChromeTab({ id: 2, url: 'https://a.com/y', windowId: 3, pinned: false }),
-        makeChromeTab({ id: 3, url: 'https://b.com/z', windowId: 4 }),
+        createChromeTabStub({ id: 1, url: 'https://a.com/x', windowId: 2, pinned: true }),
+        createChromeTabStub({ id: 2, url: 'https://a.com/y', windowId: 3, pinned: false }),
+        createChromeTabStub({ id: 3, url: 'https://b.com/z', windowId: 4 }),
       ];
       const { move, update } = stubChrome(currentTab, tabs);
 
@@ -139,12 +125,12 @@ describe('runGather', () => {
     });
 
     it('url または id を持たない、または url が不正なタブは対象から除外する', async () => {
-      const currentTab = makeChromeTab({ id: 99, windowId: 1, active: true });
+      const currentTab = createChromeTabStub({ id: 99, windowId: 1, active: true });
       const tabs = [
-        makeChromeTab({ id: 1, url: 'https://a.com/x', windowId: 2 }),
-        makeChromeTab({ id: undefined, url: 'https://a.com/y', windowId: 3 }),
-        makeChromeTab({ id: 2, url: undefined, windowId: 4 }),
-        makeChromeTab({ id: 3, url: 'not a url', windowId: 5 }),
+        createChromeTabStub({ id: 1, url: 'https://a.com/x', windowId: 2 }),
+        createChromeTabStub({ id: undefined, url: 'https://a.com/y', windowId: 3 }),
+        createChromeTabStub({ id: 2, url: undefined, windowId: 4 }),
+        createChromeTabStub({ id: 3, url: 'not a url', windowId: 5 }),
       ];
       const { move } = stubChrome(currentTab, tabs);
 
@@ -161,11 +147,11 @@ describe('runGather', () => {
 
   describe('destination: currentWindowGroup', () => {
     it('originが一致するタブを現在のウィンドウへ移動し、タブグループにまとめてホスト名をタイトルに設定する', async () => {
-      const currentTab = makeChromeTab({ id: 99, windowId: 1, active: true });
+      const currentTab = createChromeTabStub({ id: 99, windowId: 1, active: true });
       const tabs = [
-        makeChromeTab({ id: 1, url: 'https://a.com/x', windowId: 2 }),
-        makeChromeTab({ id: 2, url: 'https://a.com/y', windowId: 3 }),
-        makeChromeTab({ id: 3, url: 'https://b.com/z', windowId: 4 }),
+        createChromeTabStub({ id: 1, url: 'https://a.com/x', windowId: 2 }),
+        createChromeTabStub({ id: 2, url: 'https://a.com/y', windowId: 3 }),
+        createChromeTabStub({ id: 3, url: 'https://b.com/z', windowId: 4 }),
       ];
       const { move, update, group, tabGroupsUpdate } = stubChrome(currentTab, tabs);
 
@@ -186,10 +172,10 @@ describe('runGather', () => {
     });
 
     it('originにポート番号を含む場合、タイトルにもポート番号を保持する', async () => {
-      const currentTab = makeChromeTab({ id: 99, windowId: 1, active: true });
+      const currentTab = createChromeTabStub({ id: 99, windowId: 1, active: true });
       const tabs = [
-        makeChromeTab({ id: 1, url: 'http://localhost:8888/x', windowId: 2 }),
-        makeChromeTab({ id: 2, url: 'http://localhost:8888/y', windowId: 3 }),
+        createChromeTabStub({ id: 1, url: 'http://localhost:8888/x', windowId: 2 }),
+        createChromeTabStub({ id: 2, url: 'http://localhost:8888/y', windowId: 3 }),
       ];
       const { group, tabGroupsUpdate } = stubChrome(currentTab, tabs);
 
@@ -205,8 +191,10 @@ describe('runGather', () => {
     });
 
     it('ピン留めタブはピン留めを解除したうえでグループに含める', async () => {
-      const currentTab = makeChromeTab({ id: 99, windowId: 1, active: true });
-      const tabs = [makeChromeTab({ id: 1, url: 'https://a.com/x', windowId: 2, pinned: true })];
+      const currentTab = createChromeTabStub({ id: 99, windowId: 1, active: true });
+      const tabs = [
+        createChromeTabStub({ id: 1, url: 'https://a.com/x', windowId: 2, pinned: true }),
+      ];
       const { move, update, group, tabGroupsUpdate } = stubChrome(currentTab, tabs);
 
       await runGather({
@@ -225,10 +213,10 @@ describe('runGather', () => {
 
   describe('destination: newWindow', () => {
     it('先頭タブで新規ウィンドウを作り、残りのタブをそこへ移動する', async () => {
-      const currentTab = makeChromeTab({ id: 99, windowId: 1, active: true });
+      const currentTab = createChromeTabStub({ id: 99, windowId: 1, active: true });
       const tabs = [
-        makeChromeTab({ id: 1, url: 'https://a.com/x', windowId: 2, pinned: true }),
-        makeChromeTab({ id: 2, url: 'https://a.com/y', windowId: 3, pinned: false }),
+        createChromeTabStub({ id: 1, url: 'https://a.com/x', windowId: 2, pinned: true }),
+        createChromeTabStub({ id: 2, url: 'https://a.com/y', windowId: 3, pinned: false }),
       ];
       const windowsCreate = vi.fn().mockResolvedValue({ id: 100 });
       const { move, update } = stubChrome(currentTab, tabs, { windowsCreate });
@@ -248,10 +236,10 @@ describe('runGather', () => {
     });
 
     it('新規ウィンドウが数値の id を返さない場合、以降の移動処理をスキップする', async () => {
-      const currentTab = makeChromeTab({ id: 99, windowId: 1, active: true });
+      const currentTab = createChromeTabStub({ id: 99, windowId: 1, active: true });
       const tabs = [
-        makeChromeTab({ id: 1, url: 'https://a.com/x', windowId: 2 }),
-        makeChromeTab({ id: 2, url: 'https://a.com/y', windowId: 3 }),
+        createChromeTabStub({ id: 1, url: 'https://a.com/x', windowId: 2 }),
+        createChromeTabStub({ id: 2, url: 'https://a.com/y', windowId: 3 }),
       ];
       const windowsCreate = vi.fn().mockResolvedValue({});
       const { move } = stubChrome(currentTab, tabs, { windowsCreate });

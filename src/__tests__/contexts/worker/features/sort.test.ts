@@ -1,22 +1,8 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
 
+import { createChromeTabStub } from '@/__tests__/__helpers__';
 import { type SortableTab, getSorter, runSort, sortTabs } from '@/contexts/worker/features/sort';
 import { defaultSaveData } from '@/utils';
-
-const makeChromeTab = (overrides: Partial<chrome.tabs.Tab> = {}): chrome.tabs.Tab => ({
-  index: 0,
-  pinned: false,
-  highlighted: false,
-  windowId: 1,
-  active: false,
-  frozen: false,
-  incognito: false,
-  selected: false,
-  discarded: false,
-  autoDiscardable: true,
-  groupId: -1,
-  ...overrides,
-});
 
 const makeTab = (overrides: Partial<SortableTab> = {}): SortableTab => ({
   id: 1,
@@ -140,10 +126,28 @@ describe('sortTabs', () => {
     vi.stubGlobal('chrome', { tabs: { move } });
 
     const tabs = [
-      makeChromeTab({ id: 10, windowId: 1, pinned: false, url: 'https://b.com/', title: 'B' }),
-      makeChromeTab({ id: 11, windowId: 1, pinned: true, url: 'https://a.com/', title: 'A' }),
-      makeChromeTab({ id: 20, windowId: 2, pinned: false, url: 'https://z.com/', title: 'Z' }),
-      makeChromeTab({ id: 21, windowId: 2, pinned: false, url: 'https://a.com/', title: 'A2' }),
+      createChromeTabStub({
+        id: 10,
+        windowId: 1,
+        pinned: false,
+        url: 'https://b.com/',
+        title: 'B',
+      }),
+      createChromeTabStub({ id: 11, windowId: 1, pinned: true, url: 'https://a.com/', title: 'A' }),
+      createChromeTabStub({
+        id: 20,
+        windowId: 2,
+        pinned: false,
+        url: 'https://z.com/',
+        title: 'Z',
+      }),
+      createChromeTabStub({
+        id: 21,
+        windowId: 2,
+        pinned: false,
+        url: 'https://a.com/',
+        title: 'A2',
+      }),
     ];
 
     await sortTabs(tabs, 'sortByUrl');
@@ -161,9 +165,9 @@ describe('sortTabs', () => {
     vi.stubGlobal('chrome', { tabs: { move } });
 
     const tabs = [
-      makeChromeTab({ id: 1, url: 'https://a.com/', title: 'A', lastAccessed: 200 }),
-      makeChromeTab({ id: 2, url: 'https://b.com/', title: 'B' }),
-      makeChromeTab({ id: 3, url: 'https://c.com/', title: 'C', lastAccessed: 100 }),
+      createChromeTabStub({ id: 1, url: 'https://a.com/', title: 'A', lastAccessed: 200 }),
+      createChromeTabStub({ id: 2, url: 'https://b.com/', title: 'B' }),
+      createChromeTabStub({ id: 3, url: 'https://c.com/', title: 'C', lastAccessed: 100 }),
     ];
 
     await sortTabs(tabs, 'sortByLastAccessed');
@@ -180,10 +184,10 @@ describe('sortTabs', () => {
     vi.stubGlobal('chrome', { tabs: { move } });
 
     const tabs = [
-      makeChromeTab({ id: 1, url: 'https://a.com/', title: 'A' }),
-      makeChromeTab({ id: undefined, url: 'https://b.com/', title: 'B' }),
-      makeChromeTab({ id: 2, url: undefined, title: 'C' }),
-      makeChromeTab({ id: 3, url: 'https://d.com/', title: undefined }),
+      createChromeTabStub({ id: 1, url: 'https://a.com/', title: 'A' }),
+      createChromeTabStub({ id: undefined, url: 'https://b.com/', title: 'B' }),
+      createChromeTabStub({ id: 2, url: undefined, title: 'C' }),
+      createChromeTabStub({ id: 3, url: 'https://d.com/', title: undefined }),
     ];
 
     await sortTabs(tabs, 'sortByUrl');
@@ -202,8 +206,8 @@ describe('runSort', () => {
     const query = vi
       .fn()
       .mockResolvedValue([
-        makeChromeTab({ id: 1, url: 'https://b.com/', title: 'B' }),
-        makeChromeTab({ id: 2, url: 'https://a.com/', title: 'A' }),
+        createChromeTabStub({ id: 1, url: 'https://b.com/', title: 'B' }),
+        createChromeTabStub({ id: 2, url: 'https://a.com/', title: 'A' }),
       ]);
     const move = vi.fn();
     vi.stubGlobal('chrome', { tabs: { query, move } });

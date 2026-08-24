@@ -1,22 +1,8 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
 
+import { createChromeTabStub } from '@/__tests__/__helpers__';
 import { runCategorize } from '@/contexts/worker/features/categorize';
 import type { SaveDataType } from '@/utils';
-
-const makeChromeTab = (overrides: Partial<chrome.tabs.Tab> = {}): chrome.tabs.Tab => ({
-  index: 0,
-  pinned: false,
-  highlighted: false,
-  windowId: 1,
-  active: false,
-  frozen: false,
-  incognito: false,
-  selected: false,
-  discarded: false,
-  autoDiscardable: true,
-  groupId: -1,
-  ...overrides,
-});
 
 /** 保留中の microtask を掃き出す（fire-and-forget な update を待つ）。 */
 const flushPromises = async () => {
@@ -37,12 +23,12 @@ describe('runCategorize', () => {
       // minCategorizeNumber を 0 にして OTHERS への集約を無効化する。
       minCategorizeNumber: 0,
     };
-    const currentTab = makeChromeTab({ id: 9, url: 'https://other.com/', windowId: 1 });
+    const currentTab = createChromeTabStub({ id: 9, url: 'https://other.com/', windowId: 1 });
     const tabs = [
-      makeChromeTab({ id: 1, url: 'https://a.com/x', windowId: 1 }),
-      makeChromeTab({ id: 2, url: 'https://a.com/y', windowId: 1 }),
-      makeChromeTab({ id: 3, url: 'https://b.com/x', windowId: 1 }),
-      makeChromeTab({ id: 4, url: 'https://b.com/y', windowId: 1 }),
+      createChromeTabStub({ id: 1, url: 'https://a.com/x', windowId: 1 }),
+      createChromeTabStub({ id: 2, url: 'https://a.com/y', windowId: 1 }),
+      createChromeTabStub({ id: 3, url: 'https://b.com/x', windowId: 1 }),
+      createChromeTabStub({ id: 4, url: 'https://b.com/y', windowId: 1 }),
     ];
 
     const query = vi.fn((arg: chrome.tabs.QueryInfo) =>
@@ -86,14 +72,14 @@ describe('runCategorize', () => {
       includePinnedTabs: false,
       minCategorizeNumber: 1,
     };
-    const currentTab = makeChromeTab({ id: 9, url: 'https://other.com/', windowId: 1 });
+    const currentTab = createChromeTabStub({ id: 9, url: 'https://other.com/', windowId: 1 });
     const tabs = [
       // a.com は 2 タブ（しきい値 1 超）なので単独グループのまま。
-      makeChromeTab({ id: 1, url: 'https://a.com/x', windowId: 1 }),
-      makeChromeTab({ id: 2, url: 'https://a.com/y', windowId: 1 }),
+      createChromeTabStub({ id: 1, url: 'https://a.com/x', windowId: 1 }),
+      createChromeTabStub({ id: 2, url: 'https://a.com/y', windowId: 1 }),
       // b.com / c.com は各 1 タブ（しきい値以下）なので OTHERS へ集約される。
-      makeChromeTab({ id: 3, url: 'https://b.com/', windowId: 1 }),
-      makeChromeTab({ id: 4, url: 'https://c.com/', windowId: 1 }),
+      createChromeTabStub({ id: 3, url: 'https://b.com/', windowId: 1 }),
+      createChromeTabStub({ id: 4, url: 'https://c.com/', windowId: 1 }),
     ];
 
     const query = vi.fn((arg: chrome.tabs.QueryInfo) =>
@@ -131,10 +117,15 @@ describe('runCategorize', () => {
       minCategorizeNumber: 0,
     };
     // includePinnedTabs: false のため、pinned なカレントタブは getTabs の結果に含まれない。
-    const currentTab = makeChromeTab({ id: 9, url: 'https://a.com/', windowId: 1, pinned: true });
+    const currentTab = createChromeTabStub({
+      id: 9,
+      url: 'https://a.com/',
+      windowId: 1,
+      pinned: true,
+    });
     const tabs = [
-      makeChromeTab({ id: 1, url: 'https://a.com/x', windowId: 1 }),
-      makeChromeTab({ id: 3, url: 'https://b.com/', windowId: 1 }),
+      createChromeTabStub({ id: 1, url: 'https://a.com/x', windowId: 1 }),
+      createChromeTabStub({ id: 3, url: 'https://b.com/', windowId: 1 }),
     ];
 
     const query = vi.fn((arg: chrome.tabs.QueryInfo) =>
@@ -172,10 +163,10 @@ describe('runCategorize', () => {
       includePinnedTabs: false,
       minCategorizeNumber: 0,
     };
-    const currentTab = makeChromeTab({ id: 9, url: 'https://a.com/', windowId: 1 });
+    const currentTab = createChromeTabStub({ id: 9, url: 'https://a.com/', windowId: 1 });
     const tabs = [
-      makeChromeTab({ id: 1, url: 'https://a.com/x', windowId: 1 }),
-      makeChromeTab({ id: 2, url: 'https://a.com/y', windowId: 1 }),
+      createChromeTabStub({ id: 1, url: 'https://a.com/x', windowId: 1 }),
+      createChromeTabStub({ id: 2, url: 'https://a.com/y', windowId: 1 }),
     ];
 
     const query = vi.fn((arg: chrome.tabs.QueryInfo) =>
@@ -199,12 +190,12 @@ describe('runCategorize', () => {
       includePinnedTabs: false,
       minCategorizeNumber: 0,
     };
-    const currentTab = makeChromeTab({ id: 9, url: 'https://other.com/', windowId: 1 });
+    const currentTab = createChromeTabStub({ id: 9, url: 'https://other.com/', windowId: 1 });
     const tabs = [
-      makeChromeTab({ id: 1, url: 'https://a.com/x', windowId: 1 }),
-      makeChromeTab({ id: undefined, url: 'https://b.com/x', windowId: 1 }),
-      makeChromeTab({ id: 2, url: undefined, windowId: 1 }),
-      makeChromeTab({ id: 3, url: 'https://c.com/x', windowId: 1 }),
+      createChromeTabStub({ id: 1, url: 'https://a.com/x', windowId: 1 }),
+      createChromeTabStub({ id: undefined, url: 'https://b.com/x', windowId: 1 }),
+      createChromeTabStub({ id: 2, url: undefined, windowId: 1 }),
+      createChromeTabStub({ id: 3, url: 'https://c.com/x', windowId: 1 }),
     ];
 
     const query = vi.fn((arg: chrome.tabs.QueryInfo) =>
@@ -237,12 +228,12 @@ describe('runCategorize', () => {
       includePinnedTabs: false,
       minCategorizeNumber: 0,
     };
-    const currentTab = makeChromeTab({ id: 9, url: 'https://other.com/', windowId: 1 });
+    const currentTab = createChromeTabStub({ id: 9, url: 'https://other.com/', windowId: 1 });
     const tabs = [
-      makeChromeTab({ id: 1, url: 'https://a.com/x', windowId: 1 }),
-      makeChromeTab({ id: 2, url: 'https://a.com/y', windowId: 1 }),
-      makeChromeTab({ id: 3, url: 'https://b.com/x', windowId: 1 }),
-      makeChromeTab({ id: 4, url: 'https://b.com/y', windowId: 1 }),
+      createChromeTabStub({ id: 1, url: 'https://a.com/x', windowId: 1 }),
+      createChromeTabStub({ id: 2, url: 'https://a.com/y', windowId: 1 }),
+      createChromeTabStub({ id: 3, url: 'https://b.com/x', windowId: 1 }),
+      createChromeTabStub({ id: 4, url: 'https://b.com/y', windowId: 1 }),
     ];
 
     const query = vi.fn((arg: chrome.tabs.QueryInfo) =>

@@ -4,11 +4,10 @@ import {
   showNoticeModal,
   showSelectModal,
 } from '@/contexts/popup/components/dialogs';
+import { sendTaskRequest } from '@/contexts/popup/features/utils/send-task-request';
 import { STATE } from '@/contexts/popup/state';
 import type { GatherScope } from '@/types';
 import { getMessage, getTabs } from '@/utils';
-
-import { sendTaskRequest } from './utils/send-task-request';
 
 const FROM_CURRENT_WINDOW = 'gatherFromCurrentWindow';
 const FROM_ALL_WINDOWS = 'gatherFromAllWindows';

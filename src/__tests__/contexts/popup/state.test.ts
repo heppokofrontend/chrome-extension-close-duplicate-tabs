@@ -30,7 +30,8 @@ describe('save', () => {
 
   it('rolls back STATE and alerts the user when persisting fails', async () => {
     setSaveData.mockRejectedValue(new Error('storage unavailable'));
-    vi.stubGlobal('alert', vi.fn());
+    const alertMock = vi.fn();
+    vi.stubGlobal('alert', alertMock);
     vi.spyOn(console, 'error').mockImplementation(() => undefined);
 
     const { STATE, save } = await import('@/contexts/popup/state');
@@ -43,7 +44,7 @@ describe('save', () => {
       expect(STATE.saveData).toBe(previous);
     });
 
-    expect(window.alert).toHaveBeenCalledWith('error message');
+    expect(alertMock).toHaveBeenCalledWith('error message');
     expect(getMessage).toHaveBeenCalledWith('error_saveFailed');
 
     vi.unstubAllGlobals();
