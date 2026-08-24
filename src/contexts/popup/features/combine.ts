@@ -9,14 +9,14 @@ export const sendCombineRequest = async () => {
   const taskName = 'combine';
   const shouldWarnAboutAllWindows = !STATE.saveData.includeAllWindow;
 
+  if ((await showConfirmModal({ message: getMessage(`dialog_${taskName}`) })) === 'cancel') {
+    return;
+  }
+
   if (shouldWarnAboutAllWindows) {
     if ((await showConfirmModal({ message: getMessage(`dialog_${taskName}_all`) })) === 'cancel') {
       return;
     }
-  }
-
-  if ((await showConfirmModal({ message: getMessage(`dialog_${taskName}`) })) === 'cancel') {
-    return;
   }
 
   sendTaskRequest({ taskName });
