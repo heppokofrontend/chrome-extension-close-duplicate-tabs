@@ -7,8 +7,7 @@ export const buildTableRow = (tbody: HTMLTableSectionElement, tab: TabWithIdAndU
   const openTabLabel = getMessage('duplicates_open_tab', String(tab.id));
   const closeTabLabel = getMessage('duplicates_close_tab', tab.title ?? String(tab.id));
   const closedMessage = getMessage('duplicates_already_closed');
-  const lastAccessedLabel =
-    tab.lastAccessed === undefined ? '' : formatLastAccessed(tab.lastAccessed);
+  const lastAccessedLabel = formatLastAccessed(tab.lastAccessed);
 
   tbody.insertAdjacentHTML(
     'afterbegin',

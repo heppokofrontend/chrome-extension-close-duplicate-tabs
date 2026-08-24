@@ -104,7 +104,7 @@ export const sortTabs = async (tabs: chrome.tabs.Tab[], sortType?: SortType) => 
         title,
         pinned,
         windowId,
-        lastAccessed: lastAccessed ?? 0,
+        lastAccessed,
       };
     })
     .filter((tab): tab is SortableTab => {
