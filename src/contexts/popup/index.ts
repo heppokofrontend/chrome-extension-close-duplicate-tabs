@@ -7,7 +7,7 @@ import { initDetailsElements } from '@/contexts/popup/components/disclosures';
 import { initOptionCheckboxes } from '@/contexts/popup/components/option-checkbox';
 import { initOptionSelects } from '@/contexts/popup/components/option-select';
 import { initRunButtons } from '@/contexts/popup/components/run-buttons';
-import { POPUP_UI } from '@/contexts/popup/constants';
+import { ANNOUNCEMENT_VERSION, POPUP_UI } from '@/contexts/popup/constants';
 import { STATE, save } from '@/contexts/popup/state';
 import { setSelectUpdateBadgeModeValue } from '@/contexts/popup/utils/set-select-value';
 import { getLocalStorage, getMessage } from '@/utils';
@@ -53,7 +53,7 @@ const loadCurrentTabOrigin = async () => {
 /** 新機能のお知らせモーダルのスイッチにお知らせバッジを表示する。 */
 const initAnnounceNewFeature = () => {
   const key = 'update-announcement';
-  const version = 'v1.6.4';
+  const version = ANNOUNCEMENT_VERSION;
   const value = STATE.saveData.shown[key];
 
   POPUP_UI.showUpdateInfoButton.addEventListener('click', () => {
